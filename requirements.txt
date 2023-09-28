@@ -1,20 +1,35 @@
-pandas
-langchain
+# openai
 openai
 tiktoken
-huggingface-hub
-pypdf
-filetype
-tokenizers
-sentence-transformers
-scikit-learn
-llama-index
-python-dotenv
 
+# langchain
 docx2txt
 unstructured
+pypdf
 pdf2image
 pdfminer
 pdfminer.six
+langchain
+
+llama-index
+
+# huggingface
+huggingface-hub
+tokenizers
+sentence-transformers
+
+# evaluate
+evaluate
+Cython
+rouge_score
+absl-py
 
 faiss-cpu
+
+# misc
+pandas
+filetype
+scikit-learn
+python-dotenv
+
+wikipedia

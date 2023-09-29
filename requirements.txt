@@ -3,15 +3,13 @@ openai
 tiktoken
 
 # langchain
+langchain
 docx2txt
 unstructured
 pypdf
 pdf2image
 pdfminer
 pdfminer.six
-langchain
-
-llama-index
 
 # huggingface
 huggingface-hub
@@ -31,5 +29,7 @@ pandas
 filetype
 scikit-learn
 python-dotenv
+llama-index
 
+# agents
 wikipedia

@@ -1,4 +1,3 @@
-from typing import Dict, List, Optional, Callable
 import numpy as np
 
 from langchain.evaluation.qa import QAEvalChain
@@ -7,6 +6,8 @@ from langchain.schema.embeddings import Embeddings
 from langchain.schema.language_model import BaseLanguageModel
 
 import evaluate
+
+from typing import Dict, List, Optional, Callable
 
 from .prompts import (
     GRADE_ANSWER_PROMPT_FAST,
@@ -24,7 +25,18 @@ def grade_embedding_similarity(
     gt_dataset: List[Dict[str, str]],
     predictions: List[str],
     embedding_model: Embeddings,
-) -> List[float]:
+) -> float:
+    """Calculate similarities of label answers and generated answers using the corresponding embeddings. We multiply the matrixes of the provided embeddings and take the average of the diagonal values, which should be the cosine similarites assuming that the embeddings were already normalized.
+    TODO: Make sure embedding model returns normalized vectors.
+
+    Args:
+        gt_dataset (List[Dict[str, str]]): _description_
+        predictions (List[str]): _description_
+        embedding_model (Embeddings): _description_
+
+    Returns:
+        float: the average cosine similarities
+    """
     num_qa_pairs = len(gt_dataset)
 
     target_embeddings = np.array(
@@ -47,7 +59,18 @@ def grade_model_retrieval(
     grader_llm: Optional[BaseLanguageModel] = ChatOpenAI(
         model_name="gpt-3.5-turbo", temperature=0
     ),
-):
+) -> float:
+    """Using LangChains QAEvalChain we use a LLM as grader to get a metric how well the found document chunks from the vectorstore provide the answer for the label QA pairs.
+
+    Args:
+        gt_dataset (List[Dict]): _description_
+        predictions (List[str]): _description_
+        grade_docs_prompt (str): _description_
+        grader_llm (Optional[BaseLanguageModel], optional): _description_. Defaults to ChatOpenAI( model_name="gpt-3.5-turbo", temperature=0 ).
+
+    Returns:
+        float: average score across all labels
+    """
     if grade_docs_prompt == "Fast":
         prompt = GRADE_DOCS_PROMPT_FAST
     else:
@@ -81,7 +104,18 @@ def grade_model_answer(
     grader_llm: Optional[BaseLanguageModel] = ChatOpenAI(
         model_name="gpt-3.5-turbo", temperature=0
     ),
-):
+) -> float:
+    """Calculates scores how well the generated answer fits the label answers.
+
+    Args:
+        gt_datase (List[Dict[str, str]]): _description_
+        predictions (List[str]): _description_
+        grade_answer_prompt (str): _description_
+        grader_llm (Optional[BaseLanguageModel], optional): _description_. Defaults to ChatOpenAI( model_name="gpt-3.5-turbo", temperature=0 ).
+
+    Returns:
+        float: average score
+    """
     if grade_answer_prompt == "Fast":
         prompt = GRADE_ANSWER_PROMPT_FAST
     elif grade_answer_prompt == "Descriptive w/ bias check":
@@ -108,6 +142,15 @@ def grade_model_answer(
 
 
 def grade_rouge(references: List[str], predictions: List[str]) -> tuple[float, float]:
+    """Calculates rouge1 and rouge2 scores of the label and generated answers
+
+    Args:
+        references (List[str]): _description_
+        predictions (List[str]): _description_
+
+    Returns:
+        tuple[float, float]: rouge1 and rouge2 scores
+    """
     rouge_score = evaluate.load("rouge")
     score = rouge_score.compute(references=references, predictions=predictions)
 

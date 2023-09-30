@@ -20,7 +20,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-async def grade_embedding_similarity(
+def grade_embedding_similarity(
     gt_dataset: list[dict[str, str]],
     predictions: list[dict[str, str]],
     embedding_model: Embeddings,
@@ -44,11 +44,11 @@ async def grade_embedding_similarity(
     predicted_answers = [qa_pair["result"] for qa_pair in predictions]
 
     target_embeddings = np.array(
-        await embedding_model.aembed_documents(label_answers)
+        embedding_model.embed_documents(label_answers)
     ).reshape(num_qa_pairs, -1)
 
     predicted_embeddings = np.array(
-        await embedding_model.aembed_documents(predicted_answers)
+        embedding_model.embed_documents(predicted_answers)
     ).reshape(num_qa_pairs, -1)
 
     # similarities between openai embeddings ranges from 0.7 - 1.0 only

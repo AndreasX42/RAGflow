@@ -175,36 +175,6 @@ def split_data(
     return chunks
 
 
-def write_json(
-    data: dict[str, str], filename: str = "../resources/eval_data.json"
-) -> None:
-    """Function used to store generated QA pairs, i.e. the ground truth.
-    TODO: Provide metadata to have 'Data provenance' of the ground truth QA pairs.
-
-    Args:
-        data (_type_): _description_
-        filename (str, optional): _description_. Defaults to "../resources/eval_data.json".
-    """
-
-    logger.debug(f"Writting new qa pairs to json file {filename}")
-
-    try:
-        # Attempt to open the file for reading
-        with open(filename, "r", encoding="utf-8") as file:
-            # Load existing data into a list
-            file_data = json.load(file)
-    except FileNotFoundError:
-        # If the file doesn't exist, initialize with an empty list
-        file_data = []
-
-    # Extend the existing data with the new data
-    file_data += data
-
-    # Write the combined data back to the file
-    with open(filename, "w", encoding="utf-8") as file:
-        json.dump(file_data, file, indent=4)
-
-
 def extract_llm_metric(text: str, metric: str) -> np.number:
     """Utiliy function for extracting scores from LLM output from grading of generated answers and retrieved document chunks.
 
@@ -247,3 +217,75 @@ async def aget_retrieved_documents(
     }
 
     return retrieved_dict
+
+
+def write_json(data: dict, filename: str) -> None:
+    """Function used to store generated QA pairs, i.e. the ground truth.
+    TODO: Provide metadata to have 'Data provenance' of the ground truth QA pairs.
+
+    Args:
+        data (_type_): _description_
+        filename (str, optional): _description_.
+    """
+
+    logger.info(f"Writting JSON to {filename}.")
+
+    # remove_sensitive_info(data)
+
+    # Check if file exists
+    if os.path.exists(filename):
+        # File exists, read the data
+        with open(filename, "r", encoding="utf-8") as file:
+            json_data = json.load(file)
+            # Assuming the data is a list; you can modify as per your requirements
+            json_data.append(data)
+    else:
+        # File doesn't exist; set data as the new_data
+        # This assumes the main structure is a list; modify as needed
+        json_data = [data]
+
+    # Write the combined data back to the file
+    with open(filename, "w", encoding="utf-8") as file:
+        json.dump(json_data, file, default=convert_to_serializable, indent=4)
+
+
+# Convert non-serializable types
+def convert_to_serializable(obj: object) -> str:
+    """Preprocessing step before writing to json file
+
+    Args:
+        obj (object): _description_
+
+    Returns:
+        str: _description_
+    """
+    from langchain.schema.embeddings import Embeddings
+    from langchain.chat_models.base import BaseChatModel
+
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, Embeddings):
+        return str(obj.model)
+    elif isinstance(obj, BaseChatModel):
+        return str(obj.model_name)
+    elif isinstance(obj, set):
+        return list(obj)
+    elif callable(obj):  # For <built-in function len> and similar types
+        return str(obj)
+    elif isinstance(obj, type):  # For <class ...>
+        return str(obj)
+    return f"WARNING: Type {type(obj).__name__} not serializable!"
+
+
+def remove_sensitive_info(d: dict) -> None:
+    """Removes api keys from data before writing to json file
+
+    Args:
+        d (dict): _description_
+    """
+    api_key_pattern = re.compile(r"api_key=\'[a-zA-Z0-9-]+\'")
+    replacement_text = "api_key='REDACTED'"
+
+    for key, value in d.items():
+        if isinstance(value, str):
+            d[key] = api_key_pattern.sub(replacement_text, value)

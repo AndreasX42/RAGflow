@@ -9,6 +9,6 @@
 **/__pycache__
 
 # misc
-resources/*
-!resources/msg_life-gb-2021-EN_final.pdf
+#resources/*
+#!resources/msg_life-gb-2021-EN_final.pdf
 #notebooks/*

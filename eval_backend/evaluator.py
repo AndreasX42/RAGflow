@@ -5,8 +5,12 @@ import logging
 import asyncio
 import json
 
+from datetime import datetime
+
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
+
+import numpy as np
 
 from utils import (
     load_document,
@@ -54,7 +58,7 @@ hyperparams_list = [
         "retrieval_llm": ChatOpenAI(temperature=0, model="gpt-3.5-turbo"),
         # answer grading llm
         "use_llm_grader": True,  # if you want to generate metrics with llm grading
-        "grader_llm": ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0),
+        "grader_llm": ChatOpenAI(model_name="gpt-4", temperature=0),
         "grade_answer_prompt": "3cats_zero_shot",
         "grade_docs_prompt": "default",
     },
@@ -68,7 +72,8 @@ async def run_eval(
     k=3,
     grade_prompt="",
     file_path="./resources",
-    eval_gt_path="./resources/eval_data.json",
+    eval_dataset_path="./resources/eval_data.json",
+    eval_results_path="./resources/eval_results.json",
 ):
     """After generating gt_dataset we need to calculate the metrics based on Chunking strategy, type of vectorstore, retriever (similarity search), QA LLM
 
@@ -108,7 +113,7 @@ async def run_eval(
     qa_gen_configs = hyperparams_list[0]
 
     try:
-        with open(eval_gt_path, "r", encoding="utf-8") as file:
+        with open(eval_dataset_path, "r", encoding="utf-8") as file:
             logger.info("Evaluation dataset found, loading it.")
             gt_dataset = json.load(file)
 
@@ -134,10 +139,22 @@ async def run_eval(
                 qa_pair for qa_pair in qa_pairs if len(qa_pair["answer"]) > 150
             ]
 
-            write_json(gt_dataset, filename=eval_gt_path)
+            write_json(gt_dataset, filename=eval_dataset_path)
 
-    for hyperparams in hyperparams_list[1:]:
-        logger.info("Starting next hyperparams eval.")
+    for i, hyperparams in enumerate(hyperparams_list[1:]):
+        logger.info(
+            f"Starting hyperparameter evaluation {i}/{len(hyperparams_list)-1}."
+        )
+
+        scores = {
+            "embedding_cosine_sim": np.array([]),
+            "correct_ans": np.array([]),
+            "comprehensive_ans": np.array([]),
+            "readable_ans": np.array([]),
+            "retriever_score": np.array([]),
+            "rouge1": np.array([]),
+            "rouge2": np.array([]),
+        }
 
         # create chunks of all provided documents
         # TODO: for now only the msg pdf in resources folder
@@ -158,47 +175,68 @@ async def run_eval(
             embedding_model=hyperparams["embedding_model"],
             num_retrieved_docs=hyperparams["num_retrieved_docs"],
         )
+
         qa_llm = get_qa_llm(
             retriever=retriever, retrieval_llm=hyperparams["retrieval_llm"]
         )
+
+        logger.info("Starting evaluation round.")
 
         # dict[question, generated answer]
         predicted_answers = await asyncio.gather(
             *[qa_llm.acall(qa_pair) for qa_pair in gt_dataset]
         )
 
-        sim = await grade_embedding_similarity(
+        sim_s = grade_embedding_similarity(
             gt_dataset, predicted_answers, hyperparams["embedding_model"]
         )
-
-        print(f"Similarity score: {sim}")
-
-        rouge1, rouge2 = grade_rouge(gt_dataset, predicted_answers)
-
-        print(f"Rouge1 and 2: {rouge1, rouge2}")
-
-        cor, compr, read = grade_model_answer(
-            gt_dataset,
-            predicted_answers,
-            hyperparams["grade_answer_prompt"],
-            hyperparams["grader_llm"],
+        scores["embedding_cosine_sim"] = np.append(
+            scores["embedding_cosine_sim"], sim_s
         )
 
-        print(f"Answer grades (corr, compr, read): {cor, compr, read}")
+        rouge1_s, rouge2_s = grade_rouge(gt_dataset, predicted_answers)
+        scores["rouge1"] = np.append(scores["rouge1"], rouge1_s)
+        scores["rouge2"] = np.append(scores["rouge2"], rouge2_s)
 
-        # dict[question, concatenated string of chunks retrieved]
-        retrieved_docs = await asyncio.gather(
-            *[aget_retrieved_documents(qa_pair, retriever) for qa_pair in gt_dataset]
-        )
+        if hyperparams["use_llm_grader"]:
+            correctness_s, comprehensiveness_s, readability_s = grade_model_answer(
+                gt_dataset,
+                predicted_answers,
+                hyperparams["grade_answer_prompt"],
+                hyperparams["grader_llm"],
+            )
+            scores["correct_ans"] = np.append(scores["correct_ans"], correctness_s)
+            scores["comprehensive_ans"] = np.append(
+                scores["comprehensive_ans"], comprehensiveness_s
+            )
+            scores["readable_ans"] = np.append(scores["readable_ans"], readability_s)
 
-        accuracy = grade_model_retrieval(
-            gt_dataset,
-            retrieved_docs,
-            hyperparams["grade_docs_prompt"],
-            hyperparams["grader_llm"],
-        )
+            # dict[question, concatenated string of chunks retrieved]
+            retrieved_docs = await asyncio.gather(
+                *[
+                    aget_retrieved_documents(qa_pair, retriever)
+                    for qa_pair in gt_dataset
+                ]
+            )
 
-        print(f"Retrieval accuracy: {accuracy}")
+            retriever_s = grade_model_retrieval(
+                gt_dataset,
+                retrieved_docs,
+                hyperparams["grade_docs_prompt"],
+                hyperparams["grader_llm"],
+            )
+
+            scores["retriever_score"] = np.append(
+                scores["retriever_score"], retriever_s
+            )
+
+        # writing results to json
+        scores |= {"timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}
+        hyperparams |= {"scores": scores}
+
+        print(hyperparams)
+
+        write_json(hyperparams, eval_results_path)
 
 
 if __name__ == "__main__":

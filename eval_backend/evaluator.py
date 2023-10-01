@@ -8,8 +8,8 @@ import os
 
 from langchain.chat_models import ChatOpenAI
 
+from eval_backend.common import Hyperparameters
 from eval_backend.utils import write_json
-from eval_backend.evaluation import Hyperparameters
 from eval_backend.evaluation import run_eval
 from eval_backend.testsetgen import agenerate_eval_set
 
@@ -120,7 +120,7 @@ async def main(
     # evaluate hyperparams concurrently
     results = await asyncio.gather(
         *[
-            run_eval(gt_dataset, hp, docs_path)
+            run_eval(gt_dataset, hp, glob.glob(f"{docs_path}/*.pdf"))
             for hp in [Hyperparameters.from_dict(d) for d in hyperparams_list]
         ]
     )

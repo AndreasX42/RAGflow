@@ -1,15 +1,10 @@
 import logging
-import glob
 import asyncio
 
 import numpy as np
 from datetime import datetime
 
-from eval_backend.evaluation import Hyperparameters
-
 from eval_backend.utils import (
-    load_document,
-    split_data,
     get_retriever,
     get_qa_llm,
     aget_retrieved_documents,
@@ -21,6 +16,9 @@ from eval_backend.evaluation.evaluation_metrics import (
     grade_model_retrieval,
     grade_rouge,
 )
+
+from eval_backend.utils.doc_processing import aload_and_chunk_docs
+from eval_backend.common import Hyperparameters
 
 logger = logging.getLogger(__name__)
 
@@ -39,25 +37,15 @@ async def run_eval(
     }
 
     # create chunks of all provided documents
-    # TODO: for now only the msg pdf in resources folder
-    chunks_list = []
-    for file in glob.glob(f"{docs_path}/*.pdf"):
-        data = load_document(file)
-        chunks = split_data(
-            data=data,
-            chunk_size=hp.chunk_size,
-            chunk_overlap=hp.chunk_overlap,
-            length_function=hp.length_function,
-        )
-
-        chunks_list += chunks
+    chunks = await aload_and_chunk_docs(docs_path, hp)
 
     retriever = get_retriever(
-        splits=chunks_list,
+        splits=chunks,
         embedding_model=hp.embedding_model,
         num_retrieved_docs=hp.num_retrieved_docs,
     )
 
+    del chunks
     qa_llm = get_qa_llm(retriever=retriever, retrieval_llm=hp.retrieval_llm)
 
     # dict[question, generated answer]
@@ -105,4 +93,5 @@ async def run_eval(
     scores |= {"timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}
     result_dict = hp.to_dict()
     result_dict |= {"scores": scores}
+
     return result_dict

@@ -1,6 +1,6 @@
 [
     {
-        "chunk_size": 512,
+        "chunk_size": 1024,
         "chunk_overlap": 10,
         "num_retrieved_docs": 3,
         "grade_answer_prompt": "3cats_zero_shot",
@@ -12,19 +12,19 @@
         "length_function_name": "len",
         "scores": {
             "embedding_cosine_sim": [
-                0.946319871867191
+                0.9461792175589555
             ],
             "correct_ans": [],
             "comprehensive_ans": [],
             "readable_ans": [],
             "retriever_score": [],
             "rouge1": [
-                0.6381792115320153
+                0.6222316538525646
             ],
             "rouge2": [
-                0.5109165278394039
+                0.5148767302494373
             ],
-            "timestamp": "2023-10-01 13:41:58,860"
+            "timestamp": "2023-10-01 17:34:09,217"
         }
     },
     {
@@ -40,19 +40,103 @@
         "length_function_name": "len",
         "scores": {
             "embedding_cosine_sim": [
-                0.9463954159253374
+                0.9459657146254741
             ],
             "correct_ans": [],
             "comprehensive_ans": [],
             "readable_ans": [],
             "retriever_score": [],
             "rouge1": [
-                0.6300543809473994
+                0.6380423674313984
             ],
             "rouge2": [
-                0.5039849235370099
+                0.5065977429787121
             ],
-            "timestamp": "2023-10-01 13:42:01,771"
+            "timestamp": "2023-10-01 17:34:12,317"
+        }
+    },
+    {
+        "chunk_size": 256,
+        "chunk_overlap": 10,
+        "num_retrieved_docs": 3,
+        "grade_answer_prompt": "3cats_zero_shot",
+        "grade_docs_prompt": "default",
+        "use_llm_grader": false,
+        "retrieval_llm": "gpt-3.5-turbo",
+        "grader_llm": "gpt-4",
+        "embedding_model": "text-embedding-ada-002",
+        "length_function_name": "len",
+        "scores": {
+            "embedding_cosine_sim": [
+                0.9257126947174447
+            ],
+            "correct_ans": [],
+            "comprehensive_ans": [],
+            "readable_ans": [],
+            "retriever_score": [],
+            "rouge1": [
+                0.5270088605626356
+            ],
+            "rouge2": [
+                0.40812449338106016
+            ],
+            "timestamp": "2023-10-01 17:34:06,273"
+        }
+    },
+    {
+        "chunk_size": 128,
+        "chunk_overlap": 10,
+        "num_retrieved_docs": 3,
+        "grade_answer_prompt": "3cats_zero_shot",
+        "grade_docs_prompt": "default",
+        "use_llm_grader": false,
+        "retrieval_llm": "gpt-3.5-turbo",
+        "grader_llm": "gpt-4",
+        "embedding_model": "text-embedding-ada-002",
+        "length_function_name": "len",
+        "scores": {
+            "embedding_cosine_sim": [
+                0.9170114426475503
+            ],
+            "correct_ans": [],
+            "comprehensive_ans": [],
+            "readable_ans": [],
+            "retriever_score": [],
+            "rouge1": [
+                0.4920970189510748
+            ],
+            "rouge2": [
+                0.35435926513669813
+            ],
+            "timestamp": "2023-10-01 17:33:58,940"
+        }
+    },
+    {
+        "chunk_size": 128,
+        "chunk_overlap": 10,
+        "num_retrieved_docs": 5,
+        "grade_answer_prompt": "3cats_zero_shot",
+        "grade_docs_prompt": "default",
+        "use_llm_grader": false,
+        "retrieval_llm": "gpt-3.5-turbo",
+        "grader_llm": "gpt-4",
+        "embedding_model": "text-embedding-ada-002",
+        "length_function_name": "len",
+        "scores": {
+            "embedding_cosine_sim": [
+                0.9179572633183012
+            ],
+            "correct_ans": [],
+            "comprehensive_ans": [],
+            "readable_ans": [],
+            "retriever_score": [],
+            "rouge1": [
+                0.4951791408156867
+            ],
+            "rouge2": [
+                0.3583527890718051
+            ],
+            "timestamp": "2023-10-01 17:34:01,960"
         }
     }
 ]

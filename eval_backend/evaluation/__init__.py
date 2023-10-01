@@ -1,4 +1,4 @@
-from eval_backend.evaluation.hyperparams import Hyperparameters
+from eval_backend.common import Hyperparameters
 
 from eval_backend.evaluation.run import run_eval
 

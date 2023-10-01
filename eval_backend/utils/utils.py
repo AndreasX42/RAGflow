@@ -1,22 +1,12 @@
 import numpy as np
 import os
-import re
 
 from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from langchain.schema.embeddings import Embeddings
 from langchain.schema.language_model import BaseLanguageModel
 from langchain.schema.retriever import BaseRetriever
-
-from langchain.document_loaders import (
-    TextLoader,
-    Docx2txtLoader,
-    # PyPDFLoader,  # already splits data during loading
-    UnstructuredPDFLoader,  # returns only 1 Document
-    # PyMuPDFLoader,  # returns 1 Document per page
-)
 
 # vector db
 from langchain.vectorstores import FAISS
@@ -83,63 +73,6 @@ def get_qa_llm(
     return qa_llm
 
 
-def load_document(file: str) -> list[Document]:
-    """Loads file from given path into a list of Documents, currently pdf, txt and docx are supported.
-
-    Args:
-        file (str): file path
-
-    Returns:
-        List[Document]: loaded files as list of Documents
-    """
-    logger.info(f"Loading file {file}")
-
-    _, extension = os.path.splitext(file)
-
-    if extension == ".pdf":
-        loader = UnstructuredPDFLoader(file)
-    elif extension == ".txt":
-        loader = TextLoader(file, encoding="utf-8")
-    elif extension == ".docx":
-        loader = Docx2txtLoader(file)
-    else:
-        logger.warning("Unsupported file type detected!")
-        raise Warning("Unsupported file type detected!")
-
-    data = loader.load()
-    return data
-
-
-def split_data(
-    data: list[Document],
-    chunk_size: int = 4096,
-    chunk_overlap: int = 0,
-    length_function: callable = len,
-) -> list[Document]:
-    """Function for splitting the provided data, i.e. List of documents loaded.
-
-    Args:
-        data (List[Document]): _description_
-        chunk_size (Optional[int], optional): _description_. Defaults to 4096.
-        chunk_overlap (Optional[int], optional): _description_. Defaults to 0.
-        length_function (_type_, optional): _description_.
-
-    Returns:
-        List[Document]: the splitted document chunks
-    """
-
-    logger.debug("Splitting data.")
-
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        length_function=length_function,
-    )
-
-    chunks = text_splitter.split_documents(data)
-    return chunks
-
-
 async def aget_retrieved_documents(
     qa_pair: dict[str, str], retriever: BaseRetriever
 ) -> dict:
@@ -185,7 +118,7 @@ def write_json(data: dict, filename: str) -> None:
         with open(filename, "r", encoding="utf-8") as file:
             json_data = json.load(file)
             # Assuming the data is a list; you can modify as per your requirements
-            json_data.append(data)
+            json_data.extend(data)
     else:
         # File doesn't exist; set data as the new_data
         # This assumes the main structure is a list; modify as needed

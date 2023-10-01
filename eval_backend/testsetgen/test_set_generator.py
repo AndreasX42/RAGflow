@@ -4,7 +4,7 @@ from json import JSONDecodeError
 import itertools
 import asyncio
 
-from eval_backend.utils import load_document, split_data
+from eval_backend.utils import load_and_chunk_doc
 
 import logging
 
@@ -24,16 +24,8 @@ def generate_eval_set(hp: dict, doc_path: str) -> list[dict[str, str]]:
 
     logger.debug("Generating qa pairs.")
 
-    # load data
-    data = load_document(doc_path)
-
-    # TODO: len function for qa generation should be hyperparam?
-    chunks = split_data(
-        data=data,
-        chunk_size=3000,
-        chunk_overlap=0,
-        length_function=hp["length_function_for_qa_generation"],
-    )
+    # load data and chunk doc
+    chunks = load_and_chunk_doc(doc_path, hp)
 
     llm = hp["qa_generator_llm"]
     qa_generator_chain = QAGenerationChain.from_llm(llm)

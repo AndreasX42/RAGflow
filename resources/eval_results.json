@@ -70,5 +70,33 @@
             ],
             "timestamp": "2023-09-30 18:07:01,611"
         }
+    },
+    {
+        "chunk_size": 512,
+        "chunk_overlap": 10,
+        "num_retrieved_docs": 3,
+        "grade_answer_prompt": "3cats_zero_shot",
+        "grade_docs_prompt": "default",
+        "use_llm_grader": false,
+        "retrieval_llm": "gpt-3.5-turbo",
+        "grader_llm": "gpt-4",
+        "embedding_model": "text-embedding-ada-002",
+        "length_function_name": "len",
+        "scores": {
+            "embedding_cosine_sim": [
+                0.945475456408407
+            ],
+            "correct_ans": [],
+            "comprehensive_ans": [],
+            "readable_ans": [],
+            "retriever_score": [],
+            "rouge1": [
+                0.6407882759242509
+            ],
+            "rouge2": [
+                0.5120066360663249
+            ],
+            "timestamp": "2023-10-01 08:10:21,187"
+        }
     }
 ]

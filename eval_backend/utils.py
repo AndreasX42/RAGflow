@@ -7,9 +7,10 @@ import numpy as np
 from langchain.chains import RetrievalQA, QAGenerationChain
 from langchain.docstore.document import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema.vectorstore import VectorStoreRetriever
+
 from langchain.schema.embeddings import Embeddings
 from langchain.schema.language_model import BaseLanguageModel
+from langchain.schema.retriever import BaseRetriever
 
 from langchain.document_loaders import (
     TextLoader,
@@ -36,7 +37,7 @@ def get_retriever(
     embedding_model: Embeddings,
     num_retrieved_docs: int,
     search_type: str = "mmr",
-) -> VectorStoreRetriever:
+) -> BaseRetriever:
     """Sets up a vector database based on the document chunks and the embedding model provided.
         Here we use FAISS for the vectorstore.
 
@@ -46,7 +47,7 @@ def get_retriever(
         num_retrieved_docs (int): number of document chunks retrieved doing similarity search
 
     Returns:
-        VectorStoreRetriever: Returns a retriever object
+        BaseRretriever: Returns a retriever object
     """
     logger.info("Constructing vectorstore and retriever.")
 
@@ -57,7 +58,7 @@ def get_retriever(
 
 
 def get_qa_llm(
-    retriever: VectorStoreRetriever,
+    retriever: BaseRetriever,
     retrieval_llm: BaseLanguageModel,
 ) -> RetrievalQA:
     """Sets up a LangChain RetrievalQA model based on a retriever and language model that answers
@@ -65,7 +66,7 @@ def get_qa_llm(
 
 
     Args:
-        retriever (VectorStoreRetriever): the retriever
+        retriever (BaseRetriever): the retriever
         retrieval_llm (Optional[BaseLanguageModel], optional): language model.
 
     Returns:
@@ -157,7 +158,7 @@ def split_data(
         data (List[Document]): _description_
         chunk_size (Optional[int], optional): _description_. Defaults to 4096.
         chunk_overlap (Optional[int], optional): _description_. Defaults to 0.
-        length_function (_type_, optional): _description_. Defaults to lambdax:len( tiktoken.encoding_for_model("text-embedding-ada-002").encode(x) ).
+        length_function (_type_, optional): _description_.
 
     Returns:
         List[Document]: the splitted document chunks
@@ -192,13 +193,13 @@ def extract_llm_metric(text: str, metric: str) -> np.number:
 
 
 async def aget_retrieved_documents(
-    qa_pair: dict[str, str], retriever: VectorStoreRetriever
+    qa_pair: dict[str, str], retriever: BaseRetriever
 ) -> dict:
     """Retrieve most similar documents to query asynchronously, postprocess the document chunks and return the qa pair with the retrieved documents string as result
 
     Args:
         qa_pair (dict[str, str]): _description_
-        retriever (VectorStoreRetriever): _description_
+        retriever (BaseRetriever): _description_
 
     Returns:
         list[dict]: _description_
@@ -230,8 +231,6 @@ def write_json(data: dict, filename: str) -> None:
 
     logger.info(f"Writting JSON to {filename}.")
 
-    # remove_sensitive_info(data)
-
     # Check if file exists
     if os.path.exists(filename):
         # File exists, read the data
@@ -246,46 +245,4 @@ def write_json(data: dict, filename: str) -> None:
 
     # Write the combined data back to the file
     with open(filename, "w", encoding="utf-8") as file:
-        json.dump(json_data, file, default=convert_to_serializable, indent=4)
-
-
-# Convert non-serializable types
-def convert_to_serializable(obj: object) -> str:
-    """Preprocessing step before writing to json file
-
-    Args:
-        obj (object): _description_
-
-    Returns:
-        str: _description_
-    """
-    from langchain.schema.embeddings import Embeddings
-    from langchain.chat_models.base import BaseChatModel
-
-    if isinstance(obj, np.ndarray):
-        return obj.tolist()
-    elif isinstance(obj, Embeddings):
-        return str(obj.model)
-    elif isinstance(obj, BaseChatModel):
-        return str(obj.model_name)
-    elif isinstance(obj, set):
-        return list(obj)
-    elif callable(obj):  # For <built-in function len> and similar types
-        return str(obj)
-    elif isinstance(obj, type):  # For <class ...>
-        return str(obj)
-    return f"WARNING: Type {type(obj).__name__} not serializable!"
-
-
-def remove_sensitive_info(d: dict) -> None:
-    """Removes api keys from data before writing to json file
-
-    Args:
-        d (dict): _description_
-    """
-    api_key_pattern = re.compile(r"api_key=\'[a-zA-Z0-9-]+\'")
-    replacement_text = "api_key='REDACTED'"
-
-    for key, value in d.items():
-        if isinstance(value, str):
-            d[key] = api_key_pattern.sub(replacement_text, value)
+        json.dump(json_data, file, indent=4)  # default=convert_to_serializable,

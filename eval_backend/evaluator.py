@@ -29,6 +29,8 @@ from eval_metrics import (
     grade_rouge,
 )
 
+from hyperparameters import Hyperparameters
+
 logging.basicConfig(
     level=20,
     format="%(asctime)s - %(levelname)s - %(name)s:%(filename)s:%(lineno)d - %(message)s",
@@ -50,15 +52,15 @@ hyperparams_list = [
         # chunking stratety
         "chunk_size": 512,
         "chunk_overlap": 10,
-        "length_function_default": len,
+        "length_function_name": "len",
         # vectordb and retriever
-        "embedding_model": OpenAIEmbeddings(model="text-embedding-ada-002"),
+        "embedding_model": "text-embedding-ada-002",
         "num_retrieved_docs": 3,
         # qa llm
-        "retrieval_llm": ChatOpenAI(temperature=0, model="gpt-3.5-turbo"),
+        "retrieval_llm": "gpt-3.5-turbo",
         # answer grading llm
-        "use_llm_grader": True,  # if you want to generate metrics with llm grading
-        "grader_llm": ChatOpenAI(model_name="gpt-4", temperature=0),
+        "use_llm_grader": False,  # if you want to generate metrics with llm grading
+        "grader_llm": "gpt-4",
         "grade_answer_prompt": "3cats_zero_shot",
         "grade_docs_prompt": "default",
     },
@@ -85,7 +87,7 @@ async def run_eval(
 
             |__ grader: llm who grades generated answers
 
-    TODO: State of the art retrieval with lots of additional LLM calls:
+    TODO 1: State of the art retrieval with lots of additional LLM calls:
         - use "MMR" to filter out similiar document chunks during similarity search
         - Use SelfQueryRetriever to find information in query about specific context, e.g. querying specific document only
         - Use ContextualCompressionRetriever to compress or summarize the document chunks before serving them to QA-LLM
@@ -98,6 +100,8 @@ async def run_eval(
 
         https://learn.deeplearning.ai/langchain-chat-with-your-data/lesson/5/retrieval
         https://learn.deeplearning.ai/langchain-chat-with-your-data/lesson/7/chat
+
+    TODO 2: Integrate Anyscale (Llama2), MosaicML (MPT + EMBDS), Replicate
 
     Args:
         chain (str, optional): _description_. Defaults to "".
@@ -146,6 +150,8 @@ async def run_eval(
             f"Starting hyperparameter evaluation {i}/{len(hyperparams_list)-1}."
         )
 
+        hp = Hyperparameters.from_dict(hyperparams)
+
         scores = {
             "embedding_cosine_sim": np.array([]),
             "correct_ans": np.array([]),
@@ -163,24 +169,20 @@ async def run_eval(
             data = load_document(file)
             chunks = split_data(
                 data=data,
-                chunk_size=hyperparams["chunk_size"],
-                chunk_overlap=hyperparams["chunk_overlap"],
-                length_function=hyperparams["length_function_default"],
+                chunk_size=hp.chunk_size,
+                chunk_overlap=hp.chunk_overlap,
+                length_function=hp.length_function,
             )
 
             chunks_list += chunks
 
         retriever = get_retriever(
             splits=chunks_list,
-            embedding_model=hyperparams["embedding_model"],
-            num_retrieved_docs=hyperparams["num_retrieved_docs"],
+            embedding_model=hp.embedding_model,
+            num_retrieved_docs=hp.num_retrieved_docs,
         )
 
-        qa_llm = get_qa_llm(
-            retriever=retriever, retrieval_llm=hyperparams["retrieval_llm"]
-        )
-
-        logger.info("Starting evaluation round.")
+        qa_llm = get_qa_llm(retriever=retriever, retrieval_llm=hp.retrieval_llm)
 
         # dict[question, generated answer]
         predicted_answers = await asyncio.gather(
@@ -188,7 +190,7 @@ async def run_eval(
         )
 
         sim_s = grade_embedding_similarity(
-            gt_dataset, predicted_answers, hyperparams["embedding_model"]
+            gt_dataset, predicted_answers, hp.embedding_model
         )
         scores["embedding_cosine_sim"] = np.append(
             scores["embedding_cosine_sim"], sim_s
@@ -198,12 +200,12 @@ async def run_eval(
         scores["rouge1"] = np.append(scores["rouge1"], rouge1_s)
         scores["rouge2"] = np.append(scores["rouge2"], rouge2_s)
 
-        if hyperparams["use_llm_grader"]:
+        if hp.use_llm_grader:
             correctness_s, comprehensiveness_s, readability_s = grade_model_answer(
                 gt_dataset,
                 predicted_answers,
-                hyperparams["grade_answer_prompt"],
-                hyperparams["grader_llm"],
+                hp.grade_answer_prompt,
+                hp.grader_llm,
             )
             scores["correct_ans"] = np.append(scores["correct_ans"], correctness_s)
             scores["comprehensive_ans"] = np.append(
@@ -222,8 +224,8 @@ async def run_eval(
             retriever_s = grade_model_retrieval(
                 gt_dataset,
                 retrieved_docs,
-                hyperparams["grade_docs_prompt"],
-                hyperparams["grader_llm"],
+                hp.grade_docs_prompt,
+                hp.grader_llm,
             )
 
             scores["retriever_score"] = np.append(
@@ -232,11 +234,10 @@ async def run_eval(
 
         # writing results to json
         scores |= {"timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}
-        hyperparams |= {"scores": scores}
+        result_dict = hp.to_dict()
+        result_dict |= {"scores": scores}
 
-        print(hyperparams)
-
-        write_json(hyperparams, eval_results_path)
+        write_json(result_dict, eval_results_path)
 
 
 if __name__ == "__main__":

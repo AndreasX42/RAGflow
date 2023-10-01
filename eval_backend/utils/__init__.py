@@ -1,4 +1,4 @@
-from utils.utils import (
+from eval_backend.utils.utils import (
     load_document,
     split_data,
     get_retriever,

@@ -4,31 +4,14 @@ import tiktoken
 import logging
 import asyncio
 import json
-
-from datetime import datetime
+import os
 
 from langchain.chat_models import ChatOpenAI
 
-import numpy as np
-
-from utils import (
-    load_document,
-    split_data,
-    get_retriever,
-    get_qa_llm,
-    write_json,
-    aget_retrieved_documents,
-)
-
-from optimization import (
-    grade_embedding_similarity,
-    grade_model_answer,
-    grade_model_retrieval,
-    grade_rouge,
-)
-
-from optimization import Hyperparameters
-from testsetgen import generate_eval_set
+from eval_backend.utils import write_json
+from eval_backend.evaluation import Hyperparameters
+from eval_backend.evaluation import run_eval
+from eval_backend.testsetgen import agenerate_eval_set
 
 logging.basicConfig(
     level=20,
@@ -48,13 +31,13 @@ qa_gen_configs = {
 }
 
 
-async def run_eval(
+async def main(
     chain="",
     retriever="",
     retriever_type="",
     k=3,
     grade_prompt="",
-    file_path="./resources",
+    docs_path="./resources",
     eval_dataset_path="./resources/eval_data.json",
     eval_params_path="./resources/eval_params.json",
     eval_results_path="./resources/eval_results.json",
@@ -95,131 +78,56 @@ async def run_eval(
         eval_gt_path (str, optional): _description_. Defaults to "./resources/eval_data.json".
     """
 
-    try:
-        with open(eval_dataset_path, "r", encoding="utf-8") as file:
-            logger.info("Evaluation dataset found, loading it.")
-            gt_dataset = json.load(file)
-
-    except FileNotFoundError:
-        logger.warning("Evaluation dataset not found, creating it.")
-
-        for file in glob.glob(f"{file_path}/*.pdf"):
-            data = load_document(file)
-
-            # TODO: len function for qa generation should be hyperparam?
-            chunks = split_data(
-                data=data,
-                chunk_size=3000,
-                chunk_overlap=0,
-                length_function=qa_gen_configs["length_function_for_qa_generation"],
+    ################################################################
+    # First phase: Loading or generating evaluation dataset
+    ################################################################
+    if not qa_gen_configs["generate_new_eval_set"] and os.path.exists(
+        eval_dataset_path
+    ):
+        try:
+            with open(eval_dataset_path, "r", encoding="utf-8") as file:
+                logger.info("Evaluation dataset found, loading it.")
+                gt_dataset = json.load(file)
+        except FileNotFoundError:
+            logger.error(
+                f"Evaluation dataset could not be loaded, {eval_dataset_path}."
             )
-            qa_pairs = generate_eval_set(
-                llm=qa_gen_configs["qa_generator_llm"], chunks=chunks
-            )
+            qa_gen_configs["generate_new_eval_set"] = True
 
-            # only get pairs with sufficiently long answer
-            gt_dataset += [
-                qa_pair for qa_pair in qa_pairs if len(qa_pair["answer"]) > 150
-            ]
+    elif qa_gen_configs["generate_new_eval_set"]:
+        logger.warning("Evaluation dataset not found, starting generation process.")
 
-            write_json(gt_dataset, filename=eval_dataset_path)
+        # tarnsform list of list of dicts into list of dicts
+        qa_pairs = await agenerate_eval_set(
+            qa_gen_configs, docs_path=glob.glob(f"{docs_path}/*.pdf")
+        )
 
+        # only get pairs with sufficiently long answer
+        gt_dataset = [qa_pair for qa_pair in qa_pairs if len(qa_pair["answer"]) > 150]
+
+        # write eval dataset to json
+        write_json(gt_dataset, filename=eval_dataset_path)
+
+    else:
+        raise AttributeError("Something went wrong loading evaluation dataset.")
+
+    ################################################################
+    # Second phase: Running evaluations
+    ################################################################
     with open(eval_params_path, "r", encoding="utf-8") as file:
         hyperparams_list = json.load(file)
 
-    for i, hyperparams in enumerate(hyperparams_list):
-        logger.info(f"Starting hyperparameter evaluation {i}/{len(hyperparams_list)}.")
+    # evaluate hyperparams concurrently
+    results = await asyncio.gather(
+        *[
+            run_eval(gt_dataset, hp, docs_path)
+            for hp in [Hyperparameters.from_dict(d) for d in hyperparams_list]
+        ]
+    )
 
-        # Hyperparameters object provides corresponding LangChain objects from given model names
-        hp = Hyperparameters.from_dict(hyperparams)
-
-        scores = {
-            "embedding_cosine_sim": np.array([]),
-            "correct_ans": np.array([]),
-            "comprehensive_ans": np.array([]),
-            "readable_ans": np.array([]),
-            "retriever_score": np.array([]),
-            "rouge1": np.array([]),
-            "rouge2": np.array([]),
-        }
-
-        # create chunks of all provided documents
-        # TODO: for now only the msg pdf in resources folder
-        chunks_list = []
-        for file in glob.glob(f"{file_path}/*.pdf"):
-            data = load_document(file)
-            chunks = split_data(
-                data=data,
-                chunk_size=hp.chunk_size,
-                chunk_overlap=hp.chunk_overlap,
-                length_function=hp.length_function,
-            )
-
-            chunks_list += chunks
-
-        retriever = get_retriever(
-            splits=chunks_list,
-            embedding_model=hp.embedding_model,
-            num_retrieved_docs=hp.num_retrieved_docs,
-        )
-
-        qa_llm = get_qa_llm(retriever=retriever, retrieval_llm=hp.retrieval_llm)
-
-        # dict[question, generated answer]
-        predicted_answers = await asyncio.gather(
-            *[qa_llm.acall(qa_pair) for qa_pair in gt_dataset]
-        )
-
-        sim_s = grade_embedding_similarity(
-            gt_dataset, predicted_answers, hp.embedding_model
-        )
-        scores["embedding_cosine_sim"] = np.append(
-            scores["embedding_cosine_sim"], sim_s
-        )
-
-        rouge1_s, rouge2_s = grade_rouge(gt_dataset, predicted_answers)
-        scores["rouge1"] = np.append(scores["rouge1"], rouge1_s)
-        scores["rouge2"] = np.append(scores["rouge2"], rouge2_s)
-
-        if hp.use_llm_grader:
-            correctness_s, comprehensiveness_s, readability_s = grade_model_answer(
-                gt_dataset,
-                predicted_answers,
-                hp.grade_answer_prompt,
-                hp.grader_llm,
-            )
-            scores["correct_ans"] = np.append(scores["correct_ans"], correctness_s)
-            scores["comprehensive_ans"] = np.append(
-                scores["comprehensive_ans"], comprehensiveness_s
-            )
-            scores["readable_ans"] = np.append(scores["readable_ans"], readability_s)
-
-            # dict[question, concatenated string of chunks retrieved]
-            retrieved_docs = await asyncio.gather(
-                *[
-                    aget_retrieved_documents(qa_pair, retriever)
-                    for qa_pair in gt_dataset
-                ]
-            )
-
-            retriever_s = grade_model_retrieval(
-                gt_dataset,
-                retrieved_docs,
-                hp.grade_docs_prompt,
-                hp.grader_llm,
-            )
-
-            scores["retriever_score"] = np.append(
-                scores["retriever_score"], retriever_s
-            )
-
-        # writing results to json
-        scores |= {"timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}
-        result_dict = hp.to_dict()
-        result_dict |= {"scores": scores}
-
-        write_json(result_dict, eval_results_path)
+    # write final results to json
+    write_json(results, eval_results_path)
 
 
 if __name__ == "__main__":
-    asyncio.run(run_eval())
+    asyncio.run(main())

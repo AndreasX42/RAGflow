@@ -21,7 +21,7 @@ from langchain.document_loaders import (
 # vector db
 from langchain.vectorstores import FAISS
 
-from utils.prompts import QA_CHAIN_PROMPT
+from eval_backend.utils.prompts import QA_CHAIN_PROMPT
 
 import json
 import logging
@@ -189,7 +189,7 @@ def write_json(data: dict, filename: str) -> None:
     else:
         # File doesn't exist; set data as the new_data
         # This assumes the main structure is a list; modify as needed
-        json_data = [data]
+        json_data = data  # [data]
 
     # Write the combined data back to the file
     with open(filename, "w", encoding="utf-8") as file:

@@ -7,7 +7,6 @@ import json
 
 from datetime import datetime
 
-from langchain.embeddings import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
 
 import numpy as np
@@ -17,19 +16,19 @@ from utils import (
     split_data,
     get_retriever,
     get_qa_llm,
-    generate_eval_set,
     write_json,
     aget_retrieved_documents,
 )
 
-from eval_metrics import (
+from optimization import (
     grade_embedding_similarity,
     grade_model_answer,
     grade_model_retrieval,
     grade_rouge,
 )
 
-from hyperparameters import Hyperparameters
+from optimization import Hyperparameters
+from testsetgen import generate_eval_set
 
 logging.basicConfig(
     level=20,
@@ -40,31 +39,13 @@ logger = logging.getLogger(__name__)
 
 dotenv.load_dotenv(dotenv.find_dotenv(), override=True)
 
-hyperparams_list = [
-    {  # settings for qa generation, for the time being fixed across all evaluation runs
-        "qa_generator_llm": ChatOpenAI(temperature=0, model="gpt-3.5-turbo"),
-        "length_function_for_qa_generation": lambda x: len(
-            tiktoken.encoding_for_model("text-embedding-ada-002").encode(x)
-        ),
-        "generate_new_eval_set": False,
-    },
-    {
-        # chunking stratety
-        "chunk_size": 512,
-        "chunk_overlap": 10,
-        "length_function_name": "len",
-        # vectordb and retriever
-        "embedding_model": "text-embedding-ada-002",
-        "num_retrieved_docs": 3,
-        # qa llm
-        "retrieval_llm": "gpt-3.5-turbo",
-        # answer grading llm
-        "use_llm_grader": False,  # if you want to generate metrics with llm grading
-        "grader_llm": "gpt-4",
-        "grade_answer_prompt": "3cats_zero_shot",
-        "grade_docs_prompt": "default",
-    },
-]
+qa_gen_configs = {
+    "qa_generator_llm": ChatOpenAI(temperature=0, model="gpt-3.5-turbo"),
+    "length_function_for_qa_generation": lambda x: len(
+        tiktoken.encoding_for_model("text-embedding-ada-002").encode(x)
+    ),
+    "generate_new_eval_set": False,
+}
 
 
 async def run_eval(
@@ -75,6 +56,7 @@ async def run_eval(
     grade_prompt="",
     file_path="./resources",
     eval_dataset_path="./resources/eval_data.json",
+    eval_params_path="./resources/eval_params.json",
     eval_results_path="./resources/eval_results.json",
 ):
     """After generating gt_dataset we need to calculate the metrics based on Chunking strategy, type of vectorstore, retriever (similarity search), QA LLM
@@ -113,9 +95,6 @@ async def run_eval(
         eval_gt_path (str, optional): _description_. Defaults to "./resources/eval_data.json".
     """
 
-    # generate qa pairs as evaluation dataset
-    qa_gen_configs = hyperparams_list[0]
-
     try:
         with open(eval_dataset_path, "r", encoding="utf-8") as file:
             logger.info("Evaluation dataset found, loading it.")
@@ -145,11 +124,13 @@ async def run_eval(
 
             write_json(gt_dataset, filename=eval_dataset_path)
 
-    for i, hyperparams in enumerate(hyperparams_list[1:]):
-        logger.info(
-            f"Starting hyperparameter evaluation {i}/{len(hyperparams_list)-1}."
-        )
+    with open(eval_params_path, "r", encoding="utf-8") as file:
+        hyperparams_list = json.load(file)
 
+    for i, hyperparams in enumerate(hyperparams_list):
+        logger.info(f"Starting hyperparameter evaluation {i}/{len(hyperparams_list)}.")
+
+        # Hyperparameters object provides corresponding LangChain objects from given model names
         hp = Hyperparameters.from_dict(hyperparams)
 
         scores = {

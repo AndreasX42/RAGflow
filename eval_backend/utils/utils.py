@@ -1,10 +1,8 @@
-from json import JSONDecodeError
-import itertools
+import numpy as np
 import os
 import re
-import numpy as np
 
-from langchain.chains import RetrievalQA, QAGenerationChain
+from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -23,9 +21,8 @@ from langchain.document_loaders import (
 # vector db
 from langchain.vectorstores import FAISS
 
-from prompts import QA_CHAIN_PROMPT
+from utils.prompts import QA_CHAIN_PROMPT
 
-import tiktoken
 import json
 import logging
 
@@ -86,39 +83,6 @@ def get_qa_llm(
     return qa_llm
 
 
-def generate_eval_set(
-    llm: BaseLanguageModel, chunks: list[Document]
-) -> list[dict[str, str]]:
-    """Generate a pairs of QAs that are used as ground truth in downstream tasks, i.e. RAG evaluations
-
-    Args:
-        llm (BaseLanguageModel): the language model used in the QAGenerationChain
-        chunks (List[Document]): the document chunks used for QA generation
-
-    Returns:
-        List[Dict[str, str]]: returns a list of dictionary of question - answer pairs
-    """
-
-    logger.debug("Generating qa pairs.")
-
-    qa_generator_chain = QAGenerationChain.from_llm(llm)
-    eval_set = []
-
-    for i, chunk in enumerate(chunks):
-        if llm.get_num_tokens(chunk.page_content) < 1500:
-            print(f"Not considering {i}/{len(chunks)}")
-            continue
-
-        try:
-            qa_pair = qa_generator_chain.run(chunk.page_content)
-            eval_set.append(qa_pair)
-        except JSONDecodeError:
-            print(f"Error occurred inside QAChain in chunk {i}/{len(chunks)}")
-
-    eval_set = list(itertools.chain.from_iterable(eval_set))
-    return eval_set
-
-
 def load_document(file: str) -> list[Document]:
     """Loads file from given path into a list of Documents, currently pdf, txt and docx are supported.
 
@@ -176,22 +140,6 @@ def split_data(
     return chunks
 
 
-def extract_llm_metric(text: str, metric: str) -> np.number:
-    """Utiliy function for extracting scores from LLM output from grading of generated answers and retrieved document chunks.
-
-    Args:
-        text (str): LLM result
-        metric (str): name of metric
-
-    Returns:
-        number: the found score as integer or np.nan
-    """
-    match = re.search(f"{metric}: (\d+)", text)
-    if match:
-        return int(match.group(1))
-    return np.nan
-
-
 async def aget_retrieved_documents(
     qa_pair: dict[str, str], retriever: BaseRetriever
 ) -> dict:
@@ -245,4 +193,25 @@ def write_json(data: dict, filename: str) -> None:
 
     # Write the combined data back to the file
     with open(filename, "w", encoding="utf-8") as file:
-        json.dump(json_data, file, indent=4)  # default=convert_to_serializable,
+        json.dump(json_data, file, indent=4, default=convert_to_serializable)
+
+
+# Convert non-serializable types
+def convert_to_serializable(obj: object) -> str:
+    """Preprocessing step before writing to json file
+
+    Args:
+        obj (object): _description_
+
+    Returns:
+        str: _description_
+    """
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, set):
+        return list(obj)
+    elif callable(obj):  # For <built-in function len> and similar types
+        return str(obj)
+    elif isinstance(obj, type):  # For <class ...>
+        return str(obj)
+    return f"WARNING: Type {type(obj).__name__} not serializable!"

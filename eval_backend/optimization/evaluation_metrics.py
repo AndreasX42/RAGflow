@@ -6,14 +6,14 @@ from langchain.schema.language_model import BaseLanguageModel
 
 import evaluate
 
-from prompts import (
+from utils.prompts import (
     GRADE_ANSWER_PROMPT_3CATEGORIES_ZERO_SHOT,
     GRADE_ANSWER_PROMPT_3CATEGORIES_ZERO_SHOT_WITH_REASON,
     GRADE_ANSWER_PROMPT_FAST,
     GRADE_DOCS_PROMPT,
 )
 
-from utils import extract_llm_metric
+from optimization.utils import extract_llm_metric
 
 import logging
 

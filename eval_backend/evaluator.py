@@ -4,11 +4,10 @@ import tiktoken
 import logging
 import asyncio
 import json
-import os
 
 from langchain.chat_models import ChatOpenAI
 
-from eval_backend.common import Hyperparameters
+from eval_backend.commons import Hyperparameters
 from eval_backend.utils import write_json
 from eval_backend.evaluation import run_eval
 from eval_backend.testsetgen import agenerate_eval_set
@@ -81,9 +80,8 @@ async def main(
     ################################################################
     # First phase: Loading or generating evaluation dataset
     ################################################################
-    if not qa_gen_configs["generate_new_eval_set"] and os.path.exists(
-        eval_dataset_path
-    ):
+
+    if not qa_gen_configs["generate_new_eval_set"]:
         try:
             with open(eval_dataset_path, "r", encoding="utf-8") as file:
                 logger.info("Evaluation dataset found, loading it.")
@@ -114,6 +112,7 @@ async def main(
     ################################################################
     # Second phase: Running evaluations
     ################################################################
+
     with open(eval_params_path, "r", encoding="utf-8") as file:
         hyperparams_list = json.load(file)
 

@@ -18,7 +18,7 @@ from eval_backend.evaluation.evaluation_metrics import (
 )
 
 from eval_backend.utils.doc_processing import aload_and_chunk_docs
-from eval_backend.common import Hyperparameters
+from eval_backend.commons import Hyperparameters
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ async def run_eval(
     }
 
     # create chunks of all provided documents
-    chunks = await aload_and_chunk_docs(docs_path, hp)
+    chunks = await aload_and_chunk_docs(hp, docs_path)
 
     retriever = get_retriever(
         splits=chunks,
@@ -45,7 +45,10 @@ async def run_eval(
         num_retrieved_docs=hp.num_retrieved_docs,
     )
 
+    # chunks are now unnecessary
     del chunks
+
+    # llm for answering queries
     qa_llm = get_qa_llm(retriever=retriever, retrieval_llm=hp.retrieval_llm)
 
     # dict[question, generated answer]
@@ -66,8 +69,8 @@ async def run_eval(
         correctness_s, comprehensiveness_s, readability_s = grade_model_answer(
             gt_dataset,
             predicted_answers,
-            hp.grade_answer_prompt,
             hp.grader_llm,
+            hp.grade_answer_prompt,
         )
         scores["correct_ans"] = np.append(scores["correct_ans"], correctness_s)
         scores["comprehensive_ans"] = np.append(
@@ -83,8 +86,8 @@ async def run_eval(
         retriever_s = grade_model_retrieval(
             gt_dataset,
             retrieved_docs,
-            hp.grade_docs_prompt,
             hp.grader_llm,
+            hp.grade_docs_prompt,
         )
 
         scores["retriever_score"] = np.append(scores["retriever_score"], retriever_s)

@@ -11,7 +11,9 @@ from langchain.schema.retriever import BaseRetriever
 # vector db
 from langchain.vectorstores import FAISS
 
-from eval_backend.utils.prompts import QA_CHAIN_PROMPT
+from eval_backend.commons.prompts import QA_ANSWER_PROMPT
+
+from typing import Optional
 
 import json
 import logging
@@ -23,7 +25,7 @@ def get_retriever(
     splits: list[Document],
     embedding_model: Embeddings,
     num_retrieved_docs: int,
-    search_type: str = "mmr",
+    search_type: Optional[str] = "mmr",
 ) -> BaseRetriever:
     """Sets up a vector database based on the document chunks and the embedding model provided.
         Here we use FAISS for the vectorstore.
@@ -61,7 +63,7 @@ def get_qa_llm(
     """
     logger.info("Setting up QA LLM with provided retriever.")
 
-    chain_type_kwargs = {"prompt": QA_CHAIN_PROMPT}
+    chain_type_kwargs = {"prompt": QA_ANSWER_PROMPT}
 
     qa_llm = RetrievalQA.from_chain_type(
         llm=retrieval_llm,

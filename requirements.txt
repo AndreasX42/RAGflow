@@ -22,14 +22,14 @@ Cython
 rouge_score
 absl-py
 
-faiss-cpu
-
 # misc
 pandas
-filetype
+numpy
 scikit-learn
 python-dotenv
-llama-index
+faiss-cpu
 
 # agents
-wikipedia
+# wikipedia
+# filetype
+# llama-index

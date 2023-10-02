@@ -13,7 +13,7 @@ from langchain.document_loaders import (
     # PyMuPDFLoader,  # returns 1 Document per page
 )
 
-from eval_backend.common import Hyperparameters
+from eval_backend.commons import Hyperparameters
 
 import logging
 
@@ -29,8 +29,6 @@ def load_document(file: str) -> list[Document]:
     Returns:
         List[Document]: loaded files as list of Documents
     """
-    logger.info(f"Loading file {file}")
-
     _, extension = os.path.splitext(file)
 
     if extension == ".pdf":
@@ -41,7 +39,7 @@ def load_document(file: str) -> list[Document]:
         loader = Docx2txtLoader(file)
     else:
         logger.warning("Unsupported file type detected!")
-        raise Warning("Unsupported file type detected!")
+        raise NotImplementedError("Unsupported file type detected!")
 
     data = loader.load()
     return data
@@ -65,8 +63,6 @@ def split_data(
         List[Document]: the splitted document chunks
     """
 
-    logger.debug("Splitting data.")
-
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
@@ -77,17 +73,22 @@ def split_data(
     return chunks
 
 
-def load_and_chunk_doc(file: str, hp: Hyperparameters) -> list[Document]:
+def load_and_chunk_doc(
+    hp: Hyperparameters,
+    file: str,
+) -> list[Document]:
+    logger.info(f"Loading and splitting file {file}.")
+
     data = load_document(file)
     chunks = split_data(data, hp.chunk_size, hp.chunk_overlap, hp.length_function)
     return chunks
 
 
-async def aload_and_chunk_docs(files: list[str], hp: Hyperparameters) -> list[Document]:
+async def aload_and_chunk_docs(hp: Hyperparameters, files: list[str]) -> list[Document]:
     loop = asyncio.get_event_loop()
 
     futures = [
-        loop.run_in_executor(None, load_and_chunk_doc, file, hp) for file in files
+        loop.run_in_executor(None, load_and_chunk_doc, hp, file) for file in files
     ]
 
     results = await asyncio.gather(*futures)

@@ -6,15 +6,16 @@ from langchain.schema.language_model import BaseLanguageModel
 
 import evaluate
 
-from eval_backend.utils.prompts import (
-    GRADE_ANSWER_PROMPT_3CATEGORIES_ZERO_SHOT,
-    GRADE_ANSWER_PROMPT_3CATEGORIES_ZERO_SHOT_WITH_REASON,
+from eval_backend.commons.prompts import (
+    GRADE_ANSWER_PROMPT_5_CATEGORIES_5_GRADES_ZERO_SHOT,
+    GRADE_ANSWER_PROMPT_3_CATEGORIES_4_GRADES_FEW_SHOT,
     GRADE_ANSWER_PROMPT_FAST,
-    GRADE_DOCS_PROMPT,
+    GRADE_RETRIEVER_PROMPT,
 )
 
 from eval_backend.evaluation.utils import extract_llm_metric
 
+from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
@@ -60,8 +61,8 @@ def grade_embedding_similarity(
 def grade_model_retrieval(
     gt_dataset: list[dict],
     retrieved_docs: list[str],
-    grade_docs_prompt: str,
     grader_llm: BaseLanguageModel,
+    grade_docs_prompt: Optional[str] = "default",
 ) -> float:
     """Using LangChains QAEvalChain we use a LLM as grader to get a metric how well the found document chunks from the vectorstore provide the answer for the label QA pairs.
 
@@ -76,8 +77,8 @@ def grade_model_retrieval(
     """
     logger.info("Grading retrieved document chunks.")
 
-    if grade_docs_prompt not in ("", None):
-        prompt = GRADE_DOCS_PROMPT
+    if grade_docs_prompt == "default":
+        prompt = GRADE_RETRIEVER_PROMPT
     else:
         prompt = None
 
@@ -104,8 +105,8 @@ def grade_model_retrieval(
 def grade_model_answer(
     gt_dataset: list[dict[str, str]],
     predictions: list[str],
-    grade_answer_prompt: str,
     grader_llm: BaseLanguageModel,
+    grade_answer_prompt: Optional[str] = "few_shot",
 ) -> tuple[float, float, float]:
     """Calculates scores how well the generated answer fits the label answers.
 
@@ -122,10 +123,10 @@ def grade_model_answer(
 
     if grade_answer_prompt == "fast":
         prompt = GRADE_ANSWER_PROMPT_FAST
-    elif grade_answer_prompt == "3cats_zero_shot":
-        prompt = GRADE_ANSWER_PROMPT_3CATEGORIES_ZERO_SHOT
-    elif grade_answer_prompt == "3cats_zero_shot_with_reason":
-        prompt = GRADE_ANSWER_PROMPT_3CATEGORIES_ZERO_SHOT_WITH_REASON
+    elif grade_answer_prompt == "zero_shot":
+        prompt = GRADE_ANSWER_PROMPT_5_CATEGORIES_5_GRADES_ZERO_SHOT
+    elif grade_answer_prompt == "few_shot":
+        prompt = GRADE_ANSWER_PROMPT_3_CATEGORIES_4_GRADES_FEW_SHOT
     else:
         prompt = None
 

@@ -38,18 +38,18 @@ class Hyperparameters:
         if model_name in ("gpt-3.5-turbo", "gpt-4"):
             return ChatOpenAI(model=model_name, temperature=0)
 
-        raise AttributeError("LLM model not supported.")
+        raise NotImplementedError("LLM model not supported.")
 
     @staticmethod
     def get_embedding_model(model_name: str) -> Embeddings:
-        if model_name in ("text-embedding-ada-002"):
+        if model_name == "text-embedding-ada-002":
             return OpenAIEmbeddings(model=model_name)
 
-        raise AttributeError("Embedding model not supported.")
+        raise NotImplementedError("Embedding model not supported.")
 
-    def set_length_function(self, length_function: str) -> callable:
+    def set_length_function(self, length_function_name: str) -> callable:
         # Extract the function name from the string
-        func = length_function.strip("<>").split(" ")[-1]
+        func = length_function_name.strip("<>").split(" ")[-1]
 
         # Check if the function name exists in Python's built-ins
         if hasattr(builtins, func):
@@ -57,7 +57,7 @@ class Hyperparameters:
 
         else:
             try:
-                encoding = tiktoken.encoding_for_model("text-embedding-ada-002")
+                encoding = tiktoken.encoding_for_model(length_function_name)
                 return lambda x: len(encoding.encode(x))
             except Exception as ex:
                 logger.error("Length function not supported")

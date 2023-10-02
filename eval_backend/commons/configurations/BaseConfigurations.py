@@ -1,4 +1,3 @@
-from dataclasses import dataclass, asdict, field
 from langchain.schema.embeddings import Embeddings
 from langchain.schema.language_model import BaseLanguageModel
 
@@ -12,26 +11,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True, kw_only=True, slots=True)
-class Hyperparameters:
-    """Class to model hyperparameters."""
-
-    chunk_size: int
-    chunk_overlap: int
-    num_retrieved_docs: int
-    grade_answer_prompt: str
-    grade_docs_prompt: str
-    use_llm_grader: bool
-    retrieval_llm: BaseLanguageModel
-    grader_llm: BaseLanguageModel
-    embedding_model: Embeddings
-    length_function_name: str
-    length_function: callable = field(init=False)
-
-    def __post_init__(self) -> None:
-        object.__setattr__(
-            self, "length_function", self.set_length_function(self.length_function_name)
-        )
+class BaseConfigurations:
+    """Base class for configuration objects."""
 
     @staticmethod
     def get_language_model(model_name: str) -> BaseLanguageModel:
@@ -70,26 +51,3 @@ class Hyperparameters:
     @staticmethod
     def inverse_embedding_model(emb: Embeddings) -> str:
         return emb.model
-
-    def to_dict(self):
-        data = asdict(self)
-        data.pop("length_function", None)
-
-        # Modify the dictionary for fields that need special handling
-        data["retrieval_llm"] = self.inverse_language_model(data["retrieval_llm"])
-        data["grader_llm"] = self.inverse_language_model(data["grader_llm"])
-        data["embedding_model"] = self.inverse_embedding_model(data["embedding_model"])
-
-        return data
-
-    @classmethod
-    def from_dict(cls, input_dict):
-        input_dict["embedding_model"] = cls.get_embedding_model(
-            input_dict["embedding_model"]
-        )
-        input_dict["retrieval_llm"] = cls.get_language_model(
-            input_dict["retrieval_llm"]
-        )
-        input_dict["grader_llm"] = cls.get_language_model(input_dict["grader_llm"])
-
-        return cls(**input_dict)

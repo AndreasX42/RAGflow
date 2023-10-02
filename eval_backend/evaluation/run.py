@@ -18,13 +18,13 @@ from eval_backend.evaluation.evaluation_metrics import (
 )
 
 from eval_backend.utils.doc_processing import aload_and_chunk_docs
-from eval_backend.commons import Hyperparameters
+from eval_backend.commons.configurations import Hyperparameters, BaseConfigurations
 
 logger = logging.getLogger(__name__)
 
 
 async def run_eval(
-    gt_dataset: list[dict[str, str]], hp: Hyperparameters, docs_path: str
+    gt_dataset: list[dict[str, str]], hp: BaseConfigurations, docs_path: str
 ) -> dict:
     scores = {
         "embedding_cosine_sim": np.array([]),

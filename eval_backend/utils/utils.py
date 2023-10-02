@@ -13,7 +13,7 @@ from langchain.vectorstores import FAISS
 
 from eval_backend.commons.prompts import QA_ANSWER_PROMPT
 
-from typing import Optional
+from typing import Optional, Any
 
 import json
 import logging
@@ -101,6 +101,13 @@ async def aget_retrieved_documents(
     }
 
     return retrieved_dict
+
+
+def read_json(filename: str) -> Any:
+    """Load dataset from a JSON file."""
+
+    with open(filename, "r", encoding="utf-8") as file:
+        return json.load(file)
 
 
 def write_json(data: dict, filename: str) -> None:

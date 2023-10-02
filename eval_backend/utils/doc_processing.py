@@ -13,7 +13,7 @@ from langchain.document_loaders import (
     # PyMuPDFLoader,  # returns 1 Document per page
 )
 
-from eval_backend.commons import Hyperparameters
+from eval_backend.commons.configurations import Hyperparameters, BaseConfigurations
 
 import logging
 
@@ -74,7 +74,7 @@ def split_data(
 
 
 def load_and_chunk_doc(
-    hp: Hyperparameters,
+    hp: BaseConfigurations,
     file: str,
 ) -> list[Document]:
     logger.info(f"Loading and splitting file {file}.")
@@ -84,7 +84,9 @@ def load_and_chunk_doc(
     return chunks
 
 
-async def aload_and_chunk_docs(hp: Hyperparameters, files: list[str]) -> list[Document]:
+async def aload_and_chunk_docs(
+    hp: BaseConfigurations, files: list[str]
+) -> list[Document]:
     loop = asyncio.get_event_loop()
 
     futures = [

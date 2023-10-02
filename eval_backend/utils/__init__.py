@@ -1,6 +1,7 @@
 from eval_backend.utils.utils import (
     get_retriever,
     get_qa_llm,
+    read_json,
     write_json,
     aget_retrieved_documents,
 )

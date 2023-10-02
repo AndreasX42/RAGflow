@@ -22,41 +22,5 @@
         "embedding_model": "text-embedding-ada-002",
         "retrieval_llm": "gpt-3.5-turbo",
         "grader_llm": "gpt-4"
-    },
-    {
-        "chunk_size": 256,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "use_llm_grader": false,
-        "length_function_name": "len",
-        "grade_answer_prompt": "3cats_zero_shot",
-        "grade_docs_prompt": "default",
-        "embedding_model": "text-embedding-ada-002",
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4"
-    },
-    {
-        "chunk_size": 128,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "use_llm_grader": false,
-        "length_function_name": "len",
-        "grade_answer_prompt": "3cats_zero_shot",
-        "grade_docs_prompt": "default",
-        "embedding_model": "text-embedding-ada-002",
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4"
-    },
-    {
-        "chunk_size": 128,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 5,
-        "use_llm_grader": false,
-        "length_function_name": "len",
-        "grade_answer_prompt": "3cats_zero_shot",
-        "grade_docs_prompt": "default",
-        "embedding_model": "text-embedding-ada-002",
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4"
     }
 ]

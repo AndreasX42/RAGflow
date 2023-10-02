@@ -1,13 +1,14 @@
 from json import JSONDecodeError
 import itertools
 import asyncio
-
-from eval_backend.utils import load_and_chunk_doc
-from eval_backend.commons import Hyperparameters
+import tqdm.asyncio
 
 from langchain.chains import QAGenerationChain
 from langchain.docstore.document import Document
+
 from eval_backend.commons.prompts import QA_GENERATION_PROMPT_SELECTOR
+from eval_backend.utils import load_and_chunk_doc, write_json
+from eval_backend.commons.configurations import QAConfigurations
 
 import logging
 
@@ -30,8 +31,8 @@ async def get_qa_from_chunk(
         pass
 
 
-async def generate_eval_set(
-    qa_gen_configs: dict, doc_path: str
+async def agenerate_eval_set_from_doc(
+    hp: QAConfigurations, doc_path: str
 ) -> list[dict[str, str]]:
     """Generate a pairs of QAs that are used as ground truth in downstream tasks, i.e. RAG evaluations
 
@@ -43,14 +44,12 @@ async def generate_eval_set(
         List[Dict[str, str]]: returns a list of dictionary of question - answer pairs
     """
 
-    logger.info("Start generating evaluation dataset.")
-
-    hp = Hyperparameters.from_dict(qa_gen_configs)
+    logger.info(f"Gtarting QA generation process for {doc_path}.")
 
     # load data and chunk doc
     chunks = load_and_chunk_doc(hp, doc_path)
 
-    llm = hp.retrieval_llm
+    llm = hp.qa_generator_llm
     qa_generator_chain = QAGenerationChain.from_llm(
         llm, prompt=QA_GENERATION_PROMPT_SELECTOR.get_prompt(llm)
     )
@@ -65,7 +64,7 @@ async def generate_eval_set(
     return eval_set
 
 
-async def agenerate_eval_set(qa_gen_configs: dict, docs_path: list[str]) -> list[dict]:
+async def agenerate_eval_set(hp: QAConfigurations, docs_path: list[str]) -> list[dict]:
     """Asynchronous wrapper around the agenerate_eval_set function.
 
     Args:
@@ -75,15 +74,30 @@ async def agenerate_eval_set(qa_gen_configs: dict, docs_path: list[str]) -> list
     Returns:
         list[dict]: _description_
     """
-    loop = asyncio.get_event_loop()
 
-    # Set up generate_eval_set to be run concurrently using asyncio's default executor.
-    tasks = [
-        loop.run_in_executor(None, generate_eval_set, qa_gen_configs, doc)
-        for doc in docs_path
-    ]
+    results = await asyncio.gather(
+        *[agenerate_eval_set_from_doc(hp, doc_path) for doc_path in docs_path]
+    )
 
-    results = await asyncio.gather(*tasks)
     qa_pairs = list(itertools.chain.from_iterable(results))
 
     return qa_pairs
+
+
+async def generate_and_save_dataset(
+    hp: QAConfigurations, docs_path: str, eval_dataset_path: str
+):
+    """Generate a new evaluation dataset and save it to a JSON file."""
+
+    logger.info("Starting QA gernation suite.")
+
+    # tarnsform list of list of dicts into list of dicts
+    gt_dataset = await agenerate_eval_set(hp, docs_path)
+
+    # only get pairs with sufficiently long answer
+    # gt_dataset = [qa_pair for qa_pair in qa_pairs if len(qa_pair["answer"]) > 150]
+
+    # write eval dataset to json
+    write_json(gt_dataset, eval_dataset_path)
+
+    return gt_dataset

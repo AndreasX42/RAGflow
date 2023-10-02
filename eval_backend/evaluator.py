@@ -4,13 +4,14 @@ import tiktoken
 import logging
 import asyncio
 import json
+import os
 
 from langchain.chat_models import ChatOpenAI
 
-from eval_backend.commons import Hyperparameters
-from eval_backend.utils import write_json
+from eval_backend.commons.configurations import Hyperparameters, QAConfigurations
+from eval_backend.utils import read_json, write_json
 from eval_backend.evaluation import run_eval
-from eval_backend.testsetgen import agenerate_eval_set
+from eval_backend.testsetgen import generate_and_save_dataset
 
 logging.basicConfig(
     level=20,
@@ -21,14 +22,6 @@ logger = logging.getLogger(__name__)
 
 dotenv.load_dotenv(dotenv.find_dotenv(), override=True)
 
-qa_gen_configs = {
-    "qa_generator_llm": ChatOpenAI(temperature=0, model="gpt-3.5-turbo"),
-    "length_function_for_qa_generation": lambda x: len(
-        tiktoken.encoding_for_model("text-embedding-ada-002").encode(x)
-    ),
-    "generate_new_eval_set": False,
-}
-
 
 async def main(
     chain="",
@@ -36,7 +29,7 @@ async def main(
     retriever_type="",
     k=3,
     grade_prompt="",
-    docs_path="./resources",
+    docs_path="./resources/document_store/",
     eval_dataset_path="./resources/eval_data.json",
     eval_params_path="./resources/eval_params.json",
     eval_results_path="./resources/eval_results.json",
@@ -81,33 +74,35 @@ async def main(
     # First phase: Loading or generating evaluation dataset
     ################################################################
 
-    if not qa_gen_configs["generate_new_eval_set"]:
-        try:
-            with open(eval_dataset_path, "r", encoding="utf-8") as file:
-                logger.info("Evaluation dataset found, loading it.")
-                gt_dataset = json.load(file)
-        except FileNotFoundError:
-            logger.error(
-                f"Evaluation dataset could not be loaded, {eval_dataset_path}."
+    document_store = glob.glob(f"{docs_path}/*.pdf")
+
+    qa_gen_configs = {
+        "chunk_size": 2048,
+        "chunk_overlap": 0,
+        "qa_generator_llm": "gpt-3.5-turbo",
+        "length_function_name": "text-embedding-ada-002",
+        "generate_eval_set": True,
+    }
+
+    hp = QAConfigurations.from_dict(qa_gen_configs)
+
+    if hp.generate_eval_set:
+        if os.path.exists(eval_dataset_path):
+            os.remove(eval_dataset_path)
+            logger.info(
+                "Existing evaluation dataset deleted due to 'generate_eval_set'=True."
             )
-            qa_gen_configs["generate_new_eval_set"] = True
 
-    elif qa_gen_configs["generate_new_eval_set"]:
-        logger.warning("Evaluation dataset not found, starting generation process.")
-
-        # tarnsform list of list of dicts into list of dicts
-        qa_pairs = await agenerate_eval_set(
-            qa_gen_configs, docs_path=glob.glob(f"{docs_path}/*.pdf")
+        gt_dataset = await generate_and_save_dataset(
+            hp, document_store, eval_dataset_path
         )
-
-        # only get pairs with sufficiently long answer
-        gt_dataset = [qa_pair for qa_pair in qa_pairs if len(qa_pair["answer"]) > 150]
-
-        # write eval dataset to json
-        write_json(gt_dataset, filename=eval_dataset_path)
-
+    elif not os.path.exists(eval_dataset_path):
+        logger.warning("Evaluation dataset not found, starting generation process.")
+        gt_dataset = await generate_and_save_dataset(
+            hp, document_store, eval_dataset_path
+        )
     else:
-        raise AttributeError("Something went wrong loading evaluation dataset.")
+        gt_dataset = read_json(eval_dataset_path)
 
     ################################################################
     # Second phase: Running evaluations
@@ -119,7 +114,7 @@ async def main(
     # evaluate hyperparams concurrently
     results = await asyncio.gather(
         *[
-            run_eval(gt_dataset, hp, glob.glob(f"{docs_path}/*.pdf"))
+            run_eval(gt_dataset, hp, document_store)
             for hp in [Hyperparameters.from_dict(d) for d in hyperparams_list]
         ]
     )

@@ -61,7 +61,7 @@ def get_qa_llm(
     Returns:
         RetrievalQA: RetrievalQA object
     """
-    logger.info("Setting up QA LLM with provided retriever.")
+    logger.debug("Setting up QA LLM with provided retriever.")
 
     chain_type_kwargs = {"prompt": QA_ANSWER_PROMPT}
 

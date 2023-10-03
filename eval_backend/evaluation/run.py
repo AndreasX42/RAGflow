@@ -24,16 +24,26 @@ logger = logging.getLogger(__name__)
 
 
 async def run_eval(
-    gt_dataset: list[dict[str, str]], hp: BaseConfigurations, docs_path: str
+    gt_dataset: list[dict[str, str]], hp: Hyperparameters, docs_path: str
 ) -> dict:
+    """Entry point for initiating the evaluation based on the provided hyperparameters and documents.
+
+    Args:
+        gt_dataset (list[dict[str, str]]): _description_
+        hp (BaseConfigurations): _description_
+        docs_path (str): _description_
+
+    Returns:
+        dict: _description_
+    """
     scores = {
-        "embedding_cosine_sim": np.array([]),
-        "correct_ans": np.array([]),
-        "comprehensive_ans": np.array([]),
-        "readable_ans": np.array([]),
-        "retriever_score": np.array([]),
-        "rouge1": np.array([]),
-        "rouge2": np.array([]),
+        "embedding_cosine_sim": 0.0,
+        "correct_ans": 0.0,
+        "comprehensive_ans": 0.0,
+        "readable_ans": 0.0,
+        "retriever_score": 0.0,
+        "rouge1": 0.0,
+        "rouge2": 0.0,
     }
 
     # create chunks of all provided documents
@@ -45,7 +55,7 @@ async def run_eval(
         num_retrieved_docs=hp.num_retrieved_docs,
     )
 
-    # chunks are now unnecessary
+    # chunks are no longer needed
     del chunks
 
     # llm for answering queries
@@ -59,12 +69,14 @@ async def run_eval(
     sim_s = grade_embedding_similarity(
         gt_dataset, predicted_answers, hp.embedding_model
     )
-    scores["embedding_cosine_sim"] = np.append(scores["embedding_cosine_sim"], sim_s)
+
+    scores["embedding_cosine_sim"] = sim_s
 
     rouge1_s, rouge2_s = grade_rouge(gt_dataset, predicted_answers)
-    scores["rouge1"] = np.append(scores["rouge1"], rouge1_s)
-    scores["rouge2"] = np.append(scores["rouge2"], rouge2_s)
+    scores["rouge1"] = rouge1_s
+    scores["rouge2"] = rouge2_s
 
+    # if we want a llm to grade the predicted answers as well
     if hp.use_llm_grader:
         correctness_s, comprehensiveness_s, readability_s = grade_model_answer(
             gt_dataset,
@@ -72,11 +84,9 @@ async def run_eval(
             hp.grader_llm,
             hp.grade_answer_prompt,
         )
-        scores["correct_ans"] = np.append(scores["correct_ans"], correctness_s)
-        scores["comprehensive_ans"] = np.append(
-            scores["comprehensive_ans"], comprehensiveness_s
-        )
-        scores["readable_ans"] = np.append(scores["readable_ans"], readability_s)
+        scores["correct_ans"] = correctness_s
+        scores["comprehensive_ans"] = comprehensiveness_s
+        scores["readable_ans"] = readability_s
 
         # dict[question, concatenated string of chunks retrieved]
         retrieved_docs = await asyncio.gather(
@@ -90,7 +100,7 @@ async def run_eval(
             hp.grade_docs_prompt,
         )
 
-        scores["retriever_score"] = np.append(scores["retriever_score"], retriever_s)
+        scores["retriever_score"] = retriever_s
 
     # preprocess dict before writing to json
     scores |= {"timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}

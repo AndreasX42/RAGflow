@@ -4,6 +4,8 @@ import logging
 import asyncio
 import json
 import os
+from tqdm.asyncio import tqdm as tqdm_asyncio
+
 
 from eval_backend.commons.configurations import Hyperparameters, QAConfigurations
 from eval_backend.utils import read_json, write_json
@@ -71,6 +73,8 @@ async def main(
     # First phase: Loading or generating evaluation dataset
     ################################################################
 
+    logger.info("Checking for evaluation dataset configs.")
+
     document_store = glob.glob(f"{docs_path}/*.pdf")
 
     qa_gen_configs = {
@@ -78,7 +82,7 @@ async def main(
         "chunk_overlap": 0,
         "qa_generator_llm": "gpt-3.5-turbo",
         "length_function_name": "text-embedding-ada-002",
-        "generate_eval_set": True,
+        "generate_eval_set": False,
     }
 
     hp = QAConfigurations.from_dict(qa_gen_configs)
@@ -100,21 +104,24 @@ async def main(
         )
     else:
         gt_dataset = read_json(eval_dataset_path)
+        logger.info("Evaluation dataset found and loaded.")
 
     ################################################################
     # Second phase: Running evaluations
     ################################################################
 
+    logger.info("Starting evaluation for all provided hyperparameters.")
+
     with open(eval_params_path, "r", encoding="utf-8") as file:
         hyperparams_list = json.load(file)
 
     # evaluate hyperparams concurrently
-    results = await asyncio.gather(
-        *[
-            run_eval(gt_dataset, hp, document_store)
-            for hp in [Hyperparameters.from_dict(d) for d in hyperparams_list]
-        ]
-    )
+    tasks = [
+        run_eval(gt_dataset, hp, document_store)
+        for hp in [Hyperparameters.from_dict(d) for d in hyperparams_list]
+    ]
+
+    results = await tqdm_asyncio.gather(*tasks, total=len(tasks))
 
     # write final results to json
     write_json(results, eval_results_path)

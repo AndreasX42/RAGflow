@@ -2,7 +2,7 @@ import numpy as np
 import re
 
 
-def extract_llm_metric(text: str, metric: str) -> np.number:
+def extract_llm_metric(text: str, metric: str) -> float:
     """Utiliy function for extracting scores from LLM output from grading of generated answers and retrieved document chunks.
 
     Args:

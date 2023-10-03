@@ -55,7 +55,7 @@ def grade_embedding_similarity(
     # similarities between openai embeddings ranges from 0.7 - 1.0 only
     similarities = target_embeddings @ predicted_embeddings.T
 
-    return np.average(np.diag(similarities))
+    return np.nanmean(np.diag(similarities))
 
 
 def grade_model_retrieval(
@@ -75,7 +75,7 @@ def grade_model_retrieval(
     Returns:
         float: average score across all labels
     """
-    logger.info("Grading retrieved document chunks.")
+    logger.debug("Grading retrieved document chunks.")
 
     if grade_docs_prompt == "default":
         prompt = GRADE_RETRIEVER_PROMPT
@@ -99,7 +99,7 @@ def grade_model_retrieval(
     outputs = np.array([output["results"] for output in outputs])
     retrieval_accuracy = v_extract_llm_metric(outputs, "GRADE")
 
-    return np.average(retrieval_accuracy)
+    return np.nanmean(retrieval_accuracy)
 
 
 def grade_model_answer(
@@ -119,7 +119,7 @@ def grade_model_answer(
     Returns:
         float: average scores, for "fast" grading only average corectness score, otherwise we get the grading LLM to calculate correctness, comprehensiveness and readability scores.
     """
-    logger.info("Grading generated answers.")
+    logger.debug("Grading generated answers.")
 
     if grade_answer_prompt == "fast":
         prompt = GRADE_ANSWER_PROMPT_FAST
@@ -147,9 +147,9 @@ def grade_model_answer(
     readability = v_extract_llm_metric(outputs, "READABILITY")
 
     return (
-        np.average(correctness),
-        np.average(comprehensiveness),
-        np.average(readability),
+        np.nanmean(correctness),
+        np.nanmean(comprehensiveness),
+        np.nanmean(readability),
     )
 
 

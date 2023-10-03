@@ -77,7 +77,7 @@ def load_and_chunk_doc(
     hp: BaseConfigurations,
     file: str,
 ) -> list[Document]:
-    logger.info(f"Loading and splitting file {file}.")
+    logger.debug(f"Loading and splitting file {file}.")
 
     data = load_document(file)
     chunks = split_data(data, hp.chunk_size, hp.chunk_overlap, hp.length_function)

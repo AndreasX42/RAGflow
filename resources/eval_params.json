@@ -3,13 +3,13 @@
         "chunk_size": 1024,
         "chunk_overlap": 10,
         "num_retrieved_docs": 3,
-        "use_llm_grader": false,
+        "use_llm_grader": true,
         "length_function_name": "len",
-        "grade_answer_prompt": "3cats_zero_shot",
+        "grade_answer_prompt": "few_shot",
         "grade_docs_prompt": "default",
         "embedding_model": "text-embedding-ada-002",
         "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4"
+        "grader_llm": "gpt-3.5-turbo"
     },
     {
         "chunk_size": 512,
@@ -17,7 +17,7 @@
         "num_retrieved_docs": 3,
         "use_llm_grader": false,
         "length_function_name": "len",
-        "grade_answer_prompt": "3cats_zero_shot",
+        "grade_answer_prompt": "zero_shot",
         "grade_docs_prompt": "default",
         "embedding_model": "text-embedding-ada-002",
         "retrieval_llm": "gpt-3.5-turbo",

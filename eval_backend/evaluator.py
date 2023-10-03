@@ -1,12 +1,9 @@
 import glob
 import dotenv
-import tiktoken
 import logging
 import asyncio
 import json
 import os
-
-from langchain.chat_models import ChatOpenAI
 
 from eval_backend.commons.configurations import Hyperparameters, QAConfigurations
 from eval_backend.utils import read_json, write_json

@@ -1,13 +1,13 @@
 from json import JSONDecodeError
 import itertools
 import asyncio
-import tqdm.asyncio
+from tqdm.asyncio import tqdm as tqdm_asyncio
 
 from langchain.chains import QAGenerationChain
 from langchain.docstore.document import Document
 
 from eval_backend.commons.prompts import QA_GENERATION_PROMPT_SELECTOR
-from eval_backend.utils import load_and_chunk_doc, write_json
+from eval_backend.utils import aload_and_chunk_docs, write_json
 from eval_backend.commons.configurations import QAConfigurations
 
 import logging
@@ -47,7 +47,7 @@ async def agenerate_eval_set_from_doc(
     logger.info(f"Gtarting QA generation process for {doc_path}.")
 
     # load data and chunk doc
-    chunks = load_and_chunk_doc(hp, doc_path)
+    chunks = await aload_and_chunk_docs(hp, [doc_path])
 
     llm = hp.qa_generator_llm
     qa_generator_chain = QAGenerationChain.from_llm(
@@ -74,10 +74,9 @@ async def agenerate_eval_set(hp: QAConfigurations, docs_path: list[str]) -> list
     Returns:
         list[dict]: _description_
     """
+    tasks = [agenerate_eval_set_from_doc(hp, doc_path) for doc_path in docs_path]
 
-    results = await asyncio.gather(
-        *[agenerate_eval_set_from_doc(hp, doc_path) for doc_path in docs_path]
-    )
+    results = await tqdm_asyncio.gather(*tasks)
 
     qa_pairs = list(itertools.chain.from_iterable(results))
 

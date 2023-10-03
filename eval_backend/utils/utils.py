@@ -112,7 +112,6 @@ def read_json(filename: str) -> Any:
 
 def write_json(data: dict, filename: str) -> None:
     """Function used to store generated QA pairs, i.e. the ground truth.
-    TODO: Provide metadata to have 'Data provenance' of the ground truth QA pairs.
 
     Args:
         data (_type_): _description_

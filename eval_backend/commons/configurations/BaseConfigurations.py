@@ -2,7 +2,7 @@ from langchain.schema.embeddings import Embeddings
 from langchain.schema.language_model import BaseLanguageModel
 
 from langchain.embeddings import OpenAIEmbeddings
-from langchain.chat_models import ChatOpenAI
+from langchain.chat_models import ChatOpenAI, ChatAnyscale
 
 import tiktoken
 import builtins
@@ -17,8 +17,16 @@ class BaseConfigurations:
     @staticmethod
     def get_language_model(model_name: str) -> BaseLanguageModel:
         if model_name in ("gpt-3.5-turbo", "gpt-4"):
-            return ChatOpenAI(model=model_name, temperature=0)
-
+            return ChatOpenAI(model_name=model_name, temperature=0)
+        elif model_name in (
+            "Llama-2-7b-chat-hf",
+            "Llama-2-13b-chat-hf",
+            "Llama-2-70b-chat-hf",
+        ):
+            return ChatAnyscale(
+                model_name=f"meta-llama/{model_name}",
+                anyscale_api_base="https://api.endpoints.anyscale.com/v1",
+            )
         raise NotImplementedError("LLM model not supported.")
 
     @staticmethod

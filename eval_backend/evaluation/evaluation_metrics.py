@@ -121,12 +121,16 @@ def grade_model_answer(
     """
     logger.debug("Grading generated answers.")
 
+    MAX_GRADE = 0
     if grade_answer_prompt == "fast":
         prompt = GRADE_ANSWER_PROMPT_FAST
+        MAX_GRADE = 5
     elif grade_answer_prompt == "zero_shot":
         prompt = GRADE_ANSWER_PROMPT_5_CATEGORIES_5_GRADES_ZERO_SHOT
+        MAX_GRADE = 5
     elif grade_answer_prompt == "few_shot":
         prompt = GRADE_ANSWER_PROMPT_3_CATEGORIES_4_GRADES_FEW_SHOT
+        MAX_GRADE = 3
     else:
         prompt = None
 
@@ -147,9 +151,9 @@ def grade_model_answer(
     readability = v_extract_llm_metric(outputs, "READABILITY")
 
     return (
-        np.nanmean(correctness),
-        np.nanmean(comprehensiveness),
-        np.nanmean(readability),
+        np.nanmean(correctness) / MAX_GRADE,
+        np.nanmean(comprehensiveness) / MAX_GRADE,
+        np.nanmean(readability) / MAX_GRADE,
     )
 
 

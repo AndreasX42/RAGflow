@@ -23,6 +23,7 @@ class Hyperparameters(BaseConfigurations):
     num_retrieved_docs: int
     grade_answer_prompt: str
     grade_docs_prompt: str
+    search_type: str
     use_llm_grader: bool
     retrieval_llm: BaseLanguageModel
     grader_llm: BaseLanguageModel

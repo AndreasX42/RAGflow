@@ -9,7 +9,7 @@ from langchain.schema.language_model import BaseLanguageModel
 from langchain.schema.retriever import BaseRetriever
 
 # vector db
-from langchain.vectorstores import FAISS
+from langchain.vectorstores import Chroma
 
 from eval_backend.commons.prompts import QA_ANSWER_PROMPT
 
@@ -28,19 +28,20 @@ def get_retriever(
     search_type: Optional[str] = "mmr",
 ) -> BaseRetriever:
     """Sets up a vector database based on the document chunks and the embedding model provided.
-        Here we use FAISS for the vectorstore.
+        Here we use Chroma for the vectorstore.
 
     Args:
-        splits (List[Document]): the document chunks
-        embedding_model (Embeddings): embedding model
-        num_retrieved_docs (int): number of document chunks retrieved doing similarity search
+        splits (list[Document]): _description_
+        embedding_model (Embeddings): _description_
+        num_retrieved_docs (int): _description_
+        search_type (Optional[str], optional): _description_. Defaults to "mmr".
 
     Returns:
-        BaseRretriever: Returns a retriever object
+        BaseRetriever: _description_
     """
     logger.info("Constructing vectorstore and retriever.")
 
-    vectorstore = FAISS.from_documents(splits, embedding_model)
+    vectorstore = Chroma.from_documents(splits, embedding_model)
     retriever = vectorstore.as_retriever(k=num_retrieved_docs, search_type=search_type)
 
     return retriever

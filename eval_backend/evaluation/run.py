@@ -53,6 +53,7 @@ async def run_eval(
         splits=chunks,
         embedding_model=hp.embedding_model,
         num_retrieved_docs=hp.num_retrieved_docs,
+        search_type=hp.search_type,
     )
 
     # chunks are no longer needed

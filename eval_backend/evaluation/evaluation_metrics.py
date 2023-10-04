@@ -44,9 +44,32 @@ def grade_embedding_similarity(
     label_answers = [qa_pair["answer"] for qa_pair in gt_dataset]
     predicted_answers = [qa_pair["result"] for qa_pair in predictions]
 
-    target_embeddings = np.array(
-        embedding_model.embed_documents(label_answers)
-    ).reshape(num_qa_pairs, -1)
+    # try using embeddings of answers of evaluation set from vectorstore
+    # if not available, we calculate them again
+    try:
+        import chromadb
+        import yaml
+
+        CONFIG = yaml.safe_load(open("config.yaml", encoding="utf-8"))
+        VS_CLIENT = chromadb.PersistentClient(CONFIG["ChromaDBPathEvalSet"])
+
+        collection = VS_CLIENT.get_collection(name=embedding_model.model)
+        ids = [qa["metadata"]["id"] for qa in gt_dataset]
+
+        target_embeddings = np.array(
+            collection.get(ids=ids, include=["embeddings"])["embeddings"]
+        ).reshape(num_qa_pairs, -1)
+
+        logger.info("Embeddings for label answers loaded successfully.")
+
+    except Exception as ex:
+        logger.info(
+            f"Embeddings for label answers could not be loaded from vectorstore, {str(ex)}"
+        )
+
+        target_embeddings = np.array(
+            embedding_model.embed_documents(label_answers)
+        ).reshape(num_qa_pairs, -1)
 
     predicted_embeddings = np.array(
         embedding_model.embed_documents(predicted_answers)

@@ -10,7 +10,7 @@ from tqdm.asyncio import tqdm as tqdm_asyncio
 from eval_backend.commons.configurations import Hyperparameters, QAConfigurations
 from eval_backend.utils import read_json, write_json
 from eval_backend.evaluation import run_eval
-from eval_backend.testsetgen import generate_and_save_dataset
+from eval_backend.testsetgen import agenerate_and_save_dataset
 
 logging.basicConfig(
     level=20,
@@ -69,13 +69,19 @@ async def main(
         eval_gt_path (str, optional): _description_. Defaults to "./resources/eval_data.json".
     """
 
+    document_store = glob.glob(f"{docs_path}/*.pdf")
+
+    with open(eval_params_path, "r", encoding="utf-8") as file:
+        hyperparams_list = json.load(file)
+
+    # set up Hyperparameters objects at the beginning to evaluate inputs
+    hyperparams_list = [Hyperparameters.from_dict(d) for d in hyperparams_list]
+
     ################################################################
     # First phase: Loading or generating evaluation dataset
     ################################################################
 
     logger.info("Checking for evaluation dataset configs.")
-
-    document_store = glob.glob(f"{docs_path}/*.pdf")
 
     qa_gen_configs = {
         "chunk_size": 2048,
@@ -83,9 +89,14 @@ async def main(
         "qa_generator_llm": "gpt-3.5-turbo",
         "length_function_name": "text-embedding-ada-002",
         "generate_eval_set": False,
+        "persist_to_vs": True,
     }
 
     hp = QAConfigurations.from_dict(qa_gen_configs)
+
+    if qa_gen_configs["persist_to_vs"]:
+        emb_models_list = [hp.embedding_model for hp in hyperparams_list]
+        kwargs = {"embedding_models": emb_models_list}
 
     if hp.generate_eval_set:
         if os.path.exists(eval_dataset_path):
@@ -94,13 +105,13 @@ async def main(
                 "Existing evaluation dataset deleted due to 'generate_eval_set'=True."
             )
 
-        gt_dataset = await generate_and_save_dataset(
-            hp, document_store, eval_dataset_path
+        gt_dataset = await agenerate_and_save_dataset(
+            hp, document_store, eval_dataset_path, kwargs
         )
     elif not os.path.exists(eval_dataset_path):
         logger.warning("Evaluation dataset not found, starting generation process.")
-        gt_dataset = await generate_and_save_dataset(
-            hp, document_store, eval_dataset_path
+        gt_dataset = await agenerate_and_save_dataset(
+            hp, document_store, eval_dataset_path, kwargs
         )
     else:
         gt_dataset = read_json(eval_dataset_path)
@@ -112,14 +123,8 @@ async def main(
 
     logger.info("Starting evaluation for all provided hyperparameters.")
 
-    with open(eval_params_path, "r", encoding="utf-8") as file:
-        hyperparams_list = json.load(file)
-
     # evaluate hyperparams concurrently
-    tasks = [
-        run_eval(gt_dataset, hp, document_store)
-        for hp in [Hyperparameters.from_dict(d) for d in hyperparams_list]
-    ]
+    tasks = [run_eval(gt_dataset, hp, document_store) for hp in hyperparams_list]
 
     results = await tqdm_asyncio.gather(*tasks, total=len(tasks))
 

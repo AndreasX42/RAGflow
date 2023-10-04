@@ -5,34 +5,46 @@ from tqdm.asyncio import tqdm as tqdm_asyncio
 
 from langchain.chains import QAGenerationChain
 from langchain.docstore.document import Document
+from langchain.schema.embeddings import Embeddings
 
 from eval_backend.commons.prompts import QA_GENERATION_PROMPT_SELECTOR
 from eval_backend.utils import aload_and_chunk_docs, write_json
 from eval_backend.commons.configurations import QAConfigurations
 
+import uuid
+from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
 
+import chromadb
+import yaml
+
+CONFIG = yaml.safe_load(open("config.yaml", encoding="utf-8"))
+
 
 async def get_qa_from_chunk(
-    chunk: Document, qa_generator_chain: QAGenerationChain, eval_set: list
-):
+    chunk: Document,
+    qa_generator_chain: QAGenerationChain,
+) -> list[dict]:
     try:
         # return list of qa pairs
         qa_pairs = qa_generator_chain.run(chunk.page_content)
 
         # attach chunk metadata to qa_pair
         for qa_pair in qa_pairs:
-            qa_pair["metadata"] = chunk.metadata
+            qa_pair["metadata"] = dict(**chunk.metadata)
+            qa_pair["metadata"].update({"id": str(uuid.uuid4())})
 
-        eval_set.append(qa_pairs)
+        return qa_pairs
     except JSONDecodeError:
-        pass
+        return []
 
 
 async def agenerate_eval_set_from_doc(
-    hp: QAConfigurations, doc_path: str
+    hp: QAConfigurations,
+    doc_path: str,
+    kwargs: Optional[dict] = None,
 ) -> list[dict[str, str]]:
     """Generate a pairs of QAs that are used as ground truth in downstream tasks, i.e. RAG evaluations
 
@@ -44,7 +56,7 @@ async def agenerate_eval_set_from_doc(
         List[Dict[str, str]]: returns a list of dictionary of question - answer pairs
     """
 
-    logger.info(f"Gtarting QA generation process for {doc_path}.")
+    logger.debug(f"Starting QA generation process for {doc_path}.")
 
     # load data and chunk doc
     chunks = await aload_and_chunk_docs(hp, [doc_path])
@@ -53,18 +65,20 @@ async def agenerate_eval_set_from_doc(
     qa_generator_chain = QAGenerationChain.from_llm(
         llm, prompt=QA_GENERATION_PROMPT_SELECTOR.get_prompt(llm)
     )
-    eval_set = []
 
-    tasks = [get_qa_from_chunk(chunk, qa_generator_chain, eval_set) for chunk in chunks]
+    tasks = [get_qa_from_chunk(chunk, qa_generator_chain) for chunk in chunks]
 
-    await asyncio.gather(*tasks)
+    qa_pairs = await asyncio.gather(*tasks)
+    qa_pairs = list(itertools.chain.from_iterable(qa_pairs))
 
-    eval_set = list(itertools.chain.from_iterable(eval_set))
-
-    return eval_set
+    return qa_pairs
 
 
-async def agenerate_eval_set(hp: QAConfigurations, docs_path: list[str]) -> list[dict]:
+async def agenerate_eval_set(
+    hp: QAConfigurations,
+    docs_path: list[str],
+    kwargs: Optional[dict] = None,
+) -> list[dict]:
     """Asynchronous wrapper around the agenerate_eval_set function.
 
     Args:
@@ -74,7 +88,9 @@ async def agenerate_eval_set(hp: QAConfigurations, docs_path: list[str]) -> list
     Returns:
         list[dict]: _description_
     """
-    tasks = [agenerate_eval_set_from_doc(hp, doc_path) for doc_path in docs_path]
+    tasks = [
+        agenerate_eval_set_from_doc(hp, doc_path, kwargs) for doc_path in docs_path
+    ]
 
     results = await tqdm_asyncio.gather(*tasks)
 
@@ -83,20 +99,65 @@ async def agenerate_eval_set(hp: QAConfigurations, docs_path: list[str]) -> list
     return qa_pairs
 
 
-async def generate_and_save_dataset(
-    hp: QAConfigurations, docs_path: str, eval_dataset_path: str
+async def apersist_eval_set_to_vs(
+    qa_pairs: list[dict], embedding_model: Embeddings
+) -> None:
+    try:
+        VS_CLIENT = chromadb.PersistentClient(CONFIG["ChromaDBPathEvalSet"])
+
+        collection = VS_CLIENT.create_collection(
+            name=f"{embedding_model.model}", get_or_create=False
+        )
+    except ValueError:
+        logger.info(f"Collection already exists for {embedding_model.model}.")
+        return None
+
+    ids = [qa_pair["metadata"]["id"] for qa_pair in qa_pairs]
+    embeddings = await embedding_model.aembed_documents(
+        [qa_pair["answer"] for qa_pair in qa_pairs]
+    )
+
+    collection.upsert(
+        ids=ids,
+        embeddings=embeddings,
+        metadatas=[
+            {
+                "question": qa_pair["question"],
+                "answer": qa_pair["answer"],
+                **qa_pair["metadata"],
+            }
+            for qa_pair in qa_pairs
+        ],
+    )
+
+    logger.info(f"Upserted {embedding_model.model} embeddings to vectorstore.")
+
+
+async def agenerate_and_save_dataset(
+    hp: QAConfigurations,
+    docs_path: str,
+    eval_dataset_path: str,
+    kwargs: Optional[dict] = None,
 ):
     """Generate a new evaluation dataset and save it to a JSON file."""
 
-    logger.info("Starting QA gernation suite.")
+    logger.info("Starting QA generation suite.")
 
     # tarnsform list of list of dicts into list of dicts
-    gt_dataset = await agenerate_eval_set(hp, docs_path)
-
-    # only get pairs with sufficiently long answer
-    # gt_dataset = [qa_pair for qa_pair in qa_pairs if len(qa_pair["answer"]) > 150]
+    gt_dataset = await agenerate_eval_set(hp, docs_path, kwargs)
 
     # write eval dataset to json
     write_json(gt_dataset, eval_dataset_path)
+
+    # cache answers of qa pairs in vectorstore for each embedding model in hyperparams list
+    if hp.persist_to_vs:
+        tasks = [
+            apersist_eval_set_to_vs(gt_dataset, embedding_model)
+            for embedding_model in kwargs["embedding_models"]
+        ]
+
+        await asyncio.gather(*tasks)
+
+        logger.info("upserted qa pairs and embeddings.")
 
     return gt_dataset

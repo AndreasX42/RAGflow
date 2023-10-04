@@ -23,6 +23,7 @@ rouge_score
 absl-py
 
 # misc
+pydantic
 pandas
 numpy
 scikit-learn

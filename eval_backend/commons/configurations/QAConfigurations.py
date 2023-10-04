@@ -1,41 +1,45 @@
-from dataclasses import dataclass, asdict, field
-from langchain.schema.language_model import BaseLanguageModel
-
-from eval_backend.commons.configurations import BaseConfigurations
-
 import logging
+from typing import Any
+from pydantic.v1 import BaseModel, Extra, validator
+
+from langchain.schema.language_model import BaseLanguageModel
+from eval_backend.commons.configurations import BaseConfigurations
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True, kw_only=True, slots=True)
-class QAConfigurations(BaseConfigurations):
+class QAConfigurations(BaseModel, BaseConfigurations):
     """Class to model qa generation configs."""
 
     chunk_size: int
     chunk_overlap: int
     qa_generator_llm: BaseLanguageModel
     generate_eval_set: bool
+    persist_to_vs: bool
     length_function_name: str
-    length_function: callable = field(init=False)
+    length_function: Any
 
-    def __post_init__(self) -> None:
-        object.__setattr__(
-            self, "length_function", self.set_length_function(self.length_function_name)
-        )
+    class Config:
+        allow_mutation = False
+        arbitrary_types_allowed = True
+        extra = Extra.forbid
+
+    @validator("length_function", pre=False, always=True)
+    def populate_length_function(cls, v: callable, values: dict[str, str]):
+        return cls.set_length_function(values["length_function_name"])
 
     def to_dict(self):
-        data = asdict(self)
-        data.pop("length_function", None)
+        _data = self.dict()
+        _data.pop("length_function", None)
 
         # Modify the dictionary for fields that need special handling
-        data["qa_generator_llm"] = self.inverse_language_model(data["qa_generator_llm"])
+        _data["qa_generator_llm"] = _data["qa_generator_llm"]["model_name"]
 
-        return data
+        return _data
 
     @classmethod
-    def from_dict(cls, input_dict):
-        input_dict["qa_generator_llm"] = cls.get_language_model(
-            input_dict["qa_generator_llm"]
-        )
-        return cls(**input_dict)
+    def from_dict(cls, input_dict: dict[str, str]):
+        _input = dict(**input_dict)
+        _input["qa_generator_llm"] = cls.get_language_model(_input["qa_generator_llm"])
+
+        return cls(**_input)

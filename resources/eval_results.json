@@ -1,141 +1,5 @@
 [
     {
-        "chunk_size": 1024,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "few_shot",
-        "grade_docs_prompt": "default",
-        "use_llm_grader": true,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-3.5-turbo",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.936427659059267,
-            "correct_ans": 0.6313131313131314,
-            "comprehensive_ans": 0.5353535353535354,
-            "readable_ans": 0.9848484848484849,
-            "retriever_score": 0.7424242424242424,
-            "rouge1": 0.5741948459881472,
-            "rouge2": 0.43683616572941086,
-            "timestamp": "2023-10-03 11:04:51,538"
-        }
-    },
-    {
-        "chunk_size": 512,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "zero_shot",
-        "grade_docs_prompt": "default",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9336824555058005,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.5459712872928213,
-            "rouge2": 0.41737927265119845,
-            "timestamp": "2023-10-03 11:02:43,787"
-        }
-    },
-    {
-        "chunk_size": 1024,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "few_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": true,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-3.5-turbo",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9423731320934589,
-            "correct_ans": 0.6868686868686869,
-            "comprehensive_ans": 0.5555555555555556,
-            "readable_ans": 0.9949494949494949,
-            "retriever_score": 0.696969696969697,
-            "rouge1": 0.5671348969891258,
-            "rouge2": 0.44433994998066273,
-            "timestamp": "2023-10-03 15:41:16,570"
-        }
-    },
-    {
-        "chunk_size": 512,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "zero_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9377175788475753,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.5641798793923207,
-            "rouge2": 0.43445828556456045,
-            "timestamp": "2023-10-03 15:29:13,324"
-        }
-    },
-    {
-        "chunk_size": 1024,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "few_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": true,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-3.5-turbo",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9405322073721981,
-            "correct_ans": 0.6818181818181818,
-            "comprehensive_ans": 0.5454545454545455,
-            "readable_ans": 0.9949494949494949,
-            "retriever_score": 0.696969696969697,
-            "rouge1": 0.5654372325027135,
-            "rouge2": 0.44389349667205713,
-            "timestamp": "2023-10-03 23:23:31,695"
-        }
-    },
-    {
-        "chunk_size": 512,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "zero_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9371700925299686,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.5619713905316449,
-            "rouge2": 0.4332036003157729,
-            "timestamp": "2023-10-03 23:21:53,820"
-        }
-    },
-    {
         "id": 0,
         "chunk_size": 1024,
         "chunk_overlap": 10,
@@ -143,20 +7,20 @@
         "grade_answer_prompt": "few_shot",
         "grade_docs_prompt": "default",
         "search_type": "mmr",
-        "use_llm_grader": true,
+        "use_llm_grader": false,
         "retrieval_llm": "gpt-3.5-turbo",
         "grader_llm": "gpt-3.5-turbo",
         "embedding_model": "text-embedding-ada-002",
         "length_function_name": "len",
         "scores": {
-            "embedding_cosine_sim": 0.9474478675971341,
-            "correct_ans": 0.6969696969696969,
-            "comprehensive_ans": 0.5909090909090909,
-            "readable_ans": 0.9949494949494949,
-            "retriever_score": 0.7575757575757576,
-            "rouge1": 0.5943790698081952,
-            "rouge2": 0.46988663847748025,
-            "timestamp": "2023-10-04 12:52:09,235"
+            "embedding_cosine_sim": 0.9428740185127957,
+            "correct_ans": 0.0,
+            "comprehensive_ans": 0.0,
+            "readable_ans": 0.0,
+            "retriever_score": 0.0,
+            "rouge1": 0.5961426791422102,
+            "rouge2": 0.47311935005960987,
+            "timestamp": "2023-10-05 16:29:22,181"
         }
     },
     {
@@ -173,14 +37,14 @@
         "embedding_model": "text-embedding-ada-002",
         "length_function_name": "len",
         "scores": {
-            "embedding_cosine_sim": 0.9447797609749182,
+            "embedding_cosine_sim": 0.9486588728264446,
             "correct_ans": 0.0,
             "comprehensive_ans": 0.0,
             "readable_ans": 0.0,
             "retriever_score": 0.0,
-            "rouge1": 0.5885271373963619,
-            "rouge2": 0.45630453134487153,
-            "timestamp": "2023-10-04 12:50:23,396"
+            "rouge1": 0.6024444855929987,
+            "rouge2": 0.4818092428028097,
+            "timestamp": "2023-10-05 16:29:24,857"
         }
     },
     {
@@ -197,14 +61,14 @@
         "embedding_model": "text-embedding-ada-002",
         "length_function_name": "len",
         "scores": {
-            "embedding_cosine_sim": 0.9401679852315502,
+            "embedding_cosine_sim": 0.9356680378668287,
             "correct_ans": 0.0,
             "comprehensive_ans": 0.0,
             "readable_ans": 0.0,
             "retriever_score": 0.0,
-            "rouge1": 0.5760128670677989,
-            "rouge2": 0.4482415862786109,
-            "timestamp": "2023-10-04 13:10:25,270"
+            "rouge1": 0.5463900245950073,
+            "rouge2": 0.43983785298111827,
+            "timestamp": "2023-10-05 17:53:07,100"
         }
     },
     {
@@ -221,14 +85,14 @@
         "embedding_model": "text-embedding-ada-002",
         "length_function_name": "len",
         "scores": {
-            "embedding_cosine_sim": 0.9451651287817764,
+            "embedding_cosine_sim": 0.9327258101119894,
             "correct_ans": 0.0,
             "comprehensive_ans": 0.0,
             "readable_ans": 0.0,
             "retriever_score": 0.0,
-            "rouge1": 0.5802030691802863,
-            "rouge2": 0.4547277884778654,
-            "timestamp": "2023-10-04 13:10:32,263"
+            "rouge1": 0.5554087316891982,
+            "rouge2": 0.3995027461879369,
+            "timestamp": "2023-10-05 17:53:05,245"
         }
     },
     {
@@ -245,14 +109,14 @@
         "embedding_model": "text-embedding-ada-002",
         "length_function_name": "len",
         "scores": {
-            "embedding_cosine_sim": 0.9453637740400453,
+            "embedding_cosine_sim": 0.9423870659453158,
             "correct_ans": 0.0,
             "comprehensive_ans": 0.0,
             "readable_ans": 0.0,
             "retriever_score": 0.0,
-            "rouge1": 0.608845212377028,
-            "rouge2": 0.48723465038150093,
-            "timestamp": "2023-10-04 14:07:05,833"
+            "rouge1": 0.5756930079966247,
+            "rouge2": 0.45449742549514616,
+            "timestamp": "2023-10-05 18:01:50,615"
         }
     },
     {
@@ -269,206 +133,14 @@
         "embedding_model": "text-embedding-ada-002",
         "length_function_name": "len",
         "scores": {
-            "embedding_cosine_sim": 0.9509141370245644,
+            "embedding_cosine_sim": 0.942162951616868,
             "correct_ans": 0.0,
             "comprehensive_ans": 0.0,
             "readable_ans": 0.0,
             "retriever_score": 0.0,
-            "rouge1": 0.5998215235656024,
-            "rouge2": 0.4835737558576325,
-            "timestamp": "2023-10-04 14:07:01,741"
-        }
-    },
-    {
-        "id": 0,
-        "chunk_size": 1024,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "few_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-3.5-turbo",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9499995958950644,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.6190888807295338,
-            "rouge2": 0.49518351714139996,
-            "timestamp": "2023-10-04 16:05:12,061"
-        }
-    },
-    {
-        "id": 1,
-        "chunk_size": 512,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "zero_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9531506349493921,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.6028716195883532,
-            "rouge2": 0.47946349647540626,
-            "timestamp": "2023-10-04 16:05:14,582"
-        }
-    },
-    {
-        "id": 0,
-        "chunk_size": 1024,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "few_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-3.5-turbo",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9474946476837459,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.596063310841378,
-            "rouge2": 0.4756898774139823,
-            "timestamp": "2023-10-04 16:18:52,248"
-        }
-    },
-    {
-        "id": 1,
-        "chunk_size": 512,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "zero_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9465324254431778,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.6001133651098564,
-            "rouge2": 0.46880024746292404,
-            "timestamp": "2023-10-04 16:18:49,897"
-        }
-    },
-    {
-        "id": 0,
-        "chunk_size": 1024,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "few_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-3.5-turbo",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9478530723238694,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.597197605676872,
-            "rouge2": 0.4720619984208577,
-            "timestamp": "2023-10-04 16:30:12,166"
-        }
-    },
-    {
-        "id": 1,
-        "chunk_size": 512,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "zero_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.946443822591539,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.5983083016190287,
-            "rouge2": 0.46928940617470605,
-            "timestamp": "2023-10-04 16:30:09,579"
-        }
-    },
-    {
-        "id": 0,
-        "chunk_size": 1024,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "few_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-3.5-turbo",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9478924292545844,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.5967527638418026,
-            "rouge2": 0.4751174941460673,
-            "timestamp": "2023-10-04 16:52:38,641"
-        }
-    },
-    {
-        "id": 1,
-        "chunk_size": 512,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "grade_answer_prompt": "zero_shot",
-        "grade_docs_prompt": "default",
-        "search_type": "mmr",
-        "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4",
-        "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
-        "scores": {
-            "embedding_cosine_sim": 0.9455601899527794,
-            "correct_ans": 0.0,
-            "comprehensive_ans": 0.0,
-            "readable_ans": 0.0,
-            "retriever_score": 0.0,
-            "rouge1": 0.5996209674247337,
-            "rouge2": 0.4697173942797238,
-            "timestamp": "2023-10-04 16:36:10,714"
+            "rouge1": 0.573098130315028,
+            "rouge2": 0.44283521280007737,
+            "timestamp": "2023-10-05 17:59:26,436"
         }
     }
 ]

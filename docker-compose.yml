@@ -1,0 +1,13 @@
+version: "3"
+services:
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:latest
+    container_name: chromadb
+    volumes:
+      - ./vectorstore/chromadb:/chroma/chroma
+      - ./vectorstore:/vectorstore
+    ports:
+      - 8000:8000
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ALLOW_RESET=TRUE

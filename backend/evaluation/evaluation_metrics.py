@@ -20,6 +20,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from backend.commons.chroma import ChromaClient
+
 
 def grade_embedding_similarity(
     gt_dataset: list[dict[str, str]],
@@ -47,27 +49,21 @@ def grade_embedding_similarity(
     # try using embeddings of answers of evaluation set from vectorstore
     # if not available, we calculate them again
     try:
-        import chromadb
-        from chromadb.config import Settings
+        with ChromaClient() as CHROMA_CLIENT:
+            collection = CHROMA_CLIENT.get_collection(name=embedding_model.model)
+            ids = [qa["metadata"]["id"] for qa in gt_dataset]
 
-        CHROMA_CLIENT = chromadb.HttpClient(
-            host="localhost",
-            port=8000,
-            settings=Settings(anonymized_telemetry=False),
-        )
+            target_embeddings = np.array(
+                collection.get(ids=ids, include=["embeddings"])["embeddings"]
+            ).reshape(num_qa_pairs, -1)
 
-        collection = CHROMA_CLIENT.get_collection(name=embedding_model.model)
-        ids = [qa["metadata"]["id"] for qa in gt_dataset]
-
-        target_embeddings = np.array(
-            collection.get(ids=ids, include=["embeddings"])["embeddings"]
-        ).reshape(num_qa_pairs, -1)
-
-        logger.info("Embeddings for label answers loaded successfully.")
+            logger.info("Embeddings for label answers loaded successfully.")
 
     except Exception as ex:
         logger.info(
-            f"Embeddings for label answers could not be loaded from vectorstore, {str(ex)}"
+            f"Embeddings of {embedding_model.model} for label answers could not be loaded from vectorstore.\n\
+            Collections: {CHROMA_CLIENT.list_collections()}.\n\
+            Exception: {ex.args}"
         )
 
         target_embeddings = np.array(

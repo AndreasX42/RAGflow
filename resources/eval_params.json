@@ -1,5 +1,13 @@
 [
     {
+        "chunk_size": 2048,
+        "chunk_overlap": 0,
+        "qa_generator_llm": "gpt-3.5-turbo",
+        "length_function_name": "text-embedding-ada-002",
+        "generate_eval_set": false,
+        "persist_to_vs": true
+    },
+    {
         "id": 0,
         "chunk_size": 1024,
         "chunk_overlap": 10,

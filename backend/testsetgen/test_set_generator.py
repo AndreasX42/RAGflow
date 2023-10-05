@@ -10,15 +10,13 @@ from langchain.schema.embeddings import Embeddings
 from backend.commons.prompts import QA_GENERATION_PROMPT_SELECTOR
 from backend.utils import aload_and_chunk_docs, write_json
 from backend.commons.configurations import QAConfigurations
+from backend.commons.chroma import ChromaClient
 
 import uuid
 from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
-
-import chromadb
-from chromadb.config import Settings
 
 
 async def get_qa_from_chunk(
@@ -100,40 +98,36 @@ async def agenerate_eval_set(
 async def apersist_eval_set_to_vs(
     qa_pairs: list[dict], embedding_model: Embeddings
 ) -> None:
-    CHROMA_CLIENT = chromadb.HttpClient(
-        host="localhost",
-        port=8000,
-        settings=Settings(anonymized_telemetry=False),
-    )
+    with ChromaClient() as CHROMA_CLIENT:
+        collection_name = embedding_model.model
 
-    collection_name = embedding_model.model
+        # check if collection already exists, if not create a new one with the embeddings
+        if collection_name in [
+            collection.name for collection in CHROMA_CLIENT.list_collections()
+        ]:
+            logger.info(f"Collection {collection_name} already exists, skipping it.")
+            return None
 
-    # check if collection already exists, if not create a new one with the embeddings
-    if collection_name in [
-        collection.name for collection in CHROMA_CLIENT.list_collections()
-    ]:
-        logger.info(f"Collection {collection_name} already exists, skipping it.")
-        return None
+        collection = CHROMA_CLIENT.create_collection(name=collection_name)
 
-    collection = CHROMA_CLIENT.create_collection(name=collection_name)
+        ids = [qa_pair["metadata"]["id"] for qa_pair in qa_pairs]
 
-    ids = [qa_pair["metadata"]["id"] for qa_pair in qa_pairs]
-    embeddings = await embedding_model.aembed_documents(
-        [qa_pair["answer"] for qa_pair in qa_pairs]
-    )
+        embeddings = await embedding_model.aembed_documents(
+            [qa_pair["answer"] for qa_pair in qa_pairs]
+        )
 
-    collection.upsert(
-        ids=ids,
-        embeddings=embeddings,
-        metadatas=[
-            {
-                "question": qa_pair["question"],
-                "answer": qa_pair["answer"],
-                **qa_pair["metadata"],
-            }
-            for qa_pair in qa_pairs
-        ],
-    )
+        collection.upsert(
+            ids=ids,
+            embeddings=embeddings,
+            metadatas=[
+                {
+                    "question": qa_pair["question"],
+                    "answer": qa_pair["answer"],
+                    **qa_pair["metadata"],
+                }
+                for qa_pair in qa_pairs
+            ],
+        )
 
     logger.info(f"Upserted {embedding_model.model} embeddings to vectorstore.")
 
@@ -152,7 +146,8 @@ async def agenerate_and_save_dataset(
     gt_dataset = await agenerate_eval_set(hp, docs_path, kwargs)
 
     # write eval dataset to json
-    write_json(gt_dataset, eval_dataset_path)
+    if kwargs["debug_enabled"]:
+        write_json(gt_dataset, eval_dataset_path)
 
     # cache answers of qa pairs in vectorstore for each embedding model in hyperparams list
     unique_model_list = list(

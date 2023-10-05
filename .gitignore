@@ -8,6 +8,9 @@
 **/.ipynb_checkpoints
 **/__pycache__
 
+# vectorstore
+vectorstore/chromadb/
+
 # misc
 #resources/*
 #!resources/msg_life-gb-2021-EN_final.pdf

@@ -19,21 +19,19 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s:%(filename)s:%(lineno)d - %(message)s",
 )
 
+from typing import Optional
+
 logger = logging.getLogger(__name__)
 
 dotenv.load_dotenv(dotenv.find_dotenv(), override=True)
 
 
 async def main(
-    chain="",
-    retriever="",
-    retriever_type="",
-    k=3,
-    grade_prompt="",
-    docs_path="./resources/document_store/",
-    eval_dataset_path="./resources/eval_data.json",
-    eval_params_path="./resources/eval_params.json",
-    eval_results_path="./resources/eval_results.json",
+    docs_path: str = "./resources/document_store/",
+    eval_dataset_path: str = "./resources/eval_data.json",
+    eval_params_path: str = "./resources/eval_params.json",
+    eval_results_path: str = "./resources/eval_results.json",
+    debug_enabled: Optional[bool] = True,
 ):
     """After generating gt_dataset we need to calculate the metrics based on Chunking strategy, type of vectorstore, retriever (similarity search), QA LLM
 
@@ -83,7 +81,8 @@ async def main(
         hyperparams_list = json.load(file)
 
     # set up Hyperparameters objects at the beginning to evaluate inputs
-    hyperparams_list = [Hyperparameters.from_dict(d) for d in hyperparams_list]
+    qa_gen_params = QAConfigurations.from_dict(hyperparams_list[0])
+    hyperparams_list = [Hyperparameters.from_dict(d) for d in hyperparams_list[1:]]
 
     ################################################################
     # First phase: Loading or generating evaluation dataset
@@ -91,52 +90,51 @@ async def main(
 
     logger.info("Checking for evaluation dataset configs.")
 
-    qa_gen_configs = {
-        "chunk_size": 2048,
-        "chunk_overlap": 0,
-        "qa_generator_llm": "gpt-3.5-turbo",
-        "length_function_name": "text-embedding-ada-002",
-        "generate_eval_set": True,
-        "persist_to_vs": True,
-    }
-
-    hp = QAConfigurations.from_dict(qa_gen_configs)
-
-    if qa_gen_configs["persist_to_vs"]:
-        emb_models_list = [hp.embedding_model for hp in hyperparams_list]
-        kwargs = {"embedding_models": emb_models_list}
-
-    if hp.generate_eval_set:
+    # generate evaluation dataset
+    if qa_gen_params.generate_eval_set or not CHROMA_CLIENT.list_collections():
         if os.path.exists(eval_dataset_path):
             logger.info(
                 "Existing evaluation dataset deleted due to 'generate_eval_set'=True."
             )
             os.remove(eval_dataset_path)
 
-        # reset chromadb before
-        CHROMA_CLIENT.reset()
+        # save list of embedding models for later caching of embeddings
+        if qa_gen_params.persist_to_vs:
+            emb_models_list = [hp.embedding_model for hp in hyperparams_list]
+            kwargs = {"embedding_models": emb_models_list}
 
-        gt_dataset = await agenerate_and_save_dataset(
-            hp, document_store, eval_dataset_path, kwargs
-        )
-    elif not os.path.exists(eval_dataset_path):
-        logger.warning("Evaluation dataset not found, starting generation process.")
+        kwargs["debug_enabled"] = debug_enabled
 
         # reset chromadb before
         CHROMA_CLIENT.reset()
 
         gt_dataset = await agenerate_and_save_dataset(
-            hp, document_store, eval_dataset_path, kwargs
+            qa_gen_params, document_store, eval_dataset_path, kwargs
         )
+
     else:
         logger.info("Evaluation dataset found and loaded.")
 
-        gt_dataset = read_json(eval_dataset_path)
+        # load qa pairs from chromadb
+        collection = CHROMA_CLIENT.list_collections()[0]
+        metadata = collection.get(include=["metadatas"])["metadatas"]
+        gt_dataset = list(
+            map(
+                lambda qa: {
+                    "question": qa["question"],
+                    "answer": qa["answer"],
+                    "metadata": {"id": qa["id"]},
+                },
+                metadata,
+            )
+        )
 
     ################################################################
     # Second phase: Running evaluations
     ################################################################
 
+    print(gt_dataset[0])
+    print()
     logger.info("Starting evaluation for all provided hyperparameters.")
 
     # evaluate hyperparams concurrently

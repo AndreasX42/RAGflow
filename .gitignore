@@ -10,9 +10,10 @@
 
 # vectorstore
 vectorstore/chromadb/
-*.sqlite3
+**.sqlite3
+
+*.ipynb
 
 # misc
 #resources/*
 #!resources/msg_life-gb-2021-EN_final.pdf
-notebooks/*

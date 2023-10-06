@@ -3,6 +3,8 @@ from chromadb.config import Settings
 
 
 class ChromaClient:
+    """Get a chromadb client as ContextManager."""
+
     def __init__(self):
         self.chroma_client = chromadb.HttpClient(
             host="localhost",

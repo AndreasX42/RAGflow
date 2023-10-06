@@ -13,7 +13,7 @@ from langchain.vectorstores import Chroma
 
 from backend.commons.prompts import QA_ANSWER_PROMPT
 
-from typing import Optional, Any
+from typing import Any
 
 import json
 import logging
@@ -25,7 +25,7 @@ def get_retriever(
     splits: list[Document],
     embedding_model: Embeddings,
     num_retrieved_docs: int,
-    search_type: Optional[str] = "mmr",
+    search_type: str = "mmr",
 ) -> BaseRetriever:
     """Sets up a vector database based on the document chunks and the embedding model provided.
         Here we use Chroma for the vectorstore.
@@ -42,7 +42,9 @@ def get_retriever(
     logger.info("Constructing vectorstore and retriever.")
 
     vectorstore = Chroma.from_documents(splits, embedding_model)
-    retriever = vectorstore.as_retriever(k=num_retrieved_docs, search_type=search_type)
+    retriever = vectorstore.as_retriever(
+        search_type=search_type, search_kwargs={"k": num_retrieved_docs}
+    )
 
     return retriever
 
@@ -72,36 +74,10 @@ def get_qa_llm(
         retriever=retriever,
         chain_type_kwargs=chain_type_kwargs,
         input_key="question",
+        return_source_documents=True,
     )
+
     return qa_llm
-
-
-async def aget_retrieved_documents(
-    qa_pair: dict[str, str], retriever: BaseRetriever
-) -> dict:
-    """Retrieve most similar documents to query asynchronously, postprocess the document chunks and return the qa pair with the retrieved documents string as result
-
-    Args:
-        qa_pair (dict[str, str]): _description_
-        retriever (BaseRetriever): _description_
-
-    Returns:
-        list[dict]: _description_
-    """
-    query = qa_pair["question"]
-    docs_retrieved = await retriever.aget_relevant_documents(query)
-
-    retrieved_doc_text = "\n\n".join(
-        f"Retrieved document {i}: {doc.page_content}"
-        for i, doc in enumerate(docs_retrieved)
-    )
-    retrieved_dict = {
-        "question": qa_pair["question"],
-        "answer": qa_pair["answer"],
-        "result": retrieved_doc_text,
-    }
-
-    return retrieved_dict
 
 
 def read_json(filename: str) -> Any:

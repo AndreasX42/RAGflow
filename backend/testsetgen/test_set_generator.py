@@ -1,6 +1,7 @@
 from json import JSONDecodeError
 import itertools
 import asyncio
+from datetime import datetime
 from tqdm.asyncio import tqdm as tqdm_asyncio
 
 from langchain.chains import QAGenerationChain
@@ -108,7 +109,12 @@ async def apersist_eval_set_to_vs(
             logger.info(f"Collection {collection_name} already exists, skipping it.")
             return None
 
-        collection = CHROMA_CLIENT.create_collection(name=collection_name)
+        collection = CHROMA_CLIENT.create_collection(
+            name=collection_name,
+            metadata={
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]
+            },
+        )
 
         ids = [qa_pair["metadata"]["id"] for qa_pair in qa_pairs]
 

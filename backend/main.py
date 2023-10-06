@@ -4,22 +4,17 @@ import logging
 import asyncio
 import json
 import os
-from tqdm.asyncio import tqdm as tqdm_asyncio
-
-import chromadb
-from chromadb.config import Settings
 
 from backend.commons.configurations import Hyperparameters, QAConfigurations
-from backend.utils import read_json, write_json
-from backend.evaluation import run_eval
+from backend.evaluation import arun_eval
 from backend.testsetgen import agenerate_and_save_dataset
+from backend.commons.chroma import ChromaClient
+from backend.utils import read_json
 
 logging.basicConfig(
     level=20,
     format="%(asctime)s - %(levelname)s - %(name)s:%(filename)s:%(lineno)d - %(message)s",
 )
-
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +22,12 @@ dotenv.load_dotenv(dotenv.find_dotenv(), override=True)
 
 
 async def main(
-    docs_path: str = "./resources/document_store/",
+    document_store_path: str = "./resources/document_store/",
     eval_dataset_path: str = "./resources/eval_data.json",
     eval_params_path: str = "./resources/eval_params.json",
     eval_results_path: str = "./resources/eval_results.json",
-    debug_enabled: Optional[bool] = True,
+    hp_runs_data_path: str = "./resources/hp_runs_data.csv",
+    debug_enabled: bool = True,
 ):
     """After generating gt_dataset we need to calculate the metrics based on Chunking strategy, type of vectorstore, retriever (similarity search), QA LLM
 
@@ -69,13 +65,10 @@ async def main(
         eval_gt_path (str, optional): _description_. Defaults to "./resources/eval_data.json".
     """
 
-    CHROMA_CLIENT = chromadb.HttpClient(
-        host="localhost",
-        port=8000,
-        settings=Settings(allow_reset=True, anonymized_telemetry=False),
-    )
+    with ChromaClient() as client:
+        collections = client.list_collections()
 
-    document_store = glob.glob(f"{docs_path}/*.pdf")
+    document_store = glob.glob(f"{document_store_path}/*.pdf")
 
     with open(eval_params_path, "r", encoding="utf-8") as file:
         hyperparams_list = json.load(file)
@@ -91,7 +84,7 @@ async def main(
     logger.info("Checking for evaluation dataset configs.")
 
     # generate evaluation dataset
-    if qa_gen_params.generate_eval_set or not CHROMA_CLIENT.list_collections():
+    if qa_gen_params.generate_eval_set or not collections:
         if os.path.exists(eval_dataset_path):
             logger.info(
                 "Existing evaluation dataset deleted due to 'generate_eval_set'=True."
@@ -106,7 +99,8 @@ async def main(
         kwargs["debug_enabled"] = debug_enabled
 
         # reset chromadb before
-        CHROMA_CLIENT.reset()
+        with ChromaClient() as client:
+            client.reset()
 
         gt_dataset = await agenerate_and_save_dataset(
             qa_gen_params, document_store, eval_dataset_path, kwargs
@@ -116,34 +110,21 @@ async def main(
         logger.info("Evaluation dataset found and loaded.")
 
         # load qa pairs from chromadb
-        collection = CHROMA_CLIENT.list_collections()[0]
-        metadata = collection.get(include=["metadatas"])["metadatas"]
-        gt_dataset = list(
-            map(
-                lambda qa: {
-                    "question": qa["question"],
-                    "answer": qa["answer"],
-                    "metadata": {"id": qa["id"]},
-                },
-                metadata,
-            )
-        )
+        gt_dataset = read_json(eval_dataset_path)
 
     ################################################################
     # Second phase: Running evaluations
     ################################################################
 
-    print(gt_dataset[0])
-    print()
     logger.info("Starting evaluation for all provided hyperparameters.")
 
-    # evaluate hyperparams concurrently
-    tasks = [run_eval(gt_dataset, hp, document_store) for hp in hyperparams_list]
-
-    results = await tqdm_asyncio.gather(*tasks, total=len(tasks))
-
-    # write final results to json
-    write_json(results, eval_results_path)
+    await arun_eval(
+        gt_dataset,
+        hyperparams_list,
+        document_store,
+        eval_results_path,
+        hp_runs_data_path,
+    )
 
 
 if __name__ == "__main__":

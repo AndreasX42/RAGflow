@@ -1,14 +1,10 @@
 import logging
 import asyncio
+from tqdm.asyncio import tqdm as tqdm_asyncio
 
-import numpy as np
 from datetime import datetime
 
-from backend.utils import (
-    get_retriever,
-    get_qa_llm,
-    aget_retrieved_documents,
-)
+from backend.utils import get_retriever, get_qa_llm, write_json
 
 from backend.evaluation.evaluation_metrics import (
     grade_embedding_similarity,
@@ -18,13 +14,16 @@ from backend.evaluation.evaluation_metrics import (
 )
 
 from backend.utils.doc_processing import aload_and_chunk_docs
-from backend.commons.configurations import Hyperparameters, BaseConfigurations
+from backend.evaluation.utils import process_retrieved_docs, write_generated_data_to_csv
+from backend.commons.configurations import Hyperparameters
 
 logger = logging.getLogger(__name__)
 
 
 async def run_eval(
-    gt_dataset: list[dict[str, str]], hp: Hyperparameters, docs_path: str
+    gt_dataset: list[dict[str, str]],
+    hp: Hyperparameters,
+    docs_path: str,
 ) -> dict:
     """Entry point for initiating the evaluation based on the provided hyperparameters and documents.
 
@@ -37,13 +36,13 @@ async def run_eval(
         dict: _description_
     """
     scores = {
-        "embedding_cosine_sim": 0.0,
-        "correct_ans": 0.0,
-        "comprehensive_ans": 0.0,
-        "readable_ans": 0.0,
-        "retriever_score": 0.0,
-        "rouge1": 0.0,
-        "rouge2": 0.0,
+        "embedding_cosine_sim": -1,
+        "correct_ans": -1,
+        "comprehensive_ans": -1,
+        "readable_ans": -1,
+        "retriever_score": -1,
+        "rouge1": -1,
+        "rouge2": -1,
     }
 
     # create chunks of all provided documents
@@ -62,23 +61,29 @@ async def run_eval(
     # llm for answering queries
     qa_llm = get_qa_llm(retriever=retriever, retrieval_llm=hp.retrieval_llm)
 
-    # dict[question, generated answer]
+    # list(dict[question, result, source_documents])
     predicted_answers = await asyncio.gather(
         *[qa_llm.acall(qa_pair) for qa_pair in gt_dataset]
     )
 
+    # list of retrieved docs for each qa_pair
+    process_retrieved_docs(predicted_answers, hp.id)
+
+    # Calculate embedding similarities
     sim_s = grade_embedding_similarity(
         gt_dataset, predicted_answers, hp.embedding_model
     )
 
     scores["embedding_cosine_sim"] = sim_s
 
+    # Calculate ROUGE scores
     rouge1_s, rouge2_s = grade_rouge(gt_dataset, predicted_answers)
     scores["rouge1"] = rouge1_s
     scores["rouge2"] = rouge2_s
 
     # if we want a llm to grade the predicted answers as well
     if hp.use_llm_grader:
+        # grade predicted answers
         correctness_s, comprehensiveness_s, readability_s = grade_model_answer(
             gt_dataset,
             predicted_answers,
@@ -89,14 +94,10 @@ async def run_eval(
         scores["comprehensive_ans"] = comprehensiveness_s
         scores["readable_ans"] = readability_s
 
-        # dict[question, concatenated string of chunks retrieved]
-        retrieved_docs = await asyncio.gather(
-            *[aget_retrieved_documents(qa_pair, retriever) for qa_pair in gt_dataset]
-        )
-
+        # grade quality of retrieved documents used to answer the questions
         retriever_s = grade_model_retrieval(
             gt_dataset,
-            retrieved_docs,
+            predicted_answers,
             hp.grader_llm,
             hp.grade_docs_prompt,
         )
@@ -108,4 +109,25 @@ async def run_eval(
     result_dict = hp.to_dict()
     result_dict |= {"scores": scores}
 
-    return result_dict
+    return result_dict, predicted_answers
+
+
+async def arun_eval(
+    gt_dataset: list[dict],
+    hyperparams_list: list[Hyperparameters],
+    document_store: list[str],
+    eval_results_path: str,
+    hp_runs_data_path: str,
+) -> None:
+    tasks = [run_eval(gt_dataset, hp, document_store) for hp in hyperparams_list]
+
+    # run evaluations for all hyperparams
+    results = await tqdm_asyncio.gather(*tasks, total=len(tasks))
+
+    eval_scores, predicted_answers = list(zip(*results))
+
+    # write eval metrics to json
+    write_json(eval_scores, eval_results_path)
+
+    # write predicted answers and retrieved docs to csv
+    write_generated_data_to_csv(predicted_answers, hp_runs_data_path)

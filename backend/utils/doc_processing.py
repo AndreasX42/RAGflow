@@ -13,7 +13,7 @@ from langchain.document_loaders import (
     # PyMuPDFLoader,  # returns 1 Document per page
 )
 
-from backend.commons.configurations import Hyperparameters, BaseConfigurations
+from backend.commons.configurations import BaseConfigurations
 
 import logging
 
@@ -77,6 +77,8 @@ def load_and_chunk_doc(
     hp: BaseConfigurations,
     file: str,
 ) -> list[Document]:
+    """Wrapper function for loading and splitting document in one call."""
+
     logger.debug(f"Loading and splitting file {file}.")
 
     data = load_document(file)
@@ -84,9 +86,11 @@ def load_and_chunk_doc(
     return chunks
 
 
+# TODO: Check for better async implementation!
 async def aload_and_chunk_docs(
     hp: BaseConfigurations, files: list[str]
 ) -> list[Document]:
+    """Async implementation of load_and_chunk_doc function."""
     loop = asyncio.get_event_loop()
 
     futures = [

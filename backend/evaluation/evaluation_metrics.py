@@ -112,7 +112,7 @@ def grade_model_retrieval(
         retrieved_docs,
         question_key="question",
         answer_key="answer",
-        prediction_key="result",
+        prediction_key="retrieved_docs",
     )
 
     # vectorize the function for efficiency

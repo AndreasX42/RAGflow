@@ -1,15 +1,11 @@
-import glob
 import dotenv
 import logging
-import asyncio
 import json
-import os
+import asyncio
 
 from backend.commons.configurations import Hyperparameters, QAConfigurations
-from backend.evaluation import arun_eval
-from backend.testsetgen import agenerate_and_save_dataset
-from backend.commons.chroma import ChromaClient
-from backend.utils import read_json
+from backend.evaluation import arun_evaluation
+from backend.testsetgen import aget_or_generate_eval_set
 
 logging.basicConfig(
     level=20,
@@ -22,8 +18,9 @@ dotenv.load_dotenv(dotenv.find_dotenv(), override=True)
 
 
 async def main(
-    document_store_path: str = "./resources/document_store/",
+    document_store_path: str = "./tmp/document_store/",
     eval_dataset_path: str = "./tmp/eval_data.json",
+    qa_gen_params_path: str = "./tmp/qa_gen_params.json",
     eval_params_path: str = "./tmp/eval_params.json",
     eval_results_path: str = "./tmp/eval_results.json",
     hp_runs_data_path: str = "./tmp/hp_runs_data.csv",
@@ -64,17 +61,11 @@ async def main(
         eval_gt_path (str, optional): _description_. Defaults to "./resources/eval_data.json".
     """
 
-    with ChromaClient() as client:
-        collections = client.list_collections()
-
-    document_store = glob.glob(f"{document_store_path}/*.pdf")
-
-    with open(eval_params_path, "r", encoding="utf-8") as file:
-        hyperparams_list = json.load(file)
+    with open(qa_gen_params_path, "r", encoding="utf-8") as file:
+        qa_gen_params = json.load(file)
 
     # set up Hyperparameters objects at the beginning to evaluate inputs
-    qa_gen_params = QAConfigurations.from_dict(hyperparams_list[0])
-    hyperparams_list = [Hyperparameters.from_dict(d) for d in hyperparams_list[1:]]
+    qa_gen_params = QAConfigurations.from_dict(qa_gen_params[-1])
 
     ################################################################
     # First phase: Loading or generating evaluation dataset
@@ -83,31 +74,9 @@ async def main(
     logger.info("Checking for evaluation dataset configs.")
 
     # generate evaluation dataset
-    if qa_gen_params.generate_eval_set or not collections:
-        if os.path.exists(eval_dataset_path):
-            logger.info(
-                "Existing evaluation dataset deleted due to 'generate_eval_set'=True."
-            )
-            os.remove(eval_dataset_path)
-
-        # save list of embedding models for later caching of embeddings
-        if qa_gen_params.persist_to_vs:
-            emb_models_list = [hp.embedding_model for hp in hyperparams_list]
-            kwargs = {"embedding_models": emb_models_list}
-
-        # reset chromadb before
-        with ChromaClient() as client:
-            client.reset()
-
-        gt_dataset = await agenerate_and_save_dataset(
-            qa_gen_params, document_store, eval_dataset_path, kwargs
-        )
-
-    else:
-        logger.info("Evaluation dataset found and loaded.")
-
-        # load qa pairs from chromadb
-        gt_dataset = read_json(eval_dataset_path)
+    await aget_or_generate_eval_set(
+        qa_gen_params, eval_dataset_path, document_store_path
+    )
 
     ################################################################
     # Second phase: Running evaluations
@@ -115,10 +84,10 @@ async def main(
 
     logger.info("Starting evaluation for all provided hyperparameters.")
 
-    await arun_eval(
-        gt_dataset,
-        hyperparams_list,
-        document_store,
+    await arun_evaluation(
+        document_store_path,
+        eval_params_path,
+        eval_dataset_path,
         eval_results_path,
         hp_runs_data_path,
     )

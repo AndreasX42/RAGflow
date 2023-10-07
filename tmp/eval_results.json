@@ -13,14 +13,14 @@
         "grader_llm": "gpt-3.5-turbo",
         "embedding_model": "text-embedding-ada-002",
         "scores": {
-            "embedding_cosine_sim": 0.9406219643198592,
+            "embedding_cosine_sim": 0.9420857761081473,
             "correct_ans": -1,
             "comprehensive_ans": -1,
             "readable_ans": -1,
             "retriever_score": -1,
-            "rouge1": 0.5541830799559968,
-            "rouge2": 0.4212586963108897,
-            "timestamp": "2023-10-07 12:50:56,202"
+            "rouge1": 0.5611583780788638,
+            "rouge2": 0.4268251132874909,
+            "timestamp": "2023-10-07 22:54:39,263"
         }
     },
     {
@@ -37,14 +37,14 @@
         "grader_llm": "gpt-4",
         "embedding_model": "text-embedding-ada-002",
         "scores": {
-            "embedding_cosine_sim": 0.9368512587883424,
+            "embedding_cosine_sim": 0.9364344926045933,
             "correct_ans": -1,
             "comprehensive_ans": -1,
             "readable_ans": -1,
             "retriever_score": -1,
-            "rouge1": 0.5449054438882581,
-            "rouge2": 0.4125096485253706,
-            "timestamp": "2023-10-07 12:50:59,030"
+            "rouge1": 0.5501583076039831,
+            "rouge2": 0.42766777257805577,
+            "timestamp": "2023-10-07 22:54:35,783"
         }
     }
 ]

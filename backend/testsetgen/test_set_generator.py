@@ -1,6 +1,8 @@
 from json import JSONDecodeError
 import itertools
 import asyncio
+import glob
+import os
 from datetime import datetime
 from tqdm.asyncio import tqdm as tqdm_asyncio
 
@@ -9,12 +11,11 @@ from langchain.docstore.document import Document
 from langchain.schema.embeddings import Embeddings
 
 from backend.commons.prompts import QA_GENERATION_PROMPT_SELECTOR
-from backend.utils import aload_and_chunk_docs, write_json
+from backend.utils import aload_and_chunk_docs, write_json, read_json
 from backend.commons.configurations import QAConfigurations
 from backend.commons.chroma import ChromaClient
 
 import uuid
-from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,6 @@ async def get_qa_from_chunk(
 async def agenerate_eval_set_from_doc(
     hp: QAConfigurations,
     doc_path: str,
-    kwargs: Optional[dict] = None,
 ) -> list[dict[str, str]]:
     """Generate a pairs of QAs that are used as ground truth in downstream tasks, i.e. RAG evaluations
 
@@ -71,10 +71,9 @@ async def agenerate_eval_set_from_doc(
     return qa_pairs
 
 
-async def agenerate_eval_set(
+async def agenerate_eval_set_from_docs(
     hp: QAConfigurations,
     docs_path: list[str],
-    kwargs: Optional[dict] = None,
 ) -> list[dict]:
     """Asynchronous wrapper around the agenerate_eval_set function.
 
@@ -85,9 +84,7 @@ async def agenerate_eval_set(
     Returns:
         list[dict]: _description_
     """
-    tasks = [
-        agenerate_eval_set_from_doc(hp, doc_path, kwargs) for doc_path in docs_path
-    ]
+    tasks = [agenerate_eval_set_from_doc(hp, doc_path) for doc_path in docs_path]
 
     results = await tqdm_asyncio.gather(*tasks)
 
@@ -96,7 +93,7 @@ async def agenerate_eval_set(
     return qa_pairs
 
 
-async def apersist_eval_set_to_vs(
+async def aupsert_embeddings_for_model(
     qa_pairs: list[dict], embedding_model: Embeddings
 ) -> None:
     with ChromaClient() as CHROMA_CLIENT:
@@ -142,31 +139,57 @@ async def agenerate_and_save_dataset(
     hp: QAConfigurations,
     docs_path: str,
     eval_dataset_path: str,
-    kwargs: Optional[dict] = None,
 ):
     """Generate a new evaluation dataset and save it to a JSON file."""
 
     logger.info("Starting QA generation suite.")
 
     # tarnsform list of list of dicts into list of dicts
-    gt_dataset = await agenerate_eval_set(hp, docs_path, kwargs)
+    gt_dataset = await agenerate_eval_set_from_docs(hp, docs_path)
 
     # write eval dataset to json
     write_json(gt_dataset, eval_dataset_path)
 
     # cache answers of qa pairs in vectorstore for each embedding model in hyperparams list
-    unique_model_list = list(
-        {
-            emb_model.model: emb_model for emb_model in kwargs["embedding_models"]
-        }.values()
-    )
-
     if hp.persist_to_vs:
         tasks = [
-            apersist_eval_set_to_vs(gt_dataset, embedding_model)
-            for embedding_model in unique_model_list
+            aupsert_embeddings_for_model(gt_dataset, embedding_model)
+            for embedding_model in hp.embedding_model_list
         ]
 
         await asyncio.gather(*tasks)
 
     return gt_dataset
+
+
+async def aget_or_generate_eval_set(
+    qa_gen_params: QAConfigurations, eval_dataset_path: str, document_store_path: str
+):
+    """Entry function to generate the evaluation dataset.
+
+    Args:
+        qa_gen_params (dict): _description_
+        eval_dataset_path (str): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    logger.info("Checking for evaluation dataset configs.")
+
+    document_store = glob.glob(f"{document_store_path}/*.pdf")
+
+    # generate evaluation dataset
+    if qa_gen_params.generate_eval_set or not os.path.exists(eval_dataset_path):
+        if os.path.exists(eval_dataset_path):
+            logger.info(
+                "Existing evaluation dataset deleted due to 'generate_eval_set'=True."
+            )
+            os.remove(eval_dataset_path)
+
+        # reset chromadb before
+        with ChromaClient() as client:
+            client.reset()
+
+        gt_dataset = await agenerate_and_save_dataset(
+            qa_gen_params, document_store, eval_dataset_path
+        )

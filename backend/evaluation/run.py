@@ -1,10 +1,11 @@
 import logging
 import asyncio
 from tqdm.asyncio import tqdm as tqdm_asyncio
+import glob
 
 from datetime import datetime
 
-from backend.utils import get_retriever, get_qa_llm, write_json
+from backend.utils import get_retriever, get_qa_llm, write_json, read_json
 
 from backend.evaluation.evaluation_metrics import (
     grade_embedding_similarity,
@@ -20,10 +21,10 @@ from backend.commons.configurations import Hyperparameters
 logger = logging.getLogger(__name__)
 
 
-async def run_eval(
+async def arun_eval_for_hp(
     gt_dataset: list[dict[str, str]],
     hp: Hyperparameters,
-    docs_path: str,
+    document_store: list[str],
 ) -> dict:
     """Entry point for initiating the evaluation based on the provided hyperparameters and documents.
 
@@ -46,7 +47,7 @@ async def run_eval(
     }
 
     # create chunks of all provided documents
-    chunks = await aload_and_chunk_docs(hp, docs_path)
+    chunks = await aload_and_chunk_docs(hp, document_store)
 
     retriever = get_retriever(
         splits=chunks,
@@ -112,14 +113,22 @@ async def run_eval(
     return result_dict, predicted_answers
 
 
-async def arun_eval(
-    gt_dataset: list[dict],
-    hyperparams_list: list[Hyperparameters],
-    document_store: list[str],
+async def arun_evaluation(
+    document_store_path: str,
+    eval_params_path: str,
+    eval_dataset_path: str,
     eval_results_path: str,
     hp_runs_data_path: str,
 ) -> None:
-    tasks = [run_eval(gt_dataset, hp, document_store) for hp in hyperparams_list]
+    # load evaluation dataset
+    gt_dataset = read_json(eval_dataset_path)
+
+    document_store = glob.glob(f"{document_store_path}/*.pdf")
+
+    hyperparams_list = read_json(eval_params_path)
+    hp_list = [Hyperparameters.from_dict(d) for d in hyperparams_list]
+
+    tasks = [arun_eval_for_hp(gt_dataset, hp, document_store) for hp in hp_list]
 
     # run evaluations for all hyperparams
     results = await tqdm_asyncio.gather(*tasks, total=len(tasks))

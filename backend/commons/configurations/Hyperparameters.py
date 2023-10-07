@@ -63,4 +63,9 @@ class Hyperparameters(BaseConfigurations):
         _input["qa_llm"] = cls.get_language_model(_input["qa_llm"])
         _input["grader_llm"] = cls.get_language_model(_input["grader_llm"])
 
+        # add values that may not be set if use_llm_grader=False
+        _input.setdefault("grade_answer_prompt", "none")
+        _input.setdefault("grade_docs_prompt", "none")
+        _input.setdefault("grader_llm", "gpt-3.5-turbo")
+
         return cls(**_input)

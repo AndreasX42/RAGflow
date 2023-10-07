@@ -62,7 +62,7 @@ def process_retrieved_docs(qa_results: list[dict], hp_id: int) -> None:
     # Each qa_result is a dict containing in "source_documents" the list of retrieved documents used to answer the query
     for qa_result in qa_results:
         retrieved_docs_str = "\n\n---------------------------\n".join(
-            f"///Retrieved document {i}: {doc.page_content}\n///Metadata: {doc.metadata}"
+            f"///Retrieved document {i}: {clean_page_content(doc.page_content)}\n---Metadata: {doc.metadata}"
             for i, doc in enumerate(qa_result["source_documents"])
         )
 
@@ -82,6 +82,11 @@ def convert_element_to_df(element: dict):
     df["hp_id"] = df["hp_id"].astype(int)
 
     return df
+
+
+def clean_page_content(page_content: str):
+    """Helper function to remove paragraph breaks."""
+    return re.sub("\n+", "\n", page_content)
 
 
 def write_generated_data_to_csv(

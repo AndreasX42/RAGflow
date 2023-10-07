@@ -59,7 +59,7 @@ async def run_eval(
     del chunks
 
     # llm for answering queries
-    qa_llm = get_qa_llm(retriever=retriever, retrieval_llm=hp.retrieval_llm)
+    qa_llm = get_qa_llm(retriever, hp.qa_llm)
 
     # list(dict[question, result, source_documents])
     predicted_answers = await asyncio.gather(

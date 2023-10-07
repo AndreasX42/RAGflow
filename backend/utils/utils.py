@@ -53,7 +53,7 @@ def get_retriever(
 
 def get_qa_llm(
     retriever: BaseRetriever,
-    retrieval_llm: BaseLanguageModel,
+    qa_llm: BaseLanguageModel,
 ) -> RetrievalQA:
     """Sets up a LangChain RetrievalQA model based on a retriever and language model that answers
     queries based on retrieved document chunks.
@@ -61,7 +61,7 @@ def get_qa_llm(
 
     Args:
         retriever (BaseRetriever): the retriever
-        retrieval_llm (Optional[BaseLanguageModel], optional): language model.
+        qa_llm (Optional[BaseLanguageModel], optional): language model.
 
     Returns:
         RetrievalQA: RetrievalQA object
@@ -71,7 +71,7 @@ def get_qa_llm(
     chain_type_kwargs = {"prompt": QA_ANSWER_PROMPT}
 
     qa_llm = RetrievalQA.from_chain_type(
-        llm=retrieval_llm,
+        llm=qa_llm,
         chain_type="stuff",
         retriever=retriever,
         chain_type_kwargs=chain_type_kwargs,

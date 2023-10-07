@@ -26,11 +26,11 @@ class Hyperparameters(BaseConfigurations):
     grade_docs_prompt: CVGradeDocumentsPrompt
     search_type: CVRetrieverSearchType
     use_llm_grader: bool
-    retrieval_llm: BaseLanguageModel
+    qa_llm: BaseLanguageModel
     grader_llm: BaseLanguageModel
     embedding_model: Embeddings
 
-    @validator("retrieval_llm", "grader_llm", pre=True, always=True)
+    @validator("qa_llm", "grader_llm", pre=True, always=True)
     def check_language_model_name(cls, v, field, values):
         valid_model_names = LLM_MODELS
         if v.model_name not in valid_model_names:
@@ -49,7 +49,7 @@ class Hyperparameters(BaseConfigurations):
         _data.pop("length_function", None)
 
         # Modify the dictionary for fields that need special handling
-        _data["retrieval_llm"] = _data["retrieval_llm"]["model_name"]
+        _data["qa_llm"] = _data["qa_llm"]["model_name"]
         _data["grader_llm"] = _data["grader_llm"]["model_name"]
         _data["embedding_model"] = _data["embedding_model"]["model"]
 
@@ -60,7 +60,7 @@ class Hyperparameters(BaseConfigurations):
         _input = dict(**input_dict)
 
         _input["embedding_model"] = cls.get_embedding_model(_input["embedding_model"])
-        _input["retrieval_llm"] = cls.get_language_model(_input["retrieval_llm"])
+        _input["qa_llm"] = cls.get_language_model(_input["qa_llm"])
         _input["grader_llm"] = cls.get_language_model(_input["grader_llm"])
 
         return cls(**_input)

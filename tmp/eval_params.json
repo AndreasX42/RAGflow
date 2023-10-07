@@ -18,7 +18,7 @@
         "grade_answer_prompt": "few_shot",
         "grade_docs_prompt": "default",
         "embedding_model": "text-embedding-ada-002",
-        "retrieval_llm": "gpt-3.5-turbo",
+        "qa_llm": "gpt-3.5-turbo",
         "grader_llm": "gpt-3.5-turbo"
     },
     {
@@ -32,7 +32,7 @@
         "grade_answer_prompt": "zero_shot",
         "grade_docs_prompt": "default",
         "embedding_model": "text-embedding-ada-002",
-        "retrieval_llm": "gpt-3.5-turbo",
+        "qa_llm": "gpt-3.5-turbo",
         "grader_llm": "gpt-4"
     }
 ]

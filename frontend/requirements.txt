@@ -1,0 +1,9 @@
+streamlit
+streamlit_option_menu
+
+plotly
+pandas
+numerize
+matplotlib
+
+openpyxl

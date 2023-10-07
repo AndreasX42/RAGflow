@@ -9,7 +9,7 @@
         "grade_docs_prompt": "default",
         "search_type": "mmr",
         "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
+        "qa_llm": "gpt-3.5-turbo",
         "grader_llm": "gpt-3.5-turbo",
         "embedding_model": "text-embedding-ada-002",
         "scores": {
@@ -33,7 +33,7 @@
         "grade_docs_prompt": "default",
         "search_type": "mmr",
         "use_llm_grader": false,
-        "retrieval_llm": "gpt-3.5-turbo",
+        "qa_llm": "gpt-3.5-turbo",
         "grader_llm": "gpt-4",
         "embedding_model": "text-embedding-ada-002",
         "scores": {

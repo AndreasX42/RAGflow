@@ -152,8 +152,7 @@ async def agenerate_and_save_dataset(
     gt_dataset = await agenerate_eval_set(hp, docs_path, kwargs)
 
     # write eval dataset to json
-    if kwargs["debug_enabled"]:
-        write_json(gt_dataset, eval_dataset_path)
+    write_json(gt_dataset, eval_dataset_path)
 
     # cache answers of qa pairs in vectorstore for each embedding model in hyperparams list
     unique_model_list = list(

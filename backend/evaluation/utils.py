@@ -61,8 +61,8 @@ def process_retrieved_docs(qa_results: list[dict], hp_id: int) -> None:
 
     # Each qa_result is a dict containing in "source_documents" the list of retrieved documents used to answer the query
     for qa_result in qa_results:
-        retrieved_docs_str = "\n\n*************************\n\n".join(
-            f"Retrieved document {i}: {doc.page_content}"
+        retrieved_docs_str = "\n\n---------------------------\n".join(
+            f"///Retrieved document {i}: {doc.page_content}\n///Metadata: {doc.metadata}"
             for i, doc in enumerate(qa_result["source_documents"])
         )
 
@@ -77,7 +77,7 @@ def convert_element_to_df(element: dict):
     """Function to convert each tuple element of result to dataframe."""
     df = pd.DataFrame(element)
     df = pd.concat([df, pd.json_normalize(df["metadata"])], axis=1)
-    df = df.drop(columns=["metadata", "question", "answer"])
+    df = df.drop(columns=["metadata", "question", "answer", "source"])
     df = df.rename(columns={"result": "predicted_answer", "id": "qa_id"})
     df["hp_id"] = df["hp_id"].astype(int)
 
@@ -103,7 +103,7 @@ def write_generated_data_to_csv(
     result = pd.concat(
         [
             base_df,
-            df[["hp_id", "predicted_answer", "retrieved_docs", "qa_id", "source"]],
+            df[["hp_id", "predicted_answer", "retrieved_docs", "qa_id"]],
         ],
         axis=0,
     )

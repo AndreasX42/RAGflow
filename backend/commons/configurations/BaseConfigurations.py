@@ -8,26 +8,75 @@ import tiktoken
 import builtins
 import logging
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from pydantic.v1 import BaseModel, Field, Extra, validator
+from typing import Any
+
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-
-LLAMA_2_MODELS = (
+####################
+# LLM Models
+####################
+LLAMA_2_MODELS = [
     "Llama-2-7b-chat-hf",
     "Llama-2-13b-chat-hf",
     "Llama-2-70b-chat-hf",
-)
+]
 
-OPENAI_LLM_MODELS = ("gpt-3.5-turbo", "gpt-4")
-OPENAI_EMB_MODELS = "text-embedding-ada-002"
+OPENAI_LLM_MODELS = ["gpt-3.5-turbo", "gpt-4"]
 
+LLM_MODELS = [*OPENAI_LLM_MODELS, *LLAMA_2_MODELS]
+
+# Anyscale configs
 ANYSCALE_LLM_PREFIX = "meta-llama/"
 ANYSCALE_API_URL = "https://api.endpoints.anyscale.com/v1"
 
+####################
+# Embedding Models
+####################
+OPENAI_EMB_MODELS = ["text-embedding-ada-002"]
 
-class BaseConfigurations(ABC):
+EMB_MODELS = [*OPENAI_EMB_MODELS]
+
+
+####################
+# Enumerations
+####################
+class CVGradeAnswerPrompt(Enum):
+    FAST = "fast"
+    ZERO_SHOT = "zero_shot"
+    FEW_SHOT = "few_shot"
+    NONE = "none"
+
+
+class CVGradeDocumentsPrompt(Enum):
+    DEFAULT = "default"
+    NONE = "none"
+
+
+class CVRetrieverSearchType(Enum):
+    SIMILARITY = "similarity"
+    MMR = "mmr"
+
+
+class BaseConfigurations(BaseModel):
     """Base class for configuration objects."""
+
+    chunk_size: int = Field(ge=0)
+    chunk_overlap: int = Field(ge=0)
+    length_function_name: str
+    length_function: Any
+
+    class Config:
+        allow_mutation = False
+        arbitrary_types_allowed = True
+        extra = Extra.forbid
+
+    @validator("length_function", pre=False, always=True)
+    def populate_length_function(cls, v: callable, values: dict[str, str]):
+        return cls.set_length_function(values["length_function_name"])
 
     @staticmethod
     def get_language_model(model_name: str) -> BaseLanguageModel:
@@ -63,7 +112,9 @@ class BaseConfigurations(ABC):
                 return lambda x: len(encoding.encode(x))
             except Exception as ex:
                 logger.error(f"Length function '{length_function_name}' not supported")
-                raise ex
+                raise NotImplementedError(
+                    f"Error setting length function, neither python built-in nor valid tiktoken name passed. {ex.args}"
+                )
 
     @staticmethod
     def get_language_model_name(llm: BaseLanguageModel) -> str:

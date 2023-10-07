@@ -1,8 +1,9 @@
 [
     {
-        "id": 0,
         "chunk_size": 1024,
         "chunk_overlap": 10,
+        "length_function_name": "len",
+        "id": 0,
         "num_retrieved_docs": 3,
         "grade_answer_prompt": "few_shot",
         "grade_docs_prompt": "default",
@@ -11,22 +12,22 @@
         "retrieval_llm": "gpt-3.5-turbo",
         "grader_llm": "gpt-3.5-turbo",
         "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
         "scores": {
-            "embedding_cosine_sim": 0.9455738653521354,
+            "embedding_cosine_sim": 0.9406219643198592,
             "correct_ans": -1,
             "comprehensive_ans": -1,
             "readable_ans": -1,
             "retriever_score": -1,
-            "rouge1": 0.5873299661980698,
-            "rouge2": 0.46388486310058397,
-            "timestamp": "2023-10-06 21:52:30,906"
+            "rouge1": 0.5541830799559968,
+            "rouge2": 0.4212586963108897,
+            "timestamp": "2023-10-07 12:50:56,202"
         }
     },
     {
-        "id": 1,
         "chunk_size": 512,
         "chunk_overlap": 10,
+        "length_function_name": "len",
+        "id": 1,
         "num_retrieved_docs": 3,
         "grade_answer_prompt": "zero_shot",
         "grade_docs_prompt": "default",
@@ -35,16 +36,15 @@
         "retrieval_llm": "gpt-3.5-turbo",
         "grader_llm": "gpt-4",
         "embedding_model": "text-embedding-ada-002",
-        "length_function_name": "len",
         "scores": {
-            "embedding_cosine_sim": 0.9452080269830985,
+            "embedding_cosine_sim": 0.9368512587883424,
             "correct_ans": -1,
             "comprehensive_ans": -1,
             "readable_ans": -1,
             "retriever_score": -1,
-            "rouge1": 0.5789170472063808,
-            "rouge2": 0.45691438901156406,
-            "timestamp": "2023-10-06 21:52:35,678"
+            "rouge1": 0.5449054438882581,
+            "rouge2": 0.4125096485253706,
+            "timestamp": "2023-10-07 12:50:59,030"
         }
     }
 ]

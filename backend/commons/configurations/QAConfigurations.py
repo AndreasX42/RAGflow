@@ -1,32 +1,28 @@
 import logging
-from typing import Any
-from pydantic.v1 import BaseModel, Extra, validator
+from pydantic.v1 import validator
 
 from langchain.schema.language_model import BaseLanguageModel
-from backend.commons.configurations import BaseConfigurations
+from backend.commons.configurations.BaseConfigurations import (
+    BaseConfigurations,
+    LLM_MODELS,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class QAConfigurations(BaseModel, BaseConfigurations):
+class QAConfigurations(BaseConfigurations):
     """Class to model qa generation configs."""
 
-    chunk_size: int
-    chunk_overlap: int
     qa_generator_llm: BaseLanguageModel
     generate_eval_set: bool
     persist_to_vs: bool
-    length_function_name: str
-    length_function: Any
 
-    class Config:
-        allow_mutation = False
-        arbitrary_types_allowed = True
-        extra = Extra.forbid
-
-    @validator("length_function", pre=False, always=True)
-    def populate_length_function(cls, v: callable, values: dict[str, str]):
-        return cls.set_length_function(values["length_function_name"])
+    @validator("qa_generator_llm", pre=True, always=True)
+    def check_language_model_name(cls, v):
+        valid_model_names = LLM_MODELS
+        if v.model_name not in valid_model_names:
+            raise ValueError(f"{v} not in list of valid values {valid_model_names}.")
+        return v
 
     def to_dict(self):
         _data = self.dict()

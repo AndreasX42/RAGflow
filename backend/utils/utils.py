@@ -1,5 +1,6 @@
 import numpy as np
 import os
+from enum import Enum
 
 from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
@@ -12,6 +13,7 @@ from langchain.schema.retriever import BaseRetriever
 from langchain.vectorstores import Chroma
 
 from backend.commons.prompts import QA_ANSWER_PROMPT
+from backend.commons.configurations import CVRetrieverSearchType
 
 from typing import Any
 
@@ -25,7 +27,7 @@ def get_retriever(
     splits: list[Document],
     embedding_model: Embeddings,
     num_retrieved_docs: int,
-    search_type: str = "mmr",
+    search_type: CVRetrieverSearchType,
 ) -> BaseRetriever:
     """Sets up a vector database based on the document chunks and the embedding model provided.
         Here we use Chroma for the vectorstore.
@@ -43,7 +45,7 @@ def get_retriever(
 
     vectorstore = Chroma.from_documents(splits, embedding_model)
     retriever = vectorstore.as_retriever(
-        search_type=search_type, search_kwargs={"k": num_retrieved_docs}
+        search_type=search_type.value, search_kwargs={"k": num_retrieved_docs}
     )
 
     return retriever
@@ -124,7 +126,9 @@ def convert_to_serializable(obj: object) -> str:
     Returns:
         str: _description_
     """
-    if isinstance(obj, np.ndarray):
+    if isinstance(obj, Enum):
+        return obj.value
+    elif isinstance(obj, np.ndarray):
         return obj.tolist()
     elif isinstance(obj, set):
         return list(obj)

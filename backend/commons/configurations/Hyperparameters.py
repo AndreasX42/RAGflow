@@ -1,41 +1,48 @@
 from langchain.schema.embeddings import Embeddings
 from langchain.schema.language_model import BaseLanguageModel
 
-from backend.commons.configurations import BaseConfigurations
+from backend.commons.configurations.BaseConfigurations import (
+    BaseConfigurations,
+    LLM_MODELS,
+    EMB_MODELS,
+    CVGradeAnswerPrompt,
+    CVGradeDocumentsPrompt,
+    CVRetrieverSearchType,
+)
 
 import logging
 
-from pydantic.v1 import BaseModel, Extra, validator
-from typing import Any
+from pydantic.v1 import Field, validator
 
 logger = logging.getLogger(__name__)
 
 
-class Hyperparameters(BaseModel, BaseConfigurations):
+class Hyperparameters(BaseConfigurations):
     """Class to model hyperparameters."""
 
-    id: int
-    chunk_size: int
-    chunk_overlap: int
-    num_retrieved_docs: int
-    grade_answer_prompt: str
-    grade_docs_prompt: str
-    search_type: str
+    id: int = Field(ge=0)
+    num_retrieved_docs: int = Field(ge=0)
+    grade_answer_prompt: CVGradeAnswerPrompt
+    grade_docs_prompt: CVGradeDocumentsPrompt
+    search_type: CVRetrieverSearchType
     use_llm_grader: bool
     retrieval_llm: BaseLanguageModel
     grader_llm: BaseLanguageModel
     embedding_model: Embeddings
-    length_function_name: str
-    length_function: Any
 
-    class Config:
-        allow_mutation = False
-        arbitrary_types_allowed = True
-        extra = Extra.forbid
+    @validator("retrieval_llm", "grader_llm", pre=True, always=True)
+    def check_language_model_name(cls, v, field, values):
+        valid_model_names = LLM_MODELS
+        if v.model_name not in valid_model_names:
+            raise ValueError(f"{v} not in list of valid values {valid_model_names}.")
+        return v
 
-    @validator("length_function", pre=False, always=True)
-    def populate_length_function(cls, v: callable, values: dict[str, str]):
-        return cls.set_length_function(values["length_function_name"])
+    @validator("embedding_model", pre=True, always=True)
+    def check_embedding_model_name(cls, v):
+        valid_model_names = EMB_MODELS
+        if v.model not in valid_model_names:
+            raise ValueError(f"{v} not in list of valid values {valid_model_names}.")
+        return v
 
     def to_dict(self):
         _data = self.dict()

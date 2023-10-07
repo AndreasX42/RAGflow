@@ -10,7 +10,7 @@
 
 # vectorstore
 vectorstore/chromadb/
-**.sqlite3
+*.sqlite3
 
 *.ipynb
 

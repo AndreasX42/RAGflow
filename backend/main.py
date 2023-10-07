@@ -23,11 +23,10 @@ dotenv.load_dotenv(dotenv.find_dotenv(), override=True)
 
 async def main(
     document_store_path: str = "./resources/document_store/",
-    eval_dataset_path: str = "./resources/eval_data.json",
-    eval_params_path: str = "./resources/eval_params.json",
-    eval_results_path: str = "./resources/eval_results.json",
-    hp_runs_data_path: str = "./resources/hp_runs_data.csv",
-    debug_enabled: bool = True,
+    eval_dataset_path: str = "./tmp/eval_data.json",
+    eval_params_path: str = "./tmp/eval_params.json",
+    eval_results_path: str = "./tmp/eval_results.json",
+    hp_runs_data_path: str = "./tmp/hp_runs_data.csv",
 ):
     """After generating gt_dataset we need to calculate the metrics based on Chunking strategy, type of vectorstore, retriever (similarity search), QA LLM
 
@@ -95,8 +94,6 @@ async def main(
         if qa_gen_params.persist_to_vs:
             emb_models_list = [hp.embedding_model for hp in hyperparams_list]
             kwargs = {"embedding_models": emb_models_list}
-
-        kwargs["debug_enabled"] = debug_enabled
 
         # reset chromadb before
         with ChromaClient() as client:

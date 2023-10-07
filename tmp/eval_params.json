@@ -4,7 +4,7 @@
         "chunk_overlap": 0,
         "qa_generator_llm": "gpt-3.5-turbo",
         "length_function_name": "text-embedding-ada-002",
-        "generate_eval_set": false,
+        "generate_eval_set": true,
         "persist_to_vs": true
     },
     {

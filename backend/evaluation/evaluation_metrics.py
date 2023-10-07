@@ -4,6 +4,7 @@ from langchain.evaluation.qa import QAEvalChain
 from langchain.schema.embeddings import Embeddings
 from langchain.schema.language_model import BaseLanguageModel
 
+
 import evaluate
 
 from backend.commons.prompts import (
@@ -21,6 +22,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 from backend.commons.chroma import ChromaClient
+from backend.commons.configurations import (
+    CVGradeAnswerPrompt,
+    CVGradeDocumentsPrompt,
+)
 
 
 def grade_embedding_similarity(
@@ -84,7 +89,7 @@ def grade_model_retrieval(
     gt_dataset: list[dict],
     retrieved_docs: list[str],
     grader_llm: BaseLanguageModel,
-    grade_docs_prompt: Optional[str] = "default",
+    grade_docs_prompt: CVGradeDocumentsPrompt,
 ) -> float:
     """Using LangChains QAEvalChain we use a LLM as grader to get a metric how well the found document chunks from the vectorstore provide the answer for the label QA pairs.
 
@@ -99,7 +104,7 @@ def grade_model_retrieval(
     """
     logger.debug("Grading retrieved document chunks.")
 
-    if grade_docs_prompt == "default":
+    if grade_docs_prompt == CVGradeDocumentsPrompt.DEFAULT:
         prompt = GRADE_RETRIEVER_PROMPT
     else:
         prompt = None
@@ -128,7 +133,7 @@ def grade_model_answer(
     gt_dataset: list[dict[str, str]],
     predictions: list[str],
     grader_llm: BaseLanguageModel,
-    grade_answer_prompt: Optional[str] = "few_shot",
+    grade_answer_prompt: CVGradeAnswerPrompt,
 ) -> tuple[float, float, float]:
     """Calculates scores how well the generated answer fits the label answers.
 
@@ -144,17 +149,18 @@ def grade_model_answer(
     logger.debug("Grading generated answers.")
 
     MAX_GRADE = 0
-    if grade_answer_prompt == "fast":
+    if grade_answer_prompt == CVGradeAnswerPrompt.FAST:
         prompt = GRADE_ANSWER_PROMPT_FAST
         MAX_GRADE = 5
-    elif grade_answer_prompt == "zero_shot":
+    elif grade_answer_prompt == CVGradeAnswerPrompt.ZERO_SHOT:
         prompt = GRADE_ANSWER_PROMPT_5_CATEGORIES_5_GRADES_ZERO_SHOT
         MAX_GRADE = 5
-    elif grade_answer_prompt == "few_shot":
+    elif grade_answer_prompt == CVGradeAnswerPrompt.FEW_SHOT:
         prompt = GRADE_ANSWER_PROMPT_3_CATEGORIES_4_GRADES_FEW_SHOT
         MAX_GRADE = 3
     else:
         prompt = None
+        MAX_GRADE = 1
 
     # Note: GPT-4 grader is advised by OAI model_name="gpt-4"
     eval_chain = QAEvalChain.from_llm(llm=grader_llm, prompt=prompt, verbose=False)

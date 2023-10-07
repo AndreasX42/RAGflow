@@ -1,10 +1,10 @@
 [
     {
-        "question": "What were the activities of the Supervisory Board in the 2021 financial year?",
-        "answer": "The Supervisory Board met five times in the 2021 financial year, with four meetings held as teleconferences due to the Covid-19 pandemic. All members of the Supervisory Board were present at every meeting. The board discussed the current indicators of the earnings, financial and assets position of the msg life Group, as well as other important projects and the general development of the market climates. The Supervisory Board received detailed reports from the Management Board in preparation for each meeting and was promptly and comprehensively informed of any events of particular note during periods between meetings.",
+        "question": "What activities did the Supervisory Board perform in the 2021 financial year?",
+        "answer": "The Supervisory Board diligently performed its duties in the 2021 financial year by monitoring the activities of the Management Board, comparing actual business performance against targets, and scrutinizing the operational and strategic performance of the company. They also discussed the current indicators of earnings, financial and assets position of the msg life Group, as well as important projects and the general development of the market climates.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "7610ff41-1e9d-4bca-8ac5-557dcf3ca98c"
+            "id": "d5f1a221-03ab-42fe-ad9e-f369802d5382"
         }
     },
     {
@@ -12,7 +12,7 @@
         "answer": "The Supervisory Board received detailed reports from the Management Board in preparation for each meeting. These reports included information on the current business situation of the company and its individual segments, major sales projects, risk management, compliance, auditing, data protection, and relationships with affiliated companies. The Management Board also provided monthly details of key performance indicators, explaining any deviations from plans. Additionally, the Chairman of the Supervisory Board was in constant contact with the Management Board, inquiring about current business developments and important transactions.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "e2a435ce-2332-4077-82fb-9489cd9b7979"
+            "id": "2a49487f-87d9-43cf-8d95-a8d038e036ac"
         }
     },
     {
@@ -20,7 +20,7 @@
         "answer": "At the meeting held after the annual general meeting on 24 June 2021, Johann Zehetmaier was appointed as Chairman and Dr Martin Strobel was appointed as Deputy Chairman of the Supervisory Board.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "fa3300d1-88dd-4057-a1fb-57d1d445a3de"
+            "id": "8d81c1c7-1e84-4ee9-a244-3561cdfe6071"
         }
     },
     {
@@ -28,15 +28,15 @@
         "answer": "The annual general meeting held on 24 June 2021 appointed Baker Tilly GmbH & Co. KG Wirtschaftspr\u00fcfungsgesellschaft in D\u00fcsseldorf as auditor of the annual financial statements and consolidated financial statements for the 2021 financial year.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "563e90a7-d20d-4b39-adde-d3445e32cdfe"
+            "id": "49398a0d-a827-4736-8586-554b268a0452"
         }
     },
     {
         "question": "What is the significance of the control agreement signed by msg life ag and msg systems ag?",
-        "answer": "The control agreement signed by msg life ag and msg systems ag is significant because it was approved by the annual general meetings of both companies. This agreement establishes control over msg life ag by msg systems ag, indicating a level of influence and decision-making power that msg systems ag has over msg life ag.",
+        "answer": "The control agreement signed by msg life ag and msg systems ag is significant because it was approved by the annual general meetings of both companies. This agreement establishes control over msg life ag by msg systems ag, indicating a level of influence and decision-making power in the operations and management of msg life ag.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "96251a76-5044-4b42-afb5-52fa1ecf8248"
+            "id": "79848d8f-07e9-4c56-9129-3285a3cee76c"
         }
     },
     {
@@ -44,7 +44,7 @@
         "answer": "As of 31 December 2021, the members of the Management Board of msg life ag were Rolf Zielke (Chairman), Dr Aristid Neuburger (Deputy Chairman), Francesco Cargnel, Holger Gorissen, Robert Hess, Milenko Radic, Jens St\u00e4cker, and Dr Wolf Wiedmann. However, it should be noted that after the end of the reporting period, Dr Aristid Neuburger and Jens St\u00e4cker stepped down as members of the Management Board of the company with effect from the end of business on 28 February 2022.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "651b0064-12d3-4318-88ac-4e9cfade6d22"
+            "id": "039ad5df-98a9-4b71-89c8-cb9e2502c7af"
         }
     },
     {
@@ -52,23 +52,23 @@
         "answer": "The company's core product is the policy management system msg.Life Factory, which is used to manage life insurance and pension products. They also offer other core insurance systems such as msg.Life and Unified Administration Platform (UAP). Additionally, they provide specialized functions through products like msg.ZVK Factory, msg.Zulagenverwaltung, msg.RAN, Unified Product Platform, msg.Office, msg.Tax Connect, msg.Tax Data, msg.Tax Data - Pflege-Bahr, msg.Sales, msg.Underwriting, msg.Ilis, msg.Pension, msg.Pension Data, msg.Marsy-Pension, and msg.Online Insure. They also offer consulting and services related to software implementation and policy migration.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "cfeaa7f7-b1ef-43e1-aeb2-2a2a60f406c9"
+            "id": "979d0d78-63d7-4220-aa30-0d346f28d2d4"
         }
     },
     {
-        "question": "What are the forecasts for global economic growth in 2022?",
-        "answer": "According to the IMF, the global economy is expected to grow by just 4.4 per cent in 2022, following growth of 5.9 per cent in 2021. The forecasts of the OECD are somewhat more optimistic, expecting growth of 5.2 per cent in 2021 and 4.3 per cent in 2022. However, there are risks such as new variants of Covid-19, insufficient rates of vaccination, economic stimulus packages running out, and looming corrections on the property markets.",
+        "question": "What is the forecast for global economic growth in 2022?",
+        "answer": "According to the Global Economic Prospect Report published by the World Bank in January 2022, economists expect the global growth rate to fall from 5.5 per cent in 2021 to 4.1 per cent this year. The International Monetary Fund (IMF) also downgraded its forecast to 4.4 per cent growth for the global economy in 2022. Both organizations predict a further increase in growth to 3.2 per cent in 2023.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "c0eed9e0-edcf-4e7c-99c9-924512cd6554"
+            "id": "c66921a5-fd0c-459d-aeb2-da8055e19c45"
         }
     },
     {
-        "question": "What is the expected inflation rate in industrialized nations and developing countries in 2022?",
-        "answer": "According to the IMF, industrialized nations are expected to have an average inflation rate of 3.9 per cent in 2022. Developing countries and emerging economies, on the other hand, are expected to have an average inflation rate of 5.9 per cent.",
+        "question": "What sectors of the German economy showed improvement in 2021?",
+        "answer": "The manufacturing sector showed an improvement of 4.4% year-on-year, while the aggregated economic sector of trade, transport, accommodation, and food services saw growth of 3.0%. The construction sector reported a slight decline of 0.4%, and other services, including culture, entertainment, sports, and creative activities, grew by just 0.6% following a decline of 10.5% in the previous year.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "653a5efe-b89f-49e5-87e1-cc0c62b9f033"
+            "id": "a10f1996-afa2-4fe6-aab8-00cd3004e689"
         }
     },
     {
@@ -76,7 +76,7 @@
         "answer": "The German insurance industry closed the 2021 financial year with a 'solid' performance, reporting an increase in premiums of 1.1 per cent across all segments, reaching 223.4 billion euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "9f6527e6-4c51-4871-8e6e-b7ea0ecd585c"
+            "id": "09056645-becd-4b73-9f0d-9bdbc0243b54"
         }
     },
     {
@@ -84,31 +84,31 @@
         "answer": "In September 2021, the ECB decided to reduce the rate of PEPP purchases moderately.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_1-15.pdf",
-            "id": "eeb99b98-d254-4801-b8f6-a432e71f20b6"
+            "id": "9062cc6a-c1a7-4359-896c-def34cafed21"
         }
     },
     {
-        "question": "What is the significance of the European Commission's proposed revision of Solvency II?",
-        "answer": "The European Commission presented its proposed revision of the regulatory regime Solvency II in 2021. Solvency II has been in force since 2016 and the proposed revision is currently undergoing the legislative procedure involving the European Parliament and the European Council. According to the GDV, the amendments should remain balanced because Solvency II has proven itself so far.",
+        "question": "What are some key developments in the insurance industry?",
+        "answer": "Some key developments in the insurance industry include the proposed revision of the regulatory regime Solvency II by the European Commission, the introduction of the Transparency Directive for financial service providers, the implementation of a digital pension overview by the German government, the launch of a voluntary Pan-European Pension Product (PEPP), and the acceleration of digitization in the industry due to the Covid-19 crisis.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "55aa23c5-225f-4bcc-a3fc-0bf96c0892fe"
+            "id": "cf344980-b9ce-40b1-9768-df4db06c3a6c"
         }
     },
     {
-        "question": "What is the Pan-European Pension Product (PEPP) and who can offer it?",
-        "answer": "The Pan-European Pension Product (PEPP) is a voluntary pension product that has been launched on a European level. It is designed to be complementary to existing state, statutory, and occupational pension systems. Potential providers of the pension include insurance companies, company pension funds, banks, and administrators of alternative investment funds.",
+        "question": "What is the significance of the USA in the global insurance market?",
+        "answer": "The USA is a global market leader in the insurance industry, accounting for more than 40 percent of the global market. The US insurance industry had gross premiums of 2.5 billion dollars in 2020, and insurers in the USA have survived the crisis relatively well.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "35378c6d-fd17-4fbd-8855-f6e392b0ad4d"
+            "id": "2a241bcc-8a71-4cf5-886d-e09ba17ad416"
         }
     },
     {
-        "question": "What were some of the sales successes achieved by msg life in 2021?",
-        "answer": "In 2021, msg life achieved sales successes in various regions. In the German-speaking market, they signed contracts for a proof of concept with a well-known life insurer and a start-up life insurer. They also secured contracts with HUK-Coburg, \u00d6ffentliche Versicherung Braunschweig, AXA Lebensversicherung AG, and ERGO. In the Benelux market, msg life gained AEGON as a customer in the Netherlands and generated interest from other insurance groups. In the United States, their business with health and group insurers was satisfactory, attracting new customers and experiencing overall growth in customer demand. In the Spanish and Portuguese markets, msg life had positive developments with existing customers and successfully launched projects for SegurCaixa Adeslas and Mutual Medica.",
+        "question": "What markets does msg life serve and what recent developments have occurred in these markets?",
+        "answer": "msg life serves the Benelux, United States, Spanish, and Portuguese markets. In the Benelux market, msg life has gained AEGON as a customer in the Netherlands and is generating interest with its range of products. In the United States, msg life's business with health and group insurers has been satisfactory, attracting two new customers in the health and life insurance segments. In the Spanish and Portuguese markets, msg life has its own offices and has seen positive development with existing customers. They have successfully launched a project for their new customer, SegurCaixa Adeslas, and completed an acquisition for Mutual Medica in Spain.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "9e541dbd-a5f2-420e-ba12-4a1b1804876f"
+            "id": "0aca017d-0745-42bb-95b1-532253acf5da"
         }
     },
     {
@@ -116,7 +116,7 @@
         "answer": "In the reporting period, the msg life Group recorded gross Group revenue from its own business under German GAAP of 176.1 million euros and Group earnings before interest, taxes, depreciation and amortisation (EBITDA) under German GAAP of 17.9 million euros. The business situation of the company in the 2021 reporting year can be described as positive overall. The foundations exist for positive development in 2022 and beyond. Last year\u2019s prognosis in the separate financial statements forecast positive net results for the year; as the holding company, the individual Group company finished the 2021 financial year with net profit of 10.8 million euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "848b3384-0e24-47e5-9142-d74eb8bf9551"
+            "id": "6a3c9e81-faaf-4fca-ab2c-f118e16dcf40"
         }
     },
     {
@@ -124,15 +124,15 @@
         "answer": "The turnover of the msg life Group in the 2021 financial year was 193.8 million euros, which is 6.3 million euros higher than the figure for the 2020 financial year, corresponding to growth of 3.4 per cent.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "ea98e640-b593-49e6-bb26-d9d1eafae167"
+            "id": "42e1d3f9-fbca-4dac-961b-d11276e738de"
         }
     },
     {
         "question": "What was the turnover of the msg life Group in the financial year?",
-        "answer": "The turnover of the msg life Group in the financial year amounted to 193.8 million euros, which is 6.3 million euros higher than the figure for the 2020 financial year, corresponding to growth of 3.4 per cent.",
+        "answer": "The turnover of the msg life Group in the financial year was 193.8 million euros, which is 6.3 million euros higher than the figure for the previous year, corresponding to a growth of 3.4 per cent.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "a686d597-cf4f-4ad3-ab6e-cbe4b7aec2a2"
+            "id": "19a4cced-0e9f-4929-a412-26b3649806da"
         }
     },
     {
@@ -140,7 +140,7 @@
         "answer": "The costs for procured services in the 2021 financial year amounted to 12.2 million euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "98600067-d751-4047-93b4-b78d63b3cf8b"
+            "id": "a1796d8e-3e4a-49b5-a509-bb51a8ec17d7"
         }
     },
     {
@@ -148,7 +148,7 @@
         "answer": "In the 2021 financial year, msg life generated an operating result of 15.0 million euros and a financial result of -0.8 million euros. The Group's income from ordinary activities improved by 3.7 million euros, bringing it to 14.2 million euros. The Group closed the year with earnings before taxes on income (EBT) of 14.2 million euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "4eb31537-ccb4-42e0-931c-7272b0e9d821"
+            "id": "7ded9274-0426-41cf-845c-d4fe10d0b615"
         }
     },
     {
@@ -156,7 +156,7 @@
         "answer": "The net total of the line item 'Inventories' has increased from 4.3 million euros to 7.5 million euros. This increase is due to payments received on account and work in progress exceeding the payments received on account of customer projects as at the reporting date. The net amount of 7.5 million euros has been recognized under inventories because of the chosen method of open recognition.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "0d3cd74f-93be-49b0-ac7d-bbed8e050e7b"
+            "id": "503bee7f-8cd8-4a35-b00b-5eff59f535a1"
         }
     },
     {
@@ -164,15 +164,15 @@
         "answer": "The development of msg life ag's turnover and expenses in the 2021 financial year was mainly due to the interim delivery of a milestone within the framework of a major project with msg systems ag. Personnel expenses decreased by 0.5 million euros compared to the previous year. Provisions decreased by 1.8 million euros, primarily due to a decrease in other provisions. Depreciation of property, plant, and equipment decreased slightly. All in all, provisions accounted for 25.9% of the balance sheet total, compared to 33.6% in the previous year.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "5b5a8568-796f-4182-87f0-f1cbed4fb9be"
+            "id": "1ff51322-5cfe-4036-b2b2-eddd4c152bca"
         }
     },
     {
-        "question": "What were msg life ag's current assets and equity in the financial year ended?",
-        "answer": "In the financial year ended, msg life ag's current assets increased to 53.9 million euros and equity amounted to 53.2 million euros.",
+        "question": "What was the total R&D expenditure for msg life Group in the 2021 financial year?",
+        "answer": "The msg life Group's R&D expenditure totalled 11.195 million euros in the 2021 financial year (previous year: 8.934 million euros).",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "6d3cb3bc-4b82-4e5d-b512-b0f09c33cdf3"
+            "id": "62e59da4-4eaa-42da-98ea-4a8491fb036f"
         }
     },
     {
@@ -180,7 +180,7 @@
         "answer": "The R&D expenditure of the msg life Group in the 2021 financial year was 11.195 million euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "95ee21c8-2bf1-47a8-b955-f4eaeabeda3e"
+            "id": "70a85a69-511c-45ed-b676-ca738140173c"
         }
     },
     {
@@ -188,23 +188,23 @@
         "answer": "The onboarding process for new employees in 2021 at msg life was almost exclusively remote and digitized. The company held welcome and introductory events to present the strategic orientation and targets of the company. The aim was to quickly provide new colleagues with a broad network within the entire company. To support new employees, msg life implemented a structured onboarding scheme using innovative online collaboration formats. These formats have become well established, advanced, and more professional.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "4e8d6db4-169a-4183-8623-19b66f1ebc94"
+            "id": "69571b8f-6dd5-4a67-b65d-4ee42dae6248"
         }
     },
     {
-        "question": "What is the significance of the learning management system in msg life's Qualification Suite?",
-        "answer": "In Qualification Suite, msg life has a modern and powerful learning management system that bundles all training and qualification topics and processes into a single platform. This platform allows the company to manage purchased training courses and its own qualification content, develop the content further, and provide it to the relevant target groups. The rapid availability of training content for changing target groups is crucial for the development of additional training formats.",
+        "question": "What is the significance of the Qualification Suite in msg life's operations?",
+        "answer": "In 2021, msg life digitized its qualification courses and implemented the Qualification Suite, a modern learning management system. This platform allows the company to manage purchased training courses and its own qualification content, develop the content further, and provide it to relevant target groups. The Qualification Suite is crucial for the rapid availability of training content for changing target groups and the development of additional training formats.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "ad042504-fe52-4a44-8697-45193ffbeb44"
+            "id": "bd318eab-a082-410b-93ec-6b7465ad1003"
         }
     },
     {
         "question": "What are the main types of risk that the msg life Group is exposed to?",
-        "answer": "The main types of risk that the msg life Group is exposed to are explained in greater detail in the text. The specification of these risks does not imply that other risks which have not been mentioned will not have a significant impact on msg life\u2019s earnings, financial and assets position.",
+        "answer": "In 2021, the msg life Group's profile did not change significantly with regard to the main types of opportunity and risk areas to which it is exposed. The specification of these risks does not imply that other risks which have not been mentioned will not have a significant impact on msg life's earnings, financial and assets position.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "f638a6cf-c5ba-4a33-abf4-df048fa0bd5e"
+            "id": "9ba3bafc-85b5-40c5-a9b0-8bf669e099b0"
         }
     },
     {
@@ -212,15 +212,15 @@
         "answer": "The regulatory developments that have impacted the healthcare industry include the Patient Protection and Affordable Care Act (Obamacare) enacted in 2013, the lack of support from the Trump administration, and the improvement to the Patient Protection and Affordable Care Act in late 2021 in the form of the Build Back Better Act. These developments have led to the growth of state healthcare programs such as Medicare, Medicare Advantage, and Medicaid.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "181657b6-a5d3-4bab-9ba6-79db54c5b719"
+            "id": "daf15228-3a0b-4ae2-bda6-c3c0fe65e7f5"
         }
     },
     {
         "question": "What are the main risks identified in the text?",
-        "answer": "The main risks identified in the text are project and product risks, risks related to the Covid-19 pandemic, risks associated with third-party software, and personnel risks.",
+        "answer": "The main risks identified in the text are project and product risks, the potential impact of the Covid-19 pandemic, software defects, and personnel risks.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "63b0b964-f6b6-4b7d-a69e-1c8a66fde8c6"
+            "id": "43b8e483-5d7a-497a-9f23-31988f1018a6"
         }
     },
     {
@@ -228,7 +228,7 @@
         "answer": "msg life counters the risk of economic and technological factors through various measures. These include continuous exchange of views with employees, standardized interviews with qualified feedback, internal training to prevent monopolies of knowledge and skills, on-the-job graduate training, and recruitment through usual market channels. Additionally, the company has leadership guidelines for managers to strengthen employees' identification with the company.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "15a6502e-a1bd-4e25-ac51-b18baf2c3d68"
+            "id": "0ee36a2b-13af-4910-9354-45295a4b2cb7"
         }
     },
     {
@@ -236,15 +236,15 @@
         "answer": "msg life faces several risks, including economic risks related to the Russian invasion of Ukraine and resulting economic sanctions, IT security risks, risks from takeovers and competition, and liquidity risks. The economic risks are difficult to judge in terms of their impact on msg life's business in 2022, but the company does not expect significant changes. To address IT security risks, msg life takes extensive technical and organizational measures, such as restrictive authorization and access controls, regular backups, and penetration tests. In terms of competition risks, msg life aims to maintain its existing strategy and achieve a competitive advantage in the market. The company is also interested in expanding its market position through organic growth and strategic acquisitions. Lastly, msg life manages liquidity risk by ensuring it has sufficient liquid funds or credit lines available to meet payment obligations and hedge against payment flow fluctuations.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "cf7ea2ed-493e-4831-97ed-760c36d78ffc"
+            "id": "a65f0743-ef26-465b-bca4-13f7084f0531"
         }
     },
     {
         "question": "What are liquidity risks?",
-        "answer": "Liquidity risks refer to the potential risks associated with a company being unable to raise the funds needed to settle its financial liabilities. These risks arise when a company does not have enough liquid funds or assets that can be easily converted into cash to meet its financial obligations. In the context of the msg life Group, the company considers the liquidity risk to be low at present due to its current holdings of cash and cash equivalents. The msg life Group has sufficient liquid funds to service its financial liabilities.",
+        "answer": "Liquidity risks refer to the potential risks associated with a company being unable to raise the funds needed to settle its financial liabilities. These risks arise when a company does not have enough cash or liquid assets to meet its short-term obligations, such as paying off debts or covering operating expenses. Liquidity risks can result in financial difficulties and may lead to insolvency if not managed effectively.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "3b3662f2-0ed3-4862-9f69-7e42408344ce"
+            "id": "d4445b50-12de-4e3d-8dcc-1baa9fea5118"
         }
     },
     {
@@ -252,39 +252,39 @@
         "answer": "There are no default risks in relation to cash and cash equivalents. These are invested at banks with good ratings.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "62038e20-49f3-469a-9bb1-b5791f052e14"
+            "id": "07d22c79-8532-458f-9daa-a4f0bfd63943"
         }
     },
     {
-        "question": "What are the key risks identified in the company's annual report?",
-        "answer": "The key risks identified in the company's annual report include concentration of risk on the sales side due to geographic distribution of turnover, interest rate risks resulting from changes in market interest rates, concentration of trade receivables on individual customers, and currency risks due to changes in exchange rates. However, the company believes that these risks do not pose a threat to its continued existence and is confident in its ability to successfully deal with these challenges.",
+        "question": "What are the risks associated with the company's operations?",
+        "answer": "The company faces risks related to interest rates and currency exchange rates. Interest rate risks refer to fluctuations in the fair value or future cash flows of financial instruments due to changes in market interest rates. The company's trade receivables do not have significant concentration on individual customers, but the ten largest customers accounted for a significant share of turnover. As for currency risks, they arise from fluctuations in the fair value or future cash flows of financial instruments due to changes in exchange rates. However, the company believes that these risks do not pose a threat to its continued existence and is confident in its ability to successfully manage them.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "a5117a09-16aa-4eba-a19d-b12508655edc"
+            "id": "de0c5768-182e-4da5-bbcd-b80d63b36a5a"
         }
     },
     {
-        "question": "What is msg life's internationalisation strategy and who have they partnered with?",
-        "answer": "msg life has entered into a partnership with IBM as part of its ongoing internationalisation strategy. The goal of this partnership is to open up new insurance markets and increase the competitiveness of international insurance companies through a fully digitised end-to-end solution.",
+        "question": "What is msg life's internationalisation strategy and partnership with IBM?",
+        "answer": "In connection with its ongoing internationalisation strategy, msg life and IBM have entered into a partnership to open up new insurance markets. The goal is to significantly increase the competitiveness of international insurance companies through a fully digitised end-to-end solution, thereby securing their future.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "f12058b6-168e-4d50-a72a-8eb1847bc86d"
+            "id": "5d4231c2-5cc3-40f8-9f45-c751ab4ac6b3"
         }
     },
     {
         "question": "What are some of the regulatory requirements that insurance companies are currently facing?",
-        "answer": "Insurance companies are currently facing the implementation of numerous regulatory requirements, such as the revision of Solvency II, the new international accounting standard IFRS 17, the European Transparency Directive, the rollout of a digital pension overview, and the introduction of PEPP. These regulatory requirements necessitate comprehensive changes to the solutions currently used by insurers and require significant resources.",
+        "answer": "Insurance companies are currently facing several regulatory requirements, including the revision of Solvency II, the new international accounting standard IFRS 17, the European Transparency Directive, the rollout of a digital pension overview, and the introduction of PEPP. These regulatory requirements necessitate comprehensive changes to the solutions currently used by insurance companies and require significant resources.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "43fe8d43-57c6-4c66-821f-da47635a210e"
+            "id": "44d01159-d30a-41e3-9b58-4d5e827f875e"
         }
     },
     {
         "question": "What are the key factors crucial to the success of insurance companies?",
-        "answer": "Microservice-oriented architectures designed to quickly support modified business models and high system versatility for the rapid introduction of innovative products are factors crucial to the success of insurance companies.",
+        "answer": "Given the current challenges, microservice-oriented architectures designed to quickly support modified business models and high system versatility for the rapid introduction of innovative products are factors crucial to the success of insurance companies.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "2013917d-ca43-446d-9459-086f695d378e"
+            "id": "800eb684-35d2-49d8-87fa-ed2869280db3"
         }
     },
     {
@@ -292,7 +292,7 @@
         "answer": "The TRAIL.X project is a collaboration between msg life and the Ludwig Maximilian University of Munich to develop deep neural networks (DNNs) for the actuarial computation module. These DNNs will enable life insurers to replace old system generations, integrate artificial intelligence into their core functions, and modernize their systems.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_16-30.pdf",
-            "id": "c788e548-85bc-4c7a-bd70-cd6ce5d7ec5b"
+            "id": "80f57698-3c35-4fc3-9ac7-b20ba6dc640c"
         }
     },
     {
@@ -300,7 +300,7 @@
         "answer": "In the 2022 financial year, msg life expects Group earnings before interest, taxes, depreciation of property, plant and equipment and amortisation of intangible assets (EBITDA) of between 14.0 and 18.0 million euros and gross Group revenue from its own business of between 165.0 and 180.0 million euros in accordance with German GAAP.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "03c90da9-b51c-4e60-ac04-a76bf29065f9"
+            "id": "d1dce779-653e-422b-8662-7e3069234dc2"
         }
     },
     {
@@ -308,7 +308,7 @@
         "answer": "The value of franchises, trademarks, patents, licenses, and similar rights in the consolidated statement of financial position for 2021 is 1,029,822 Euro.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "5e45a601-74a0-4d53-83d3-51ac58190adb"
+            "id": "c6483250-0970-46d1-917d-fadadd9d4bb7"
         }
     },
     {
@@ -316,7 +316,7 @@
         "answer": "The total equity of the company as of December 31, 2021, is \u20ac57,582,348.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "d5be56be-1148-4acd-acc1-2250b56da94e"
+            "id": "41961a15-3239-4146-8a5b-c306c249f3e3"
         }
     },
     {
@@ -324,7 +324,7 @@
         "answer": "The msg life Group is a leading consulting and software company for the insurance and retirement savings market. Its software solutions primarily support life insurance companies and pension fund institutions in Europe and in particular health and group insurance companies in the United States in the design, implementation and administration of their products.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "6a4d44d3-595e-4fb1-8125-c26d4dd002ff"
+            "id": "273bb352-167e-4dce-a7c1-8cd64574456a"
         }
     },
     {
@@ -332,7 +332,7 @@
         "answer": "The headquarters of the msg life Group are located at Humboldtstrasse 35, 70771 Leinfelden-Echterdingen, Germany.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "62350d5b-2fd0-49b1-85f2-61a381717903"
+            "id": "5d784ad6-5e84-49ff-b64e-9e44855bf233"
         }
     },
     {
@@ -340,7 +340,7 @@
         "answer": "msg life AG and msg nexinsure ag have been working closely together for many years in the context of the joint solution msg.Insurance Suite.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "6bc045fe-2982-4ac7-86ce-36d6ff072128"
+            "id": "56bd450c-d029-4c7d-919c-8d9f59daa492"
         }
     },
     {
@@ -348,15 +348,15 @@
         "answer": "The asset and liability items of foreign business operations (excluding equity) are converted into euros within the scope of consolidation at the mean spot exchange rate on the respective reporting date, in accordance with section 308a of the HGB. Income and expenses are converted at the average exchange rates for the month. Exchange rate volatility and seasonal influences are not taken into account due to immateriality. Any resulting conversion difference is reported in Group equity. Exchange rate-related differences in the context of receivables and payables and elimination of intercompany profit and loss are also recognized in profit or loss for reasons of simplification.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "9037f6d6-fb04-4ae8-88b3-893540ad28a7"
+            "id": "4b2f21aa-0295-4cb7-88c7-efd532952bcf"
         }
     },
     {
         "question": "How are deferred taxes calculated and recognised?",
-        "answer": "Deferred taxes are calculated based on the temporary concept, which takes into account temporary and virtually permanent accounting and measurement differences between the values of assets and liabilities recognized under commercial and tax law. Deferred taxes are recognized under accruals and deferrals, as long as the income represents revenue for a specific time after the reporting date. When determining deferred tax assets, losses carried forward must be taken into account in the amount of the offset of losses expected within the next five years. Changes in tax rates on deferred taxes are posted through profit and loss when the change in the law comes into force.",
+        "answer": "Deferred taxes are calculated based on the temporary concept, which takes into account temporary and virtually permanent accounting and measurement differences between the values of assets and liabilities recognized under commercial and tax law. Deferred taxes are recognized in line with the current legal position in individual countries at the time of realization. Changes in tax rates that come into force are posted through profit and loss. Deferred tax assets and liabilities are set off against each other.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "016870c1-405f-4f20-a82a-327e1f92fd12"
+            "id": "42872f5e-efdf-4674-9c9b-c754bba597b1"
         }
     },
     {
@@ -364,15 +364,15 @@
         "answer": "Capital is consolidated according to the purchase method of accounting.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "8c381fc2-6907-4040-b4be-47cae50a7a98"
+            "id": "8a9f177c-4666-45d4-b8b2-419024c87db8"
         }
     },
     {
         "question": "What are the other assets reported in the Annual Report 2021?",
-        "answer": "The other assets reported in the Annual Report 2021 can be broken down as follows:\n- Value added tax: 954 thousand euros\n- Corporate income tax: 303 thousand euros\n- Security deposits: 189 thousand euros\n- Trade tax: 0 thousand euros\n- Sundry: 239 thousand euros\n\nThe total value of other assets is 1,685 thousand euros.",
+        "answer": "The other assets reported in the Annual Report 2021 can be broken down as follows:\n- Value added tax: 954 thousand euros\n- Corporate income tax: 303 thousand euros\n- Security deposits: 189 thousand euros\n- Trade tax: 0 thousand euros\n- Sundry: 239 thousand euros\n\nThe total value of these other assets is 1,685 thousand euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "17bcf913-f96d-46ed-9cc7-196ddc4948d9"
+            "id": "86b9c6d2-96f2-478e-8dce-26b39adbe1c4"
         }
     },
     {
@@ -380,39 +380,39 @@
         "answer": "The annual general meeting on 10 November 2020 authorized the Management Board to increase the company\u2019s share capital by 09 November 2025 with the approval of the Supervisory Board by issuing new no-par-value bearer shares against cash contributions or contributions in kind on one or more occasions, albeit by no more than 21,401,226 euros in total (authorized capital 2020/1). The new shares must be offered to the shareholders for subscription; they may also be taken on by banks or by a company which operates in accordance with section 53, paragraph 1, sentence 1 or section 53b, paragraph 1, sentence 1, or paragraph 7 of the German Banking Act (KWG), on condition that the shares are offered to the shareholders for subscription. The Management Board is authorized to exclude the shareholders\u2019 preemptive rights with the approval of the Supervisory Board and in compliance with the precise regulations.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_31-45.pdf",
-            "id": "adf230fe-8ea3-4092-82f6-b946ea50f339"
+            "id": "4089888e-1314-42e3-aac5-897f175e175a"
         }
     },
     {
-        "question": "What are capital reserves and how are they calculated?",
-        "answer": "Capital reserves include the amount received in excess of the nominal price when shares are issued. They are calculated by subtracting the nominal price from the total amount received from the issuance of shares. For example, if a company issues shares at a price of $10 each and receives a total of $100,000, the capital reserves would be $90,000 ($100,000 - $10,000).",
+        "question": "What are capital reserves and how much did they total by the end of 2021?",
+        "answer": "Capital reserves include the amount received in excess of the nominal price when shares are issued. By 31 December 2021, the capital reserves totaled 11,704,846.80 euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_46-59.pdf",
-            "id": "7abd0316-e4ae-4188-81a3-f155634134ef"
+            "id": "f585c04c-3d18-46c2-99a7-6d890898795f"
         }
     },
     {
-        "question": "What are the actuarial assumptions for the respective reference dates?",
-        "answer": "The actuarial assumptions for the respective reference dates are as follows:\n\n2021:\n- Actuarial interest rates: 1.94% per year\n- Projected increase in salaries: n.a.\n- Rate of pension progression (civil service adjustment): 1.80\n- Inflation rate: n.a.\n\n2020:\n- Actuarial interest rates: 2.38% per year\n- Projected increase in salaries: n.a.\n- Rate of pension progression (civil service adjustment): 1.80\n- Inflation rate: n.a.",
+        "question": "What is the difference resulting from interest determined in accordance with section 253, paragraph 6, sentence 1, of the HGB?",
+        "answer": "The difference resulting from interest determined in accordance with section 253, paragraph 6, sentence 1, of the HGB is as follows:\n\n31 December 2021\n\nmsg life ag: 74 thousand euros\nmsg life central europe: 459 thousand euros\nmsg life Switzerland: 203 thousand euros\n\n31 December 2020\n\nmsg life ag: N/A",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_46-59.pdf",
-            "id": "bbb372de-6b4e-4eab-a173-2882a18238a9"
+            "id": "31921bee-6a6a-40f4-940f-9a4a8e5d6d3f"
         }
     },
     {
-        "question": "What are the tax provisions as of 31 December 2021?",
-        "answer": "The tax provisions as of 31 December 2021 are not provided in the given text.",
+        "question": "What are the obligations when interest is calculated at the average market interest rate for the past seven years and ten years?",
+        "answer": "The obligations when interest is calculated at the average market interest rate for the past seven years are 1,597 thousand euros, 6,623 thousand euros, 3,596 thousand euros, and 11,816 thousand euros. The obligations when interest is calculated at the average market interest rate for the past ten years are 1,523 thousand euros, 6,164 thousand euros, 3,393 thousand euros, and 11,080 thousand euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_46-59.pdf",
-            "id": "c38713bc-0e09-4952-82a4-fff4d79488ba"
+            "id": "c0d8211e-c958-4d4f-80b9-05e9e46f6645"
         }
     },
     {
         "question": "What are the current tax provisions mentioned in the text?",
-        "answer": "The current tax provisions mentioned in the text are 1.195 million euros. This is an increase from the previous year's provisions of 756,000 euros. The provisions primarily consist of income taxes from Germany (743,000 euros), income taxes from the USA (280,000 euros), and federal, state, and municipal taxes in Switzerland (114,000 euros).",
+        "answer": "The current tax provisions mentioned in the text are 1.195 million euros. This is an increase from the previous year's provisions of 756,000 euros. The provisions primarily consist of income taxes from Germany totaling 743,000 euros, income taxes from the USA totaling 280,000 euros, and federal, state, and municipal taxes in Switzerland totaling 114,000 euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_46-59.pdf",
-            "id": "56073562-37d1-4408-aa62-1677595e5503"
+            "id": "e84be61d-8769-42ab-91d5-adcedf1d44bb"
         }
     },
     {
@@ -420,7 +420,7 @@
         "answer": "msg life Austria and the Austrian Forschungsf\u00f6rderungsgesellschaft mbH (FFG) signed an initial research funding agreement on 27 April 2017. On 27 April 2018, the second funding agreement was concluded between msg life Austria and FFG, consisting of a loan and a research grant.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_46-59.pdf",
-            "id": "bc921a77-05a5-430b-a941-115413e9c78b"
+            "id": "78d02b5c-15b8-45ec-8e15-582fc8cf861a"
         }
     },
     {
@@ -428,39 +428,15 @@
         "answer": "The total group turnover for the year 2020 is 187,470 thousand euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_46-59.pdf",
-            "id": "d0242576-cc58-4d38-95e5-fdef8afe8ac4"
+            "id": "773cb647-378f-4854-9bfa-5f5b0d96dac2"
         }
     },
     {
-        "question": "What are the components of the 'Other' income category?",
-        "answer": "The 'Other' income category includes income of 46,000 euros from a research bonus from the Austrian finance ministry, income of 8,000 euros from an additional funding program 'Employment bonus' by Austria Wirtschaftsservice Gesellschaft mbh, and other income of 168,000 euros relating to the personnel department.",
+        "question": "What information does the table in the text provide?",
+        "answer": "The table in the text provides information on the total amounts from transactions between related companies for the reporting year and the previous year. It includes income from transactions with related parties and companies, expenses from transactions with related parties and companies, amounts due from related parties and companies, and amounts payable to related parties and companies. The table also specifies the amounts in thousand euros for each category and lists the related companies involved in the transactions.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_46-59.pdf",
-            "id": "3503b93d-010f-4f94-b471-688948657417"
-        }
-    },
-    {
-        "question": "What were the fees incurred for auditing services in the reporting year and the previous year?",
-        "answer": "The fees incurred for auditing services in the reporting year and the previous year were as follows:\n\n2021: 190,000 euros\n2020: 225,000 euros",
-        "metadata": {
-            "source": "./resources/document_store\\msg_life-gb-2021-EN_final_46-59.pdf",
-            "id": "c9c90ebc-cd43-4302-bf10-ae9691efbbd2"
-        }
-    },
-    {
-        "question": "What was the remuneration for former members of the Management Board in 2021?",
-        "answer": "The remuneration for former members of the Management Board in 2021 amounted to 131,000 euros.",
-        "metadata": {
-            "source": "./resources/document_store\\msg_life-gb-2021-EN_final_46-59.pdf",
-            "id": "87e7ab5a-f322-4159-bfff-c3622bfd3a95"
-        }
-    },
-    {
-        "question": "What information is provided in the table regarding transactions between related companies?",
-        "answer": "The table provides information on the total amounts from transactions between related companies for the reporting year and the previous year. It includes the following categories: income from transactions with related parties and companies, expenses from transactions with related parties and companies, amounts due from related parties and companies, and amounts payable to related parties and companies. The amounts are shown in thousand euros. The table also lists the related companies involved in these transactions and provides specific figures for each company in each category.",
-        "metadata": {
-            "source": "./resources/document_store\\msg_life-gb-2021-EN_final_46-59.pdf",
-            "id": "daf8e3e7-61ee-4856-8c70-eba0a1889bc2"
+            "id": "65cfea40-9d1e-4fe6-944f-e90af5ad0997"
         }
     },
     {
@@ -468,55 +444,55 @@
         "answer": "The members of the Management Board are Rolf Zielke, Dr Aristid Neuburger, Francesco Cargnel, Holger Gorissen, Robert Hess, Milenko Radic, Jens St\u00e4cker, and Dr Wolf Wiedmann.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_60-end.pdf",
-            "id": "8decc42c-1a0d-4f71-a4eb-479ff447fa81"
+            "id": "294b7fc3-e368-4eda-8c4a-53c575e31e56"
         }
     },
     {
-        "question": "What are the different types of intangible assets listed in the text?",
-        "answer": "The different types of intangible assets listed in the text are franchises, trademarks, patents, licences, and similar rights, as well as goodwill.",
+        "question": "What are the categories of fixed assets mentioned in the text?",
+        "answer": "The categories of fixed assets mentioned in the text are: \n\nI. Intangible assets\n1. Franchises, trademarks, patents, licences and similar rights\n2. Goodwill\n\nII. Property, plant and equipment\n1. Land, leasehold rights and buildings, including buildings on third-party land\n2. Other fixtures and fittings, tools and equipment\n3. Advance payments and plant and machinery in process of construction\n\nIII. Financial assets\n1. Investments",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_60-end.pdf",
-            "id": "604e4940-8684-44c5-93c8-b31aaeb2110b"
+            "id": "3acfef9b-cfa6-4191-8ea4-33d9a504ad97"
         }
     },
     {
-        "question": "What is the net carrying amount of intangible assets as at 31 December 2020?",
-        "answer": "The net carrying amount of intangible assets as at 31 December 2020 is 7,198 thousand euros.",
+        "question": "What are the total assets for the period from 1 January 2020 to 31 December 2020?",
+        "answer": "The total assets for the period from 1 January 2020 to 31 December 2020 are 60,528 thousand euros.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_60-end.pdf",
-            "id": "1170fbdb-21aa-4756-9035-c9560b1f0ad6"
+            "id": "ac2f87f7-73ac-42bf-beb4-818ec5562f7b"
         }
     },
     {
-        "question": "What did the independent auditor's report state about the consolidated financial statements of msg life ag?",
-        "answer": "The independent auditor's report stated that the consolidated financial statements of msg life ag comply with the requirements of German commercial law and give a true and fair view of the assets and financial position of the Group as at 31 December 2021 and its earnings position for the financial year from 1 January 2021 to 31 December 2021.",
+        "question": "What is the purpose of the independent auditor's report?",
+        "answer": "The purpose of the independent auditor's report is to provide an opinion on the consolidated financial statements of msg life ag and its subsidiaries. The report states whether the financial statements comply with the requirements of German commercial law and give a true and fair view of the assets, financial position, and earnings position of the Group for the specified period.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_60-end.pdf",
-            "id": "7d297161-4487-46a3-ad64-6c5008248662"
+            "id": "d3edf45f-5fc3-4493-a0df-187dbac3c80e"
         }
     },
     {
-        "question": "What is the responsibility of the legal representatives and Supervisory Board for the consolidated financial statements, condensed management report, and Group management report?",
+        "question": "What are the responsibilities of the legal representatives and Supervisory Board for the consolidated financial statements, condensed management report, and Group management report?",
         "answer": "The legal representatives are responsible for the preparation of the consolidated financial statements that comply, in all material respects, with German GAAP, and that the consolidated financial statements, in compliance with these requirements, give a true and fair view of the assets, financial and earnings position of the Group. In addition, the legal representatives are responsible for such internal controls as they have deemed necessary in line with German GAAP to enable the preparation of consolidated financial statements that are free from material misstatement, whether due to fraud or error.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_60-end.pdf",
-            "id": "bb8823b0-7c0f-459f-9970-52c41d74d077"
+            "id": "365e99df-4b94-4b23-a2ac-125611979b4d"
         }
     },
     {
         "question": "What is the responsibility of the legal representatives in preparing the consolidated financial statements?",
-        "answer": "The legal representatives are responsible for assessing the Group's ability to continue as a going concern and disclosing matters related to going concern. They are also responsible for financial reporting based on the going concern basis of accounting, unless there is an intention to liquidate the company or to cease operations, or there is no realistic alternative but to do so. Additionally, the legal representatives are responsible for the preparation of the condensed management report and Group management report that provide an appropriate view of the Group's position and comply with German legal requirements.",
+        "answer": "The legal representatives are responsible for assessing the Group's ability to continue as a going concern and disclosing matters related to going concern. They are also responsible for financial reporting based on the going concern basis of accounting, unless there is an intention to liquidate the company or to cease operations, or there is no realistic alternative but to do so. Additionally, the legal representatives are responsible for preparing the condensed management report and Group management report that provide an appropriate view of the Group's position and comply with German legal requirements.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_60-end.pdf",
-            "id": "803cca11-b041-43f1-a30b-59214f642225"
+            "id": "03a7e6bb-3fdc-4e0b-ac88-85e7edb2bde7"
         }
     },
     {
-        "question": "What are the responsibilities of the auditor in relation to the consolidated financial statements and management reports?",
-        "answer": "The auditor has several responsibilities in relation to the consolidated financial statements and management reports. These include obtaining an understanding of internal controls, evaluating accounting policies and estimates, assessing the going concern basis of accounting, evaluating the presentation and content of the financial statements, obtaining sufficient audit evidence, evaluating the consistency of the reports, and performing audit procedures on prospective disclosures. The auditor is also responsible for communicating with the persons in charge of the audit and reporting significant findings. These responsibilities are aimed at ensuring that the financial statements and reports provide a true and fair view of the Group's financial position and comply with applicable standards and regulations.",
+        "question": "What are the responsibilities of the auditor in evaluating the consolidated financial statements and management reports?",
+        "answer": "The auditor has several responsibilities in evaluating the consolidated financial statements and management reports. These include obtaining an understanding of internal controls, evaluating accounting policies and estimates, assessing the going concern basis of accounting, evaluating the presentation and content of the financial statements, obtaining sufficient audit evidence, evaluating consistency with the law, performing audit procedures on prospective disclosures, and communicating with the persons in charge of the audit. The auditor's role is to ensure that the financial statements and management reports are prepared in compliance with relevant standards and provide a true and fair view of the Group's financial position.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_60-end.pdf",
-            "id": "39e401b8-95fd-4081-bb62-29a755e85aaf"
+            "id": "591777e7-fbf8-4d7f-a295-40017c92b151"
         }
     },
     {
@@ -524,7 +500,7 @@
         "answer": "The contact information for msg life ag is as follows: Humboldtstra\u00dfe 35, 70771 Leinfelden-Echterdingen, Germany. Phone: +49 711 94958 -0, Fax: +49 711 94958 -49, Email: info@msg-life.com. You can also visit their website at www.msg-life.com.",
         "metadata": {
             "source": "./resources/document_store\\msg_life-gb-2021-EN_final_60-end.pdf",
-            "id": "c2b29b26-2ff1-4145-9ba1-e4b91333d26c"
+            "id": "3a0fe285-a1bf-4577-9977-64194d20a7d7"
         }
     }
 ]

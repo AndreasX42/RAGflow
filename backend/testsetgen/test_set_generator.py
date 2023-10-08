@@ -159,11 +159,9 @@ async def agenerate_and_save_dataset(
 
         await asyncio.gather(*tasks)
 
-    return gt_dataset
 
-
-async def aget_or_generate_eval_set(
-    qa_gen_params: QAConfigurations, eval_dataset_path: str, document_store_path: str
+async def agenerate_evaluation_set(
+    qa_gen_params_path: str, eval_dataset_path: str, document_store_path: str
 ):
     """Entry function to generate the evaluation dataset.
 
@@ -175,6 +173,11 @@ async def aget_or_generate_eval_set(
         _type_: _description_
     """
     logger.info("Checking for evaluation dataset configs.")
+
+    qa_gen_params = read_json(qa_gen_params_path)
+
+    # set up Hyperparameters objects at the beginning to evaluate inputs
+    qa_gen_params = QAConfigurations.from_dict(qa_gen_params[-1])
 
     document_store = glob.glob(f"{document_store_path}/*.pdf")
 
@@ -190,6 +193,6 @@ async def aget_or_generate_eval_set(
         with ChromaClient() as client:
             client.reset()
 
-        gt_dataset = await agenerate_and_save_dataset(
+        await agenerate_and_save_dataset(
             qa_gen_params, document_store, eval_dataset_path
         )

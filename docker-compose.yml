@@ -1,5 +1,33 @@
 version: "3"
 services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: ./app
+    container_name: app-frontend
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./app:/app
+      - ./app/pages:/app/pages
+    environment:
+      - EVALBACKEND_HOST=eval-backend
+      - EVALBACKEND_PORT=8080
+    restart: always
+  eval-backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    container_name: eval-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/eval_backend/backend
+      - ./tmp:/eval_backend/tmp
+    environment:
+      - CHROMADB_HOST=chromadb
+      - CHROMADB_PORT=8080
+    restart: always
   chromadb:
     image: ghcr.io/chroma-core/chroma:latest
     container_name: chromadb
@@ -11,3 +39,4 @@ services:
     environment:
       - IS_PERSISTENT=TRUE
       - ALLOW_RESET=TRUE
+    restart: always

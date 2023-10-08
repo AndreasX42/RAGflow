@@ -1,0 +1,16 @@
+[server]
+maxUploadSize = 10
+# this is needed for local development with docker
+# if you don't want to start the default browser:
+headless = true
+# you will need this for local development:
+runOnSave = true
+# you will need this if running docker on windows host:
+fileWatcherType = "poll"
+
+[theme]
+primaryColor = "#E3735E"
+backgroundColor = "#121212"  # Dark gray background
+secondaryBackgroundColor = "#1E1E1E"  # Slightly lighter gray for secondary elements
+textColor = "#E0E0E0"  # Light gray text for better contrast against the dark background
+font = "sans serif"

@@ -126,6 +126,8 @@ async def arun_evaluation(
     document_store = glob.glob(f"{document_store_path}/*.pdf")
 
     hyperparams_list = read_json(eval_params_path)
+    print(hyperparams_list)
+
     hp_list = [Hyperparameters.from_dict(d) for d in hyperparams_list]
 
     tasks = [arun_eval_for_hp(gt_dataset, hp, document_store) for hp in hp_list]

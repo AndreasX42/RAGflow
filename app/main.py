@@ -6,6 +6,7 @@ from page_home import page_home
 from page_documents import page_documents
 from page_dashboard import page_dashboard
 from page_login import page_login
+from page_downloads import page_downloads
 
 
 def main():
@@ -17,15 +18,17 @@ def main():
                 options=[
                     "Home",
                     "Dashboard",
-                    "Document Store",
                     "Parameters",
-                    "Authentication",
+                    "Upload Docs",
+                    "Downloads",
+                    "Authenticate",
                 ],
                 icons=[
                     "house-fill",
                     "clipboard2-pulse-fill",
-                    "cloud-upload-fill",
                     "toggles",
+                    "cloud-upload-fill",
+                    "cloud-download-fill",
                     "file-earmark-check-fill",
                 ],
                 menu_icon="cast",
@@ -42,11 +45,13 @@ def main():
             page_home()
         if selected == "Dashboard":
             page_dashboard()
-        if selected == "Document Store":
-            page_documents()
         if selected == "Parameters":
             page_params()
-        if selected == "Authentication":
+        if selected == "Upload Docs":
+            page_documents()
+        if selected == "Downloads":
+            page_downloads()
+        if selected == "Authenticate":
             page_login()
 
     sideBar()
@@ -63,6 +68,14 @@ if __name__ == "__main__":
     main()
 
     with st.sidebar:
+        if "user_id" in st.session_state and st.session_state.user_id:
+            auth_button = '<div style="display: flex; justify-content: center; align-items: center; height: 5vh;"><span style="display: inline-flex; align-items: center; justify-content: center; color:white; background-color:green; padding:8px; border-radius:5px;">Authenticated</span></div>'
+
+        else:
+            auth_button = '<div style="display: flex; justify-content: center; align-items: center; height: 5vh;"><span style="display: inline-flex; align-items: center; justify-content: center; color:white; background-color:#880808; padding:8px; border-radius:5px;">Not Authenticated</span></div>'
+
+        st.markdown(auth_button, unsafe_allow_html=True)
+
         st.markdown("<br>" * 3, unsafe_allow_html=True)
         st.markdown("---")
         st.markdown(

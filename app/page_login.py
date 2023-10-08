@@ -29,14 +29,14 @@ def page_login():
         else:
             if existing_uuid:
                 st.session_state.user_id = existing_uuid
-                st.success(f"Your UUID: {st.session_state.user_id}")
+                st.success(f"Authenticated your UUID: {st.session_state.user_id}")
 
     with tab2:
         # If no UUID in session, show button to generate a new UUID
         if st.button("Generate new UUID"):
             new_uuid = str(uuid.uuid4())
             st.session_state.user_id = new_uuid
-            st.success(f"Your UUID: {st.session_state.user_id}")
+            st.success(f"Your new UUID: {st.session_state.user_id}")
 
     os.makedirs(f"./tmp/{st.session_state.user_id}/", exist_ok=True)
 

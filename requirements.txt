@@ -11,11 +11,6 @@ pdf2image
 pdfminer
 pdfminer.six
 
-# huggingface
-# huggingface-hub
-# tokenizers
-# sentence-transformers
-
 # evaluate
 evaluate
 Cython
@@ -29,9 +24,5 @@ numpy
 scikit-learn
 python-dotenv
 chromadb
-
-# agents
-# wikipedia
-# filetype
-# llama-index
-# faiss-cpu
+fastapi
+uvicorn

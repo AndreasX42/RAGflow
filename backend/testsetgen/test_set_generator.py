@@ -176,8 +176,11 @@ async def agenerate_evaluation_set(
 
     qa_gen_params = read_json(qa_gen_params_path)
 
+    if isinstance(qa_gen_params, list):
+        qa_gen_params = qa_gen_params[-1]
+
     # set up Hyperparameters objects at the beginning to evaluate inputs
-    qa_gen_params = QAConfigurations.from_dict(qa_gen_params[-1])
+    qa_gen_params = QAConfigurations.from_dict(qa_gen_params)
 
     document_store = glob.glob(f"{document_store_path}/*.pdf")
 

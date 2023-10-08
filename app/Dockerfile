@@ -13,9 +13,6 @@ RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
 # Copy all into image
 COPY ./ ./
 
-#HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
-
-# Set the PYTHONPATH environment variable
-ENV PYTHONPATH "${PYTHONPATH}:/app:/app/pages"
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
 CMD ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]

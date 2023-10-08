@@ -2,12 +2,7 @@ import streamlit as st
 import os
 import zipfile
 import io
-
-
-def list_files_in_directory(path):
-    """List all files in the specified directory."""
-    with os.scandir(path) as directory:
-        return [entry.name for entry in directory if entry.is_file()]
+from utils import display_files
 
 
 def page_downloads():
@@ -22,11 +17,7 @@ def page_downloads():
         user_directory = f"./tmp/{user_id}/"
 
         # List all files in the directory
-        files = list_files_in_directory(user_directory)
-
-        if not files:
-            st.write("No files found!")
-            return
+        files = display_files(user_directory)
 
         selected_files = st.multiselect("Select files to download:", files)
 

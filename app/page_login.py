@@ -2,6 +2,7 @@ import streamlit as st
 import uuid
 import os
 import re
+from utils import get_document_store_path
 
 
 def page_login():
@@ -28,16 +29,20 @@ def page_login():
 
         else:
             if existing_uuid:
-                st.session_state.user_id = existing_uuid
+                set_state(existing_uuid)
                 st.success(f"Authenticated your UUID: {st.session_state.user_id}")
 
     with tab2:
         # If no UUID in session, show button to generate a new UUID
         if st.button("Generate new UUID"):
             new_uuid = str(uuid.uuid4())
-            st.session_state.user_id = new_uuid
+            set_state(new_uuid)
             st.success(f"Your new UUID: {st.session_state.user_id}")
 
+
+def set_state(user_id: str) -> None:
+    st.session_state.user_id = user_id
+    st.session_state.user_file_dir = f"./tmp/{st.session_state.user_id}/"
     os.makedirs(f"./tmp/{st.session_state.user_id}/", exist_ok=True)
 
 

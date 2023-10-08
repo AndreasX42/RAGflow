@@ -1,9 +1,7 @@
 import dotenv
 import logging
-import json
 import asyncio
 
-from backend.commons.configurations import Hyperparameters, QAConfigurations
 from backend.evaluation import arun_evaluation
 from backend.testsetgen import agenerate_evaluation_set
 

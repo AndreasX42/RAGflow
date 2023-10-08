@@ -1,5 +1,6 @@
 import streamlit as st
 import json
+from utils import get_valid_params, write_json, start_qa_gen
 
 
 def page_params():
@@ -11,13 +12,20 @@ def page_params():
 
     tab1, tab2 = st.tabs(["QA Generator settings", "Hyperparameters settings"])
 
+    valid_data = get_valid_params()
+
     with tab1:
         with st.expander("QA Generator settings"):
             attributes = {
                 "chunk_size": st.number_input("Chunk Size", value=512),
                 "chunk_overlap": st.number_input("Chunk Overlap", value=10),
-                "length_function_name": st.text_input("Length Function Name", "len"),
-                "qa_generator_llm": st.text_input("QA LLM", "gpt-3.5-turbo"),
+                "length_function_name": st.selectbox(
+                    "Length Function for splitting or embedding model for corresponding tokenizer",
+                    valid_data["embedding_models"] + ["len"],
+                ),
+                "qa_generator_llm": st.selectbox(
+                    "QA Language Model", valid_data["llm_models"]
+                ),
             }
             # Get input from the user
             input_text = st.text_area(
@@ -33,8 +41,26 @@ def page_params():
                 # This is just a mockup to show you how to display the attributes.
                 # You'll probably want to process or display them differently.
                 st.write(attributes)
+                # save json
+                write_json(
+                    attributes,
+                    f"{st.session_state.user_file_dir}/qa_gen_params.json",
+                    append=False,
+                )
 
-        st.markdown("<br>" * 2, unsafe_allow_html=True)
+        st.markdown("<br>" * 1, unsafe_allow_html=True)
+
+        submit_button = st.button("Start Hyperparameter Run", key="Submit3")
+        if submit_button:
+            with st.spinner("Running..."):
+                success = start_qa_gen()
+                if success:
+                    st.success("QA Eval Set Generation Completed!")
+                else:
+                    st.error("Error occurred during QA Eval Set Generation.")
+
+        st.markdown("<br>" * 1, unsafe_allow_html=True)
+
         uploaded_file = st.file_uploader(
             label="OR: Upload a JSON file to provide a list of hyperparameters instead.",
             type=["json"],
@@ -57,6 +83,15 @@ def page_params():
             # Your dictionary
             st.text("Example of expected input:")
 
+            # save json
+            write_json(
+                data,
+                f"{st.session_state.user_file_dir}/qa_gen_params.json",
+                append=False,
+            )
+
+            del uploaded_file
+
         st.code(
             """
         {
@@ -66,7 +101,7 @@ def page_params():
             "qa_generator_llm": "gpt-3.5-turbo",
             "generate_eval_set": true, # to generate evaluation set, if false we use we load existing set
             "persist_to_vs": true # if true, for now chromadb resets all user collections
-            "embedding_model_list": list[Embeddings] # list of embedding model names to use for caching in chromadb
+            "embedding_model_list": list[embedding model names] # list of embedding model names to use for caching in chromadb
         }
         
         """
@@ -82,24 +117,28 @@ def page_params():
                 "chunk_overlap": st.number_input(
                     "Chunk Overlap", value=10, key="chunk overlap"
                 ),
-                "length_function_name": st.text_input(
-                    "Length Function Name (Used for chunking)",
-                    "len",
-                    key="length function for document chunking.",
+                "length_function_name": st.selectbox(
+                    "Length Function for splitting or embedding model for corresponding tokenizer",
+                    valid_data["embedding_models"] + ["len"],
+                    key="len_tab2",
                 ),
                 "num_retrieved_docs": st.number_input(
                     "Number of Docs the retriever should return",
                     value=3,
                     key="number of docs to retrieve",
                 ),
-                "search_type": st.selectbox("Search Type", ["mmr", "other_type"]),
-                "embedding_model": st.text_input(
+                "search_type": st.selectbox(
+                    "Search Type", valid_data["retr_search_types"]
+                ),
+                "embedding_model": st.selectbox(
                     "Embedding Model",
-                    "text-embedding-ada-002",
+                    valid_data["embedding_models"],
                     key="Name of embedding model.",
                 ),
-                "qa_llm": st.text_input(
-                    "QA LLM", "gpt-3.5-turbo", key="Name of LLM for QA task."
+                "qa_llm": st.selectbox(
+                    "QA Language Model",
+                    valid_data["llm_models"],
+                    key="Name of LLM for QA task.",
                 ),
             }
 
@@ -110,16 +149,18 @@ def page_params():
             if use_llm_grader:
                 attributes2["grade_answer_prompt"] = st.selectbox(
                     "Grade Answer Prompt",
-                    ["few_shot", "zero_shot", "fast"],
+                    valid_data["grade_answer_prompts"],
                     key="Type of prompt to use for answer grading.",
                 )
-                attributes2["grade_docs_prompt"] = st.text_input(
+                attributes2["grade_docs_prompt"] = st.selectbox(
                     "Grade Documents Prompt",
-                    "default",
+                    valid_data["grade_documents_prompts"],
                     key="Type of prompt to grade retrieved document chunks.",
                 )
-                attributes2["grader_llm"] = st.text_input(
-                    "Grading LLM", "gpt-3.5-turbo", key="Name of LLM for grading."
+                attributes2["grader_llm"] = st.selectbox(
+                    "Grading LLM",
+                    valid_data["llm_models"],
+                    key="Name of LLM for grading.",
                 )
 
             submit_button = st.button("Submit", key="Submit2")
@@ -129,6 +170,11 @@ def page_params():
                 # This is just a mockup to show you how to display the attributes.
                 # You'll probably want to process or display them differently.
                 st.write(attributes2)
+                write_json(
+                    attributes,
+                    f"{st.session_state.user_file_dir}/eval_params.json",
+                    append=True,
+                )
 
         st.markdown("<br>" * 2, unsafe_allow_html=True)
         uploaded_file = st.file_uploader(
@@ -149,6 +195,13 @@ def page_params():
 
             # Display the JSON contents
             st.write(data)
+            write_json(
+                attributes,
+                f"{st.session_state.user_file_dir}/eval_params.json",
+                append=True,
+            )
+
+            del uploaded_file
 
         # Your dictionary
         st.text("Example of expected input:")

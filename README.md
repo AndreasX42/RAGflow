@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/cci-23k7wh/RAGflow-CCI)
+
 # RAGflow 👨‍💻
 
 This repository offers tools to construct and evaluate Retrieval Augmented Generation (RAG) systems for creating question-answer applications on top of document stores. We treat parameters such as chunk size, overlap, the choice of embedding model and the chat model as hyperparameters. A grid search is performed in this parameter space to optimize results.

@@ -30,9 +30,9 @@ jobs:
           command: |
             . venv/bin/activate
 
-            docker build -t $DOCKER_USER/$IMAGE_NAME:$TAG ./app
-            docker build -t $DOCKER_USER/$IMAGE_NAME:$TAG ./backend
-            docker build -t $DOCKER_USER/$IMAGE_NAME:$TAG ./vectorstore
+            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG ./app
+            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG ./backend
+            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG ./vectorstore
 
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
 

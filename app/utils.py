@@ -18,24 +18,30 @@ def write_json(data: dict, filename: str, append: Optional[bool] = True) -> None
     """Function used to store generated QA pairs, i.e. the ground truth."""
 
     # If no append should be performed we delete it
-    if not append:
+    if not append and os.path.exists(filename):
         os.remove(filename)
+
+    combined_data = []
 
     # Check if file exists
     if os.path.exists(filename):
         # File exists, read the data
         with open(filename, "r", encoding="utf-8") as file:
-            json_data = json.load(file)
-            # Assuming the data is a list; you can modify as per your requirements
-            json_data.extend(data)
+            existing_data = json.load(file)
+            if isinstance(existing_data, list):
+                combined_data.extend(existing_data)
+            else:
+                combined_data.append(existing_data)
+
+    # Append the new data
+    if isinstance(data, list):
+        combined_data.extend(data)
     else:
-        # File doesn't exist; set data as the new_data
-        # This assumes the main structure is a list; modify as needed
-        json_data = data  # [data]
+        combined_data.append(data)
 
     # Write the combined data back to the file
     with open(filename, "w", encoding="utf-8") as file:
-        json.dump(json_data, file, indent=4)
+        json.dump(combined_data, file, indent=4)
 
 
 def display_files(path: str):
@@ -53,9 +59,21 @@ def display_files(path: str):
 
 
 def list_files_in_directory(path):
-    """List all files in the specified directory."""
-    with os.scandir(path) as directory:
-        return [entry.name for entry in directory if entry.is_file()]
+    """List all files in the specified directory and its subdirectories."""
+    file_list = []
+
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            # Create a relative path from the original path
+            relative_path = os.path.relpath(root, path)
+            if relative_path == ".":
+                # If the file is in the root directory, just append the file name
+                file_list.append(file)
+            else:
+                # Otherwise, append the subdirectory prefix and the file name
+                file_list.append(os.path.join(relative_path, file))
+
+    return file_list
 
 
 def save_uploaded_file(uploaded_file: str, doc_save_path: str):
@@ -104,16 +122,52 @@ def start_qa_gen() -> bool:
         "qa_gen_params_path": get_qa_gen_params_path(),
     }
 
-    response = requests.post(
-        f"http://{API_HOST}:{API_PORT}/evalsetgeneration/start", json=json_payload
-    )
+    # response = requests.post(
+    #    f"http://{API_HOST}:{API_PORT}/evalsetgeneration/start", json=json_payload
+    # )
+    import time
 
-    # Handle response errors if needed
-    response.raise_for_status()
+    time.sleep(10)
 
-    write_json(response.json(), get_eval_data_path(), append=False)
+    if response.status_code == 200:
+        st.session_state.response = 1
+    else:
+        st.session_state.response = 2
 
-    return True
+
+def realname(path, root=None):
+    if root is not None:
+        path = os.path.join(root, path)
+    result = os.path.basename(path)
+    if os.path.islink(path):
+        realpath = os.readlink(path)
+        result = "%s -> %s" % (os.path.basename(path), realpath)
+    return result
+
+
+def ptree(startpath, depth=-1):
+    prefix = 0
+    if startpath != "/":
+        if startpath.endswith("/"):
+            startpath = startpath[:-1]
+        prefix = len(startpath)
+
+    structure_str = ""
+    for root, dirs, files in os.walk(startpath):
+        level = root[prefix:].count(os.sep)
+        if depth > -1 and level > depth:
+            continue
+        indent = subindent = ""
+        if level > 0:
+            indent = "|   " * (level - 1) + "|-- "
+        subindent = "|   " * (level) + "|-- "
+        structure_str += "{}{}/\n".format(indent, realname(root))
+        for d in dirs:
+            if os.path.islink(os.path.join(root, d)):
+                structure_str += "{}{}\n".format(subindent, realname(d, root=root))
+        for f in files:
+            structure_str += "{}{}\n".format(subindent, realname(f, root=root))
+    return structure_str
 
 
 def get_user_directory() -> str:

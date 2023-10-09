@@ -1,6 +1,5 @@
 import streamlit as st
-import os
-from utils import display_files, save_uploaded_file
+from utils import get_document_store_path, save_uploaded_file, ptree
 
 
 def page_documents():
@@ -29,8 +28,6 @@ def page_documents():
 
             del uploaded_files
 
-        display_files(doc_save_path)
-
         with tab2:
             st.write("Not implemented yet.")
             # Provide link to cloud resource
@@ -38,3 +35,10 @@ def page_documents():
 
             if cloud_link:
                 st.write(f"You provided the link: {cloud_link}")
+
+        # List all files in the directory
+        st.subheader("Files uploaded")
+        path = get_document_store_path()
+        if path:
+            structure = ptree(path)
+            st.code(structure, language="plaintext")

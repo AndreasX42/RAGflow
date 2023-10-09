@@ -1,5 +1,14 @@
 [
     {
+        "chunk_size": 512,
+        "chunk_overlap": 10,
+        "length_function_name": "text-embedding-ada-002",
+        "qa_generator_llm": "gpt-3.5-turbo",
+        "embedding_models": [
+            "y"
+        ]
+    },
+    {
         "chunk_size": 1024,
         "chunk_overlap": 0,
         "qa_generator_llm": "gpt-3.5-turbo",
@@ -8,7 +17,16 @@
         "persist_to_vs": true,
         "embedding_model_list": [
             "text-embedding-ada-002",
-            "text-embedding-ada-002"
+            "text-embedding-ada-002x"
+        ]
+    },
+    {
+        "chunk_size": 512,
+        "chunk_overlap": 10,
+        "length_function_name": "text-embedding-ada-002",
+        "qa_generator_llm": "gpt-3.5-turbo",
+        "embedding_models": [
+            "y"
         ]
     }
 ]

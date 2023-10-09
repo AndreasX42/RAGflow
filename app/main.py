@@ -19,8 +19,8 @@ def main():
                     "Home",
                     "Dashboard",
                     "Parameters",
-                    "Upload Docs",
-                    "Downloads",
+                    "Documents",
+                    "File Manager",
                     "Authenticate",
                 ],
                 icons=[
@@ -28,7 +28,7 @@ def main():
                     "clipboard2-pulse-fill",
                     "toggles",
                     "cloud-upload-fill",
-                    "cloud-download-fill",
+                    "file-earmark-text-fill",
                     "file-earmark-check-fill",
                 ],
                 menu_icon="cast",
@@ -47,9 +47,9 @@ def main():
             page_dashboard()
         if selected == "Parameters":
             page_params()
-        if selected == "Upload Docs":
+        if selected == "Documents":
             page_documents()
-        if selected == "Downloads":
+        if selected == "File Manager":
             page_downloads()
         if selected == "Authenticate":
             page_login()

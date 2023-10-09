@@ -2,73 +2,77 @@ import streamlit as st
 import pandas as pd
 import os
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import json
 import plotly.express as px
+from utils import *
 
 
 def page_dashboard():
     st.title("Dashboard Page")
 
-    if "user_file_dir" in st.session_state:
-        eval_data_path = f"{st.session_state.user_file_dir}eval_data.json"
-        hp_runs_data_path = f"{st.session_state.user_file_dir}hp_runs_data.csv"
-        eval_results_path = f"{st.session_state.user_file_dir}eval_results.json"
-
     if "user_id" not in st.session_state or not st.session_state.user_id:
-        st.warning("Warning: Authenticate before uploading data.")
-
-    elif not os.path.exists(eval_data_path):
-        st.warning("No evaluation dataset found, generate it first.")
-
-    elif not os.path.exists(hp_runs_data_path):
-        st.warning("No hyperparameter evaluation data found, start some hp evaluation.")
+        st.warning("Warning: Authenticate before viewing data.")
+        return
 
     else:
-        if os.path.exists(eval_data_path) and os.path.exists(hp_runs_data_path):
-            # load excel file
-            df_hp_runs = pd.read_csv(hp_runs_data_path)
+        tab1, tab2, tab3, tab4 = st.tabs(
+            [
+                "Charts",
+                "Evaluation dataset",
+                "Generated predictions",
+                "Combined dataset",
+            ]
+        )
 
-            df_eval_set = pd.read_json(eval_data_path)
-            df_eval_set = pd.concat(
-                [df_eval_set, pd.json_normalize(df_eval_set["metadata"])], axis=1
-            )
-            df_eval_set = df_eval_set.drop(columns=["metadata"])
+        with tab1:
+            if os.path.exists(get_eval_results_path()):
+                plot_eval_results(get_eval_results_path())
+            else:
+                st.warning("No hyperparameter results available. Run some evaluation.")
 
-            merged_df = df_eval_set.merge(df_hp_runs, left_on="id", right_on="qa_id")
-            merged_df.drop(columns="id", inplace=True)
+        with tab2:
+            if os.path.exists(get_eval_data_path()):
+                df_eval_set = get_df_eval_set()
 
-            tab1, tab2, tab3, tab4 = st.tabs(
-                [
-                    "Charts",
-                    "Evaluation dataset",
-                    "Generated predictions",
-                    "Combined dataset",
-                ]
-            )
-
-            with tab1:
-                plot_eval_results(eval_results_path)
-
-            with tab2:
                 showData = st.multiselect(
                     "Filter: ",
                     df_eval_set.columns,
                     default=["question", "answer", "source", "id"],
                 )
                 st.dataframe(df_eval_set[showData], use_container_width=True)
+            else:
+                st.warning("No evaluation data available. Generate it.")
 
-            with tab3:
+        with tab3:
+            if os.path.exists(get_hp_runs_data_path()):
+                df_hp_runs = pd.read_csv(get_hp_runs_data_path())
+
                 showData = st.multiselect(
                     "Filter: ",
                     df_hp_runs.columns,
-                    default=["hp_id", "predicted_answer", "retrieved_docs", "qa_id"],
+                    default=[
+                        "hp_id",
+                        "predicted_answer",
+                        "retrieved_docs",
+                        "qa_id",
+                    ],
                 )
                 st.dataframe(df_hp_runs[showData], use_container_width=True)
+            else:
+                st.warning("No generated dataset from hyperparameter runs available.")
 
-            with tab4:
+        with tab4:
+            if os.path.exists(get_eval_data_path()) and os.path.exists(
+                get_hp_runs_data_path()
+            ):
+                df_eval_set4 = get_df_eval_set()
+                df_hp_runs4 = get_df_hp_runs()
+
+                merged_df = df_eval_set4.merge(
+                    df_hp_runs4, left_on="id", right_on="qa_id"
+                )
+                merged_df.drop(columns="id", inplace=True)
+
                 showData = st.multiselect(
                     "Filter: ",
                     merged_df.columns,
@@ -83,6 +87,23 @@ def page_dashboard():
                     ],
                 )
                 st.dataframe(merged_df[showData], use_container_width=True)
+            else:
+                st.warning("Not sufficient data available.")
+
+
+def get_df_eval_set() -> pd.DataFrame:
+    df_eval_set = pd.read_json(get_eval_data_path())
+    df_eval_set = pd.concat(
+        [df_eval_set, pd.json_normalize(df_eval_set["metadata"])],
+        axis=1,
+    )
+    df_eval_set = df_eval_set.drop(columns=["metadata"])
+
+    return df_eval_set
+
+
+def get_df_hp_runs() -> pd.DataFrame():
+    return pd.read_csv(get_hp_runs_data_path())
 
 
 def plot_eval_results(eval_results_path: str):

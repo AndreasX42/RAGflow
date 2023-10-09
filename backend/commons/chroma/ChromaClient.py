@@ -2,8 +2,8 @@ import chromadb
 from chromadb.config import Settings
 import os
 
-API_HOST = os.environ.get("CHROMADB_HOST")
-API_PORT = os.environ.get("CHROMADB_PORT")
+API_HOST = os.environ.get("CHROMADB_HOST", "localhost")
+API_PORT = os.environ.get("CHROMADB_PORT", 8000)
 
 
 class ChromaClient:

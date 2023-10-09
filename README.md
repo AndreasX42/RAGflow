@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/cci-23k7wh/RAGflow-CCI)
+[![CircleCI](https://dl.circleci.com/status-badge/img/circleci/6FfqBzs4fBDyTPvBNqnq5x/8HU8omXUEUaEgrpWMj271K/tree/main.svg?style=shield)](https://app.circleci.com/pipelines/circleci/6FfqBzs4fBDyTPvBNqnq5x)
 
 # RAGflow 👨‍💻
 

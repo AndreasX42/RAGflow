@@ -9,7 +9,9 @@ def page_downloads():
     st.title("File Manager")
 
     if "user_id" not in st.session_state or not st.session_state.user_id:
-        st.error("WARNING: Authenticate before downloading data.")
+        st.warning("Warning: Authenticate before downloading data.")
+        return
+
     else:
         # Assuming the directory is named after the user's UUID
 

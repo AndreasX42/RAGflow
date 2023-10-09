@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
         st.markdown(auth_button, unsafe_allow_html=True)
 
-        st.markdown("<br>" * 3, unsafe_allow_html=True)
+        st.markdown("<br>" * 1, unsafe_allow_html=True)
         st.markdown("---")
         st.markdown(
             '<div style="text-align: center;"><h6>Made in &nbsp;<a href="https://streamlit.io" target="_blank"><img src="https://streamlit.io/images/brand/streamlit-mark-color.png" alt="Streamlit logo" height="16"></a>&nbsp by <a href="https://github.com/AndreasX42">@AndreasX42</a></h6></div>',

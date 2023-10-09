@@ -3,6 +3,7 @@ import os
 import requests
 import json
 from typing import Optional
+import time
 
 API_HOST = os.environ.get("EVALBACKEND_HOST")
 API_PORT = os.environ.get("EVALBACKEND_PORT")
@@ -42,20 +43,6 @@ def write_json(data: dict, filename: str, append: Optional[bool] = True) -> None
     # Write the combined data back to the file
     with open(filename, "w", encoding="utf-8") as file:
         json.dump(combined_data, file, indent=4)
-
-
-def display_files(path: str):
-    files = list_files_in_directory(path)
-
-    if not files:
-        st.write("No files uploaded!")
-    else:
-        # Display the files in a nice format
-        st.markdown("### List of files:")
-        for file_name in files:
-            st.write(f"- {file_name}")
-
-    return files
 
 
 def list_files_in_directory(path):
@@ -116,26 +103,103 @@ def get_valid_params():
 def start_qa_gen() -> bool:
     """Start QA eval set generation."""
 
-    json_payload = {
-        "document_store_path": get_document_store_path(),
-        "eval_dataset_path": get_eval_data_path(),
-        "qa_gen_params_path": get_qa_gen_params_path(),
-    }
+    try:
+        json_payload = {
+            "document_store_path": get_document_store_path(),
+            "eval_dataset_path": get_eval_data_path(),
+            "qa_gen_params_path": get_qa_gen_params_path(),
+        }
 
-    # response = requests.post(
-    #    f"http://{API_HOST}:{API_PORT}/evalsetgeneration/start", json=json_payload
-    # )
-    import time
+        response = requests.post(
+            f"http://{API_HOST}:{API_PORT}/evalsetgeneration/start", json=json_payload
+        )
 
-    time.sleep(10)
+        response.raise_for_status()
+        return "Successfully generated evaluation data."
 
-    if response.status_code == 200:
-        st.session_state.response = 1
-    else:
-        st.session_state.response = 2
+    except requests.HTTPError as http_err:
+        return f"HTTP error occurred: {http_err}"
+
+    except Exception as err:
+        return f"An error occurred: {err}"
+
+
+def start_hp_run() -> bool:
+    """Start Hyperparameters evaluation."""
+
+    try:
+        json_payload = {
+            "document_store_path": get_document_store_path(),
+            "eval_dataset_path": get_eval_data_path(),
+            "eval_params_path": get_eval_params_path(),
+            "eval_results_path": get_eval_results_path(),
+            "hp_runs_data_path": get_hp_runs_data_path(),
+        }
+
+        response = requests.post(
+            f"http://{API_HOST}:{API_PORT}/evaluations/start", json=json_payload
+        )
+
+        response.raise_for_status()
+        return "Successfully ran hyperparameters evaluations."
+
+    except requests.HTTPError as http_err:
+        return f"HTTP error occurred: {http_err}"
+
+    except Exception as err:
+        return f"An error occurred: {err}"
+
+
+def upload_files(
+    context: str,
+    ext_list: list[str],
+    file_path: str,
+    allow_multiple_files: Optional[bool] = False,
+):
+    """Function to let the user upload files."""
+    with st.expander("Upload file(s)"):
+        with st.form(f"upload_{context}", clear_on_submit=True):
+            selection = st.file_uploader(
+                label=f"Upload file(s) with extension {', '.join(ext_list)}.",
+                type=ext_list,
+                accept_multiple_files=allow_multiple_files,
+                key=f"context_{context}",
+            )
+
+            submitted = st.form_submit_button("Upload file(s)")
+
+            # for now only ["json"] or ["docx", "txt", "pdf"] possible as ext_list
+            if submitted and selection is not None:
+                if "json" in ext_list:
+                    # To read file as bytes:
+                    bytes_data = selection.getvalue()
+                    # To convert to a string based on json:
+                    string_data = bytes_data.decode("utf-8")
+                    # Load the JSON to a Python object
+                    data = json.loads(string_data)
+                    # Display the JSON contents
+                    st.write(data)
+                    # save json
+                    write_json(
+                        data,
+                        file_path,
+                    )
+
+                    with st.spinner():
+                        st.success("File(s) uploaded successfully!")
+                        time.sleep(2)
+
+                else:
+                    for file in selection:
+                        save_uploaded_file(file, file_path)
+
+                    with st.spinner():
+                        st.success("File(s) uploaded successfully!")
+                        time.sleep(2)
 
 
 def realname(path, root=None):
+    """Helper function for ptree."""
     if root is not None:
         path = os.path.join(root, path)
     result = os.path.basename(path)
@@ -146,6 +210,7 @@ def realname(path, root=None):
 
 
 def ptree(startpath, depth=-1):
+    """Displays a tree structure of current user directory."""
     prefix = 0
     if startpath != "/":
         if startpath.endswith("/"):
@@ -170,6 +235,9 @@ def ptree(startpath, depth=-1):
     return structure_str
 
 
+#
+# Getter methods for user file paths.
+#
 def get_user_directory() -> str:
     """Return the user directory based on user_id."""
     return os.path.join("./tmp", st.session_state.user_id)

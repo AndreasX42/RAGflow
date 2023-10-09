@@ -59,13 +59,15 @@ class Hyperparameters(BaseConfigurations):
     def from_dict(cls, input_dict: dict[str, str]):
         _input = dict(**input_dict)
 
+        # set default values if use_grader_llm=False and additional values not set
+        if not _input["use_llm_grader"]:
+            _input["grade_answer_prompt"] = CVGradeAnswerPrompt.NONE.value
+            _input["grade_docs_prompt"] = CVGradeDocumentsPrompt.NONE.value
+            _input["grader_llm"] = LLM_MODELS[0]
+
+        # set the actual langchain objects
         _input["embedding_model"] = cls.get_embedding_model(_input["embedding_model"])
         _input["qa_llm"] = cls.get_language_model(_input["qa_llm"])
         _input["grader_llm"] = cls.get_language_model(_input["grader_llm"])
-
-        # add values that may not be set if use_llm_grader=False
-        _input.setdefault("grade_answer_prompt", "none")
-        _input.setdefault("grade_docs_prompt", "none")
-        _input.setdefault("grader_llm", "gpt-3.5-turbo")
 
         return cls(**_input)

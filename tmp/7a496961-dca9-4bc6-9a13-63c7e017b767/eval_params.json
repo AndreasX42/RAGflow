@@ -1,6 +1,6 @@
 [
     {
-        "id": 0,
+        "id": 1,
         "chunk_size": 512,
         "chunk_overlap": 10,
         "length_function_name": "text-embedding-ada-002",
@@ -11,7 +11,7 @@
         "use_llm_grader": false
     },
     {
-        "id": 0,
+        "id": 2,
         "chunk_size": 512,
         "chunk_overlap": 10,
         "length_function_name": "text-embedding-ada-002",
@@ -19,51 +19,6 @@
         "search_type": "similarity",
         "embedding_model": "text-embedding-ada-002",
         "qa_llm": "gpt-3.5-turbo",
-        "grade_answer_prompt": "fast",
-        "grade_docs_prompt": "default",
-        "grader_llm": "gpt-3.5-turbo",
-        "use_llm_grader": true
-    },
-    {
-        "id": 0,
-        "chunk_size": 1024,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "use_llm_grader": false,
-        "search_type": "mmr",
-        "length_function_name": "len",
-        "grade_answer_prompt": "few_shot",
-        "grade_docs_prompt": "default",
-        "embedding_model": "text-embedding-ada-002",
-        "qa_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-3.5-turbo"
-    },
-    {
-        "id": 1,
-        "chunk_size": 512,
-        "chunk_overlap": 10,
-        "num_retrieved_docs": 3,
-        "use_llm_grader": false,
-        "search_type": "mmr",
-        "length_function_name": "len",
-        "grade_answer_prompt": "zero_shot",
-        "grade_docs_prompt": "default",
-        "embedding_model": "text-embedding-ada-002",
-        "qa_llm": "gpt-3.5-turbo",
-        "grader_llm": "gpt-4"
-    },
-    {
-        "id": 0,
-        "chunk_size": 512,
-        "chunk_overlap": 10,
-        "length_function_name": "text-embedding-ada-002",
-        "num_retrieved_docs": 3,
-        "search_type": "similarity",
-        "embedding_model": "text-embedding-ada-002",
-        "qa_llm": "gpt-3.5-turbo",
-        "grade_answer_prompt": "fast",
-        "grade_docs_prompt": "default",
-        "grader_llm": "gpt-3.5-turbo",
-        "use_llm_grader": true
+        "use_llm_grader": false
     }
 ]

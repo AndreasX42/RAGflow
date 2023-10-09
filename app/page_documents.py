@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import get_document_store_path, save_uploaded_file, ptree
+from utils import *
 
 
 def page_documents():
@@ -8,7 +8,8 @@ def page_documents():
     st.subheader("Provide the documents that the application should use.")
 
     if "user_id" not in st.session_state or not st.session_state.user_id:
-        st.warning("WARNING: Authenticate before uploading data.")
+        st.warning("Warning: Authenticate before uploading data.")
+        return
 
     else:
         tab1, tab2 = st.tabs(["Upload JSON file", "Provide cloud storage link"])
@@ -17,16 +18,12 @@ def page_documents():
 
         with tab1:
             # Upload local files
-            uploaded_files = st.file_uploader(
-                "Choose a set of PDF, TXT, or DOCX files",
-                accept_multiple_files=True,
-                type=["pdf", "txt", "docx"],
+            upload_files(
+                context="docs",
+                ext_list=["pdf", "txt", "docx"],
+                file_path=get_document_store_path(),
+                allow_multiple_files=True,
             )
-
-            for uploaded_file in uploaded_files:
-                save_uploaded_file(uploaded_file, doc_save_path)
-
-            del uploaded_files
 
         with tab2:
             st.write("Not implemented yet.")

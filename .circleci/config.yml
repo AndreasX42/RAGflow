@@ -1,29 +1,51 @@
 version: 2.1
-jobs:
-  build:
+
+executors:
+  python-docker-executor:
     docker:
       - image: cimg/python:3.11
+
+jobs:
+  build_all:
+    executor: python-docker-executor
     steps:
       - checkout
       - run:
-          name: Setup VirtualEnv
+          name: Setup VirtualEnv for App
           command: |
-            echo 'export TAG=0.1.${CIRCLE_BUILD_NUM}' >> $BASH_ENV
-            echo 'export IMAGE_NAME=python-circleci-docker' >> $BASH_ENV 
+            echo 'export TAG=${CIRCLE_BUILD_NUM}' >> $BASH_ENV
+            echo 'export IMAGE_NAME_BASE=ragflow' >> $BASH_ENV 
             virtualenv venv
             . venv/bin/activate
             pip install --no-cache-dir -r ./app/requirements.txt
       - run:
-          name: Run Tests
+          name: Run App Tests
           command: |
             . venv/bin/activate
             python tests/test.py
       - setup_remote_docker:
-          docker_layer_caching: false
+          docker_layer_caching: true
       - run:
-          name: Build and push Docker image
+          name: Build and push App Docker image
           command: |
             . venv/bin/activate
+
             docker build -t $DOCKER_USER/$IMAGE_NAME:$TAG ./app
+            docker build -t $DOCKER_USER/$IMAGE_NAME:$TAG ./backend
+            docker build -t $DOCKER_USER/$IMAGE_NAME:$TAG ./vectorstore
+
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push $DOCKER_USER/$IMAGE_NAME:$TAG
+
+            docker push $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
+            docker push $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
+            docker push $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG
+
+  # Add similar jobs for vectorstore and backend as well...
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build_all
+      # - build_vectorstore
+      # - build_backend

@@ -24,7 +24,6 @@ jobs:
           name: Build and push Docker image
           command: |
             . venv/bin/activate
-          #  pyinstaller -F hello_world.py
             docker build -t $DOCKER_USER/$IMAGE_NAME:$TAG ./app
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
             docker push $DOCKER_USER/$IMAGE_NAME:$TAG

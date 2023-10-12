@@ -2,7 +2,17 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/6FfqBzs4fBDyTPvBNqnq5x/8HU8omXUEUaEgrpWMj271K/tree/main.svg?style=shield&circle-token=545d0058e25f4566f54a9282ef976f6a8a77b327)](https://app.circleci.com/pipelines/circleci/6FfqBzs4fBDyTPvBNqnq5x)
 
-RAGflow provides tools for constructing and evaluating Retrieval Augmented Generation (RAG) systems, empowering developers to craft efficient question-answer applications leveraging LLMs.
+RAGflow provides tools for constructing and evaluating Retrieval Augmented Generation (RAG) systems, empowering developers to craft efficient question-answer applications leveraging LLMs. The stack consists of
+
+- [Python](https://www.python.org/)
+- [LangChain](https://www.langchain.com/)
+- [OpenAI](https://www.openai.com/)
+- [Hugging Face](https://huggingface.co/)
+- [ChromaDB](https://www.trychroma.com/)
+- [Streamlit](https://www.streamlit.io/)
+- [Docker](https://www.docker.com/)
+- [CircleCI](https://circleci.com/)
+
 
 # 📋 TODO
 - Write unit and integration tests for CI
@@ -43,6 +53,7 @@ Directory Structure
 Setup
 - Checkout repository
 - Start application with ‘docker-compose up --build’
+- Frontend should be available on localhost:8501.
     
 # 🌐 Links & Resources
 - TBA

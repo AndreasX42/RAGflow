@@ -6,7 +6,7 @@ executors:
       - image: cimg/python:3.11
 
 jobs:
-  test_application:
+  run_integration_tests:
     docker:
       - image: cimg/python:3.11
     steps:
@@ -14,29 +14,34 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
+          name: Install Dependencies
+          command: |
+            pip install --upgrade pip
+            pip install pytest
+            # Add any other dependencies here
+      - run:
           name: Build Docker Compose services
-          command: docker-compose build
+          command: docker-compose -f docker-compose-test.yaml build
       - run:
           name: Run Docker Compose up
-          command: docker-compose up -d
+          command: docker-compose -f docker-compose-test.yaml up -d
       - run:
           name: Execute integration tests
           command: |
-            # Example script for integration tests
-            ./run_integration_tests.sh
+            pytest tests/
       - run:
           name: Bring services down
-          command: docker-compose down
+          command: docker-compose -f docker-compose-test.yaml down
       - store_artifacts:
           path: /tests/test-reports
           destination: test-reports
 
-  build_and_test_units:
+  build_and_push_to_docker_hub:
     executor: python-docker-executor
     steps:
       - checkout
       - run:
-          name: Setup VirtualEnv for App
+          name: Setup VirtualEnv
           command: |
             echo 'export TAG=${CIRCLE_BUILD_NUM}' >> $BASH_ENV
             echo 'export IMAGE_NAME_BASE=ragflow' >> $BASH_ENV 
@@ -51,7 +56,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Build and push App Docker image
+          name: Build and push to Docker Hub
           command: |
             . venv/bin/activate
 
@@ -65,12 +70,9 @@ jobs:
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG
 
-  # Add similar jobs for vectorstore and backend as well...
-
 workflows:
   version: 2
   build-deploy:
     jobs:
-      - build_and_test_units
-      # - build_vectorstore
-      # - build_backend
+      - run_integration_tests
+      - build_and_push_to_docker_hub

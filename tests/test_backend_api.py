@@ -47,11 +47,11 @@ class CVRetrieverSearchType(Enum):
     MMR = "mmr"
 
 
-BACKEND_HOST = os.environ.get("EVALBACKEND_HOST", "localhost")
-BACKEND_PORT = os.environ.get("EVALBACKEND_HOST", "8080")
+BACKEND_HOST = os.environ.get("EVALBACKEND_HOST")
+BACKEND_PORT = os.environ.get("EVALBACKEND_HOST")
 
-CHROMADB_HOST = os.environ.get("CHROMADB_HOST", "localhost")
-CHROMADB_PORT = os.environ.get("CHROMADB_PORT", "8000")
+CHROMADB_HOST = os.environ.get("CHROMADB_HOST")
+CHROMADB_PORT = os.environ.get("CHROMADB_PORT")
 
 
 def fetch_data(host: str, port: str, endpoint: str):

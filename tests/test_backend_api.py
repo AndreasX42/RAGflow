@@ -1,5 +1,5 @@
 import requests
-from enum import Enum, EnumType
+from enum import EnumType
 
 from backend.commons.configurations.BaseConfigurations import (
     LLM_MODELS,

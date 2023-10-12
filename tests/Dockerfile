@@ -10,4 +10,4 @@ COPY ./ ./
 
 RUN chmod +x wait-for-it.sh
 
-ENTRYPOINT [ "/bin/bash", "-c" , "./wait-for-it.sh eval-backend:8000 --timeout=30 -- pytest]
+ENTRYPOINT ["/bin/bash", "-c" , "./wait-for-it.sh eval-ba:8000 --timeout=30 -- pytest"]

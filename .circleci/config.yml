@@ -14,23 +14,10 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Install Dependencies
-          command: |
-            pip install --upgrade pip
-            pip install pytest requests
-            # Add any other dependencies here
+          name: Run Docker Compose to build and start
+          command: docker-compose -f docker-compose-test.yaml up --build
       - run:
-          name: Build Docker Compose services
-          command: docker-compose -f docker-compose-test.yaml build
-      - run:
-          name: Run Docker Compose up
-          command: docker-compose -f docker-compose-test.yaml up -d
-      - run:
-          name: Execute integration tests
-          command: |
-            pytest tests/
-      - run:
-          name: Bring services down
+          name: Shut services down
           command: docker-compose -f docker-compose-test.yaml down
       - store_artifacts:
           path: /tests/test-reports

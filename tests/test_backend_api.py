@@ -47,8 +47,8 @@ class CVRetrieverSearchType(Enum):
     MMR = "mmr"
 
 
-BACKEND_URL = os.environ.get("EVALBACKEND_URL", "localhost:8080")
-CHROMADB_URL = os.environ.get("CHROMADB_URL", "localhost:8000")
+BACKEND_URL = os.environ.get("EVALBACKEND_URL")
+CHROMADB_URL = os.environ.get("CHROMADB_URL")
 
 
 def fetch_data(api_url: str, endpoint: str):

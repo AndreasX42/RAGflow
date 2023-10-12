@@ -51,3 +51,5 @@ services:
       - app
       - eval-backend
       - chromadb
+    volumes:
+      - ./tests:/tests

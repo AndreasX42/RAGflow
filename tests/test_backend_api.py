@@ -5,26 +5,18 @@ import os
 ####################
 # LLM Models
 ####################
-LLAMA_2_MODELS = [
+LLM_MODELS = [
+    "gpt-3.5-turbo",
+    "gpt-4",
     "Llama-2-7b-chat-hf",
     "Llama-2-13b-chat-hf",
     "Llama-2-70b-chat-hf",
 ]
 
-OPENAI_LLM_MODELS = ["gpt-3.5-turbo", "gpt-4"]
-
-LLM_MODELS = [*OPENAI_LLM_MODELS, *LLAMA_2_MODELS]
-
-# Anyscale configs
-ANYSCALE_LLM_PREFIX = "meta-llama/"
-ANYSCALE_API_URL = "https://api.endpoints.anyscale.com/v1"
-
 ####################
 # Embedding Models
 ####################
-OPENAI_EMB_MODELS = ["text-embedding-ada-002"]
-
-EMB_MODELS = [*OPENAI_EMB_MODELS]
+EMB_MODELS = ["text-embedding-ada-002"]
 
 
 ####################
@@ -48,7 +40,7 @@ class CVRetrieverSearchType(Enum):
 
 
 BACKEND_HOST = os.environ.get("EVALBACKEND_HOST")
-BACKEND_PORT = os.environ.get("EVALBACKEND_HOST")
+BACKEND_PORT = os.environ.get("EVALBACKEND_PORT")
 
 CHROMADB_HOST = os.environ.get("CHROMADB_HOST")
 CHROMADB_PORT = os.environ.get("CHROMADB_PORT")

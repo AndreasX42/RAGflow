@@ -8,4 +8,6 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 COPY ./ ./
 
-CMD ["pytest", "-v"]
+RUN chmod +x wait-for-it.sh
+
+ENTRYPOINT [ "/bin/bash", "-c" , "./wait-for-it.sh chromadb:8000 --strict --timeout=30 -- pytest]

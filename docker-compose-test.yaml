@@ -51,4 +51,3 @@ services:
       - app
       - eval-backend
       - chromadb
-    restart: always

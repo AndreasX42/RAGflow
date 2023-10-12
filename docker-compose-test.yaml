@@ -13,7 +13,6 @@ services:
     environment:
       - EVALBACKEND_HOST=eval-backend
       - EVALBACKEND_PORT=8080
-    restart: always
   eval-backend:
     build:
       dockerfile: Dockerfile
@@ -27,7 +26,6 @@ services:
     environment:
       - CHROMADB_HOST=chromadb
       - CHROMADB_PORT=8000
-    restart: always
   chromadb:
     image: ghcr.io/chroma-core/chroma:latest
     container_name: chromadb
@@ -39,4 +37,16 @@ services:
     environment:
       - IS_PERSISTENT=TRUE
       - ALLOW_RESET=TRUE
+  test-suite:
+    build:
+      dockerfile: Dockerfile
+      context: ./tests
+    container_name: tester
+    environment:
+      - EVALBACKEND_URL=eval-backend:8080
+      - CHROMADB_URL=chromadb:8000
+    depends_on:
+      - app
+      - eval-backend
+      - chromadb
     restart: always

@@ -1,22 +1,59 @@
 import requests
-from enum import EnumType
+from enum import EnumType, Enum
+import os
 
-from backend.commons.configurations.BaseConfigurations import (
-    LLM_MODELS,
-    EMB_MODELS,
-    CVGradeAnswerPrompt,
-    CVGradeDocumentsPrompt,
-    CVRetrieverSearchType,
-)
+####################
+# LLM Models
+####################
+LLAMA_2_MODELS = [
+    "Llama-2-7b-chat-hf",
+    "Llama-2-13b-chat-hf",
+    "Llama-2-70b-chat-hf",
+]
 
-BASE_URL_BACKEND = "http://localhost:8080"
-BASE_URL_FRONTEND = "http://localhost:8501"
-BASE_URL_CHROMADB = "http://localhost:8000"
+OPENAI_LLM_MODELS = ["gpt-3.5-turbo", "gpt-4"]
+
+LLM_MODELS = [*OPENAI_LLM_MODELS, *LLAMA_2_MODELS]
+
+# Anyscale configs
+ANYSCALE_LLM_PREFIX = "meta-llama/"
+ANYSCALE_API_URL = "https://api.endpoints.anyscale.com/v1"
+
+####################
+# Embedding Models
+####################
+OPENAI_EMB_MODELS = ["text-embedding-ada-002"]
+
+EMB_MODELS = [*OPENAI_EMB_MODELS]
+
+
+####################
+# Enumerations
+####################
+class CVGradeAnswerPrompt(Enum):
+    FAST = "fast"
+    ZERO_SHOT = "zero_shot"
+    FEW_SHOT = "few_shot"
+    NONE = "none"
+
+
+class CVGradeDocumentsPrompt(Enum):
+    DEFAULT = "default"
+    NONE = "none"
+
+
+class CVRetrieverSearchType(Enum):
+    SIMILARITY = "similarity"
+    MMR = "mmr"
+
+
+BACKEND_URL = os.environ.get("EVALBACKEND_URL", "localhost:8080")
+CHROMADB_URL = os.environ.get("CHROMADB_URL", "localhost:8000")
 
 
 def fetch_data(api_url: str, endpoint: str):
     """Fetch data from the given endpoint."""
-    response = requests.get(f"{api_url}{endpoint}")
+    response = requests.get(f"http://{api_url}{endpoint}")
 
     # Handle response errors if needed
     response.raise_for_status()
@@ -35,7 +72,7 @@ def test_backend_get_endpoints():
     }
 
     for endpoint, expected_values in endpoints.items():
-        fetched_data = fetch_data(BASE_URL_BACKEND, endpoint)
+        fetched_data = fetch_data(BACKEND_URL, endpoint)
 
         # Assert that the fetched data matches the enum values
         if isinstance(expected_values, list):

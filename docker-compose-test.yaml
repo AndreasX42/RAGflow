@@ -43,8 +43,10 @@ services:
       context: ./tests
     container_name: tester
     environment:
-      - EVALBACKEND_URL=localhost:8080
-      - CHROMADB_URL=localhost:8000
+      - EVALBACKEND_HOST=localhost
+      - EVALBACKEND_PORT=8080
+      - CHROMADB_HOST=localhost
+      - CHROMADB_PORT=8000
     depends_on:
       - app
       - eval-backend

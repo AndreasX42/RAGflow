@@ -47,13 +47,16 @@ class CVRetrieverSearchType(Enum):
     MMR = "mmr"
 
 
-BACKEND_URL = os.environ.get("EVALBACKEND_URL")
-CHROMADB_URL = os.environ.get("CHROMADB_URL")
+BACKEND_HOST = os.environ.get("EVALBACKEND_HOST", "localhost")
+BACKEND_PORT = os.environ.get("EVALBACKEND_HOST", "8080")
+
+CHROMADB_HOST = os.environ.get("CHROMADB_HOST", "localhost")
+CHROMADB_PORT = os.environ.get("CHROMADB_PORT", "8000")
 
 
-def fetch_data(api_url: str, endpoint: str):
+def fetch_data(host: str, port: str, endpoint: str):
     """Fetch data from the given endpoint."""
-    response = requests.get(f"http://{api_url}{endpoint}")
+    response = requests.get(f"http://{host}:{port}{endpoint}")
 
     # Handle response errors if needed
     response.raise_for_status()
@@ -72,7 +75,7 @@ def test_backend_get_endpoints():
     }
 
     for endpoint, expected_values in endpoints.items():
-        fetched_data = fetch_data(BACKEND_URL, endpoint)
+        fetched_data = fetch_data(BACKEND_HOST, BACKEND_PORT, endpoint)
 
         # Assert that the fetched data matches the enum values
         if isinstance(expected_values, list):

@@ -12,11 +12,11 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Setup VirtualEnv
-        command: |
-          virtualenv venv
-          . venv/bin/activate
-          pip install --no-cache-dir -r ./tests/requirements.txt
+          name: Setup VirtualEnv
+          command: |
+            virtualenv venv
+            . venv/bin/activate
+            pip install --no-cache-dir -r ./tests/requirements.txt
       - setup_remote_docker:
           docker_layer_caching: false
       - run:

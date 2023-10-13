@@ -20,8 +20,8 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
-          name: Run Docker Compose to build and start
-          command: docker-compose -f docker-compose-test.yaml up --build --detach
+          name: Run Docker Compose to build, start and test
+          command: docker-compose -f docker-compose-test.yaml up --exit-code-from test-suite --build
       - run:
           name: Shut services down
           command: docker-compose -f docker-compose-test.yaml down

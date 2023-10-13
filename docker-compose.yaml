@@ -31,6 +31,8 @@ services:
   chromadb:
     image: ghcr.io/chroma-core/chroma:latest
     container_name: chromadb
+    ports:
+      - "8000:8000"
     volumes:
       - ./vectorstore/chromadb:/chroma/chroma
       - ./vectorstore:/vectorstore

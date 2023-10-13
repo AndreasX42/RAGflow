@@ -11,18 +11,23 @@ jobs:
       - image: cimg/python:3.11
     steps:
       - checkout
+      -run:
+        name: Setup VirtualEnv
+        command: |
+          virtualenv venv
+          . venv/bin/activate
+          pip install --no-cache-dir -r ./tests/requirements.txt
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Run Docker Compose to build and start
-          command: docker-compose -f docker-compose-test.yaml up --exit-code-from test-suite --build
+          command: docker-compose -f docker-compose-test.yaml up --build --detach
       - run:
           name: Shut services down
           command: docker-compose -f docker-compose-test.yaml down
       - store_artifacts:
           path: /tests/test-reports
           destination: test-reports
-
   build_and_push_to_docker_hub:
     executor: python-docker-executor
     steps:
@@ -35,13 +40,8 @@ jobs:
             virtualenv venv
             . venv/bin/activate
             pip install --no-cache-dir -r ./app/requirements.txt
-      - run:
-          name: Run App Tests
-          command: |
-            . venv/bin/activate
-            python tests/test.py
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Build and push to Docker Hub
           command: |

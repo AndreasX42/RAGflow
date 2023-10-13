@@ -66,8 +66,6 @@ def test_backend_get_endpoints():
         "/configs/grade_documents_prompts": CVGradeDocumentsPrompt,
     }
 
-    assert 1 == 2
-
     for endpoint, expected_values in endpoints.items():
         fetched_data = fetch_data(BACKEND_HOST, BACKEND_PORT, endpoint)
 

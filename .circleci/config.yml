@@ -40,16 +40,23 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
-          name: Build and push to Docker Hub
+          name: Login into Docker Hub
+          command: |
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+      - run:
+          name: Push app image
           command: |
             docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG ./app
-            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG ./backend
-            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG ./vectorstore
-
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
+      - run:
+          name: Push backend image
+          command: |
+            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG ./backend
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
+      - run:
+          name: Push vs image
+          command: |
+            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG ./vectorstore
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG
 
 workflows:

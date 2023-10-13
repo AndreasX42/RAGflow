@@ -11,7 +11,7 @@ jobs:
       - image: cimg/python:3.11
     steps:
       - checkout
-      -run:
+      - run:
         name: Setup VirtualEnv
         command: |
           virtualenv venv

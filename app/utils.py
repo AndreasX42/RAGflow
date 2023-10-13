@@ -108,6 +108,7 @@ def start_qa_gen() -> bool:
             "document_store_path": get_document_store_path(),
             "eval_dataset_path": get_eval_data_path(),
             "qa_gen_params_path": get_qa_gen_params_path(),
+            "user_id": st.session_state.user_id,
         }
 
         response = requests.post(
@@ -134,6 +135,7 @@ def start_hp_run() -> bool:
             "eval_params_path": get_eval_params_path(),
             "eval_results_path": get_eval_results_path(),
             "hp_runs_data_path": get_hp_runs_data_path(),
+            "user_id": st.session_state.user_id,
         }
 
         response = requests.post(

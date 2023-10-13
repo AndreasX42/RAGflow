@@ -25,6 +25,7 @@ async def arun_eval_for_hp(
     gt_dataset: list[dict[str, str]],
     hp: Hyperparameters,
     document_store: list[str],
+    user_id: str,
 ) -> dict:
     """Entry point for initiating the evaluation based on the provided hyperparameters and documents.
 
@@ -72,7 +73,7 @@ async def arun_eval_for_hp(
 
     # Calculate embedding similarities
     sim_s = grade_embedding_similarity(
-        gt_dataset, predicted_answers, hp.embedding_model
+        gt_dataset, predicted_answers, hp.embedding_model, user_id
     )
 
     scores["embedding_cosine_sim"] = sim_s
@@ -119,6 +120,7 @@ async def arun_evaluation(
     eval_dataset_path: str,
     eval_results_path: str,
     hp_runs_data_path: str,
+    user_id: str,
 ) -> None:
     # load evaluation dataset
     gt_dataset = read_json(eval_dataset_path)
@@ -129,7 +131,9 @@ async def arun_evaluation(
 
     hp_list = [Hyperparameters.from_dict(d) for d in hyperparams_list]
 
-    tasks = [arun_eval_for_hp(gt_dataset, hp, document_store) for hp in hp_list]
+    tasks = [
+        arun_eval_for_hp(gt_dataset, hp, document_store, user_id) for hp in hp_list
+    ]
 
     # run evaluations for all hyperparams
     results = await tqdm_asyncio.gather(*tasks, total=len(tasks))

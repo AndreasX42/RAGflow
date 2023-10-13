@@ -23,7 +23,10 @@ class EvaluationRunRequest(BaseModel):
         min_length=3, description="path to list of eval results"
     )
     hp_runs_data_path: str = Field(
-        min_length=3, description="path to list of generated "
+        min_length=3, description="path to list of generated"
+    )
+    user_id: str = Field(
+        min_length=1, description="user id, e.g. used to access cached embeddings"
     )
 
     class Config:
@@ -34,6 +37,7 @@ class EvaluationRunRequest(BaseModel):
                 "eval_dataset_path": "./tmp/eval_data.json",  # path to generated evaluation dataset
                 "eval_results_path": "./tmp/eval_results.json",  # path to list of eval results
                 "hp_runs_data_path": "./tmp/hp_runs_data.csv",  # path to list of generated predictions and retrieved docs
+                "user_id": "3e6e131c-d9f3-4085-a412-f5f8875e34f0",  # user id
             }
         }
 

@@ -32,7 +32,9 @@ async def get_qa_from_chunk(
         # attach chunk metadata to qa_pair
         for qa_pair in qa_pairs:
             qa_pair["metadata"] = dict(**chunk.metadata)
-            qa_pair["metadata"].update({"id": str(uuid.uuid4())})
+            qa_pair["metadata"].update(
+                {"id": str(uuid.uuid4()), "context": chunk.page_content}
+            )
 
         return qa_pairs
     except JSONDecodeError:
@@ -94,22 +96,25 @@ async def agenerate_eval_set_from_docs(
 
 
 async def aupsert_embeddings_for_model(
-    qa_pairs: list[dict], embedding_model: Embeddings
+    qa_pairs: list[dict], embedding_model: Embeddings, user_id: str
 ) -> None:
     with ChromaClient() as CHROMA_CLIENT:
-        collection_name = embedding_model.model
+        collection_id = f"userid_{user_id}_{embedding_model.model}"
 
         # check if collection already exists, if not create a new one with the embeddings
-        if collection_name in [
-            collection.name for collection in CHROMA_CLIENT.list_collections()
+        if [
+            collection
+            for collection in CHROMA_CLIENT.list_collections()
+            if collection.metadata.get("custom_id", "") == collection_id
         ]:
-            logger.info(f"Collection {collection_name} already exists, skipping it.")
+            logger.info(f"Collection {collection_id} already exists, skipping it.")
             return None
 
         collection = CHROMA_CLIENT.create_collection(
-            name=collection_name,
+            name=f"userid_{user_id[:32]}_{embedding_model.model}",
             metadata={
-                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3],
+                "custom_id": collection_id,
             },
         )
 
@@ -139,6 +144,7 @@ async def agenerate_and_save_dataset(
     hp: QAConfigurations,
     docs_path: str,
     eval_dataset_path: str,
+    user_id: str,
 ):
     """Generate a new evaluation dataset and save it to a JSON file."""
 
@@ -153,7 +159,7 @@ async def agenerate_and_save_dataset(
     # cache answers of qa pairs in vectorstore for each embedding model in hyperparams list
     if hp.persist_to_vs:
         tasks = [
-            aupsert_embeddings_for_model(gt_dataset, embedding_model)
+            aupsert_embeddings_for_model(gt_dataset, embedding_model, user_id)
             for embedding_model in hp.embedding_model_list
         ]
 
@@ -161,7 +167,10 @@ async def agenerate_and_save_dataset(
 
 
 async def agenerate_evaluation_set(
-    qa_gen_params_path: str, eval_dataset_path: str, document_store_path: str
+    qa_gen_params_path: str,
+    eval_dataset_path: str,
+    document_store_path: str,
+    user_id: str,
 ):
     """Entry function to generate the evaluation dataset.
 
@@ -192,10 +201,15 @@ async def agenerate_evaluation_set(
             )
             os.remove(eval_dataset_path)
 
-        # reset chromadb before
+        # reset chromadb collections for this user
         with ChromaClient() as client:
-            client.reset()
+            collections = client.list_collections()
+            for collection in collections:
+                if collection.metadata.get("custom_id", "").startswith(
+                    f"userid_{user_id}_"
+                ):
+                    client.delete_collection(name=collection.name)
 
         await agenerate_and_save_dataset(
-            qa_gen_params, document_store, eval_dataset_path
+            qa_gen_params, document_store, eval_dataset_path, user_id
         )

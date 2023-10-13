@@ -10,16 +10,25 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 - [Hugging Face](https://huggingface.co/)
 - [ChromaDB](https://www.trychroma.com/)
 - [Streamlit](https://www.streamlit.io/)
+- [FastAPI](https://fastapi.tiangolo.com/)
 - [Docker](https://www.docker.com/)
 - [CircleCI](https://circleci.com/)
 
+# 📖 What is Retrievel Augmented Generation (RAG)?
 
-# 📋 TODO
-- Write unit and integration tests for CI
-- Implement better Login/Authentication in Streamlit app
-- Set up CD onto Cloud environment (Kubernetes)
-- Optimize some design choices (shared volumes should be some cloud storage)
-    
+<img src="https://miro.medium.com/v2/resize:fit:4800/format:webp/1*Jq9bEbitg1Pv4oASwEQwJg.png" alt="Description" width="850"/>
+<p align="left"><a href="https://towardsdatascience.com/rag-vs-finetuning-which-is-the-best-tool-to-boost-your-llm-application-94654b1eaba7">Source</a></p>
+
+In RAG, when a user query is received, relevant documents or passages are retrieved from a massive corpus, i.e. a document store. These retrieved documents are then provided as context to a generative model, which synthesizes a coherent response or answer using both the input query and the retrieved information. This approach leverages the strengths of both retrieval-based and generative systems, aiming to produce accurate and well-formed responses by drawing from vast amounts of textual data.
+
+# 🚀 Workflow of RAGflow
+- Automatic Generation of Question-Answer Pairs\
+Begin with RAGflow's capability to generate relevant question-answer pairs from provided documents which is used as an evaluation dataset to evaluate RAG systems.
+Hyperparameter Evaluation
+- Evaluate provided hyperparameters \
+After generating Q&A pairs, dive into hyperparameter evaluation. Provide your hyperparameters, let RAGflow evaluate their efficacy, and obtain insights for crafting robust RAG systems.
+This approach allows you to select efficient document splitting strategies, language and embedding models which could be further finetuned with respect to your document store.
+
 # 🌟 Key Features & Functionalities
 - `Document Store Integration` Provide documents in formats like pdf and docx as knowledge base.
 - `Dynamic Parameter Selection` Customize parameters such as document splitting strategies, embedding model, and question-answering LLMs for evaluations.
@@ -29,16 +38,6 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 - `Integration with External Platforms` Collaborate with platforms like Anyscale, MosaicML, and Replicate for enhanced functionalities and state-of-the-art LLM models.
 - `Interactive Feedback Loop` Refine and improve your RAG system with interactive feedback based on real-world results.
     
-# 🚀 Workflow
-- Automatic Generation of Question-Answer Pairs\
-Begin with RAGflow's capability to generate relevant question-answer pairs from provided documents.
-Hyperparameter Evaluation
-- Evaluate provided hyperparameters \
-After generating Q&A pairs, dive deep into hyperparameter evaluation. Provide your hyperparameters, let RAGflow evaluate their efficacy, and obtain insights for crafting robust RAG systems.
-
-# 📖 Dive Deeper
-For a more interactive and comprehensive guide on RAGflow's functionalities and usage, check out our Streamlit frontend application. Here, we provide various detailed insights, set your parameters, and watch RAGflow automate the process of constructing RAG systems.
-
 # 🛠️ Development
 Directory Structure
 - `/.circleci` CircleCI integration config for CI/CD pipeline.
@@ -58,5 +57,7 @@ Setup
 # 🌐 Links & Resources
 - TBA
     
-# 🙋 About the Developer
-Hi, I'm Andreas! As a devoted developer and AI aficionado, I've always been drawn to leveraging the prowess of machine learning. RAGflow is my endeavor to simplify and optimize the creation of Retrieval Augmented Generation systems. Keen to explore? Dive into my GitHub repository for an in-depth look!
+# 📋 TODO
+- Write unit and integration tests for CI
+- Implement better Login/Authentication in Streamlit app
+- Set up CD onto Cloud environment (Kubernetes)

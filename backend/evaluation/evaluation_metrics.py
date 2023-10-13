@@ -32,6 +32,7 @@ def grade_embedding_similarity(
     gt_dataset: list[dict[str, str]],
     predictions: list[dict[str, str]],
     embedding_model: Embeddings,
+    user_id: str,
 ) -> float:
     """Calculate similarities of label answers and generated answers using the corresponding embeddings. We multiply the matrixes of the provided embeddings and take the average of the diagonal values, which should be the cosine similarites assuming that the embeddings were already normalized.
     TODO: Make sure embedding model returns normalized vectors.
@@ -55,7 +56,13 @@ def grade_embedding_similarity(
     # if not available, we calculate them again
     try:
         with ChromaClient() as CHROMA_CLIENT:
-            collection = CHROMA_CLIENT.get_collection(name=embedding_model.model)
+            collection_id = f"userid_{user_id}_{embedding_model.model}"
+
+            for col in CHROMA_CLIENT.list_collections():
+                if col.metadata.get("custom_id", "") == collection_id:
+                    collection = col
+                    break
+
             ids = [qa["metadata"]["id"] for qa in gt_dataset]
 
             target_embeddings = np.array(

@@ -19,6 +19,9 @@ class EvalsetGenerationRequest(BaseModel):
         min_length=3,
         description="path to where the generated qa pairs should be stored.",
     )
+    user_id: str = Field(
+        min_length=1, description="user id, e.g. used to access cached embeddings."
+    )
 
     class Config:
         json_schema_extra = {
@@ -26,6 +29,7 @@ class EvalsetGenerationRequest(BaseModel):
                 "document_store_path": "./tmp/document_store/",  # path to documents
                 "qa_gen_params_path": "./tmp/qa_gen_params.json",  # path to list of hyperparameters
                 "eval_dataset_path": "./tmp/eval_data.json",  # path to generated evaluation dataset
+                "user_id": "3e6e131c-d9f3-4085-a412-f5f8875e34f0",  # user id
             }
         }
 

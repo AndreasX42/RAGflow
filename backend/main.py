@@ -22,6 +22,7 @@ async def main(
     eval_params_path: str = "./tmp/eval_params.json",
     eval_results_path: str = "./tmp/eval_results.json",
     hp_runs_data_path: str = "./tmp/hp_runs_data.csv",
+    user_id: str = "3e6e131c-d9f3-4185-a492-f5f8875e34f0",
 ):
     """After generating gt_dataset we need to calculate the metrics based on Chunking strategy, type of vectorstore, retriever (similarity search), QA LLM
 
@@ -67,7 +68,7 @@ async def main(
 
     # generate evaluation dataset
     await agenerate_evaluation_set(
-        qa_gen_params_path, eval_dataset_path, document_store_path
+        qa_gen_params_path, eval_dataset_path, document_store_path, user_id
     )
 
     ################################################################
@@ -82,6 +83,7 @@ async def main(
         eval_dataset_path,
         eval_results_path,
         hp_runs_data_path,
+        user_id,
     )
 
 

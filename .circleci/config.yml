@@ -64,4 +64,6 @@ workflows:
   build-deploy:
     jobs:
       - run_integration_tests
-      - build_and_push_to_docker_hub
+      - build_and_push_to_docker_hub:
+          requires:
+            - run_integration_tests

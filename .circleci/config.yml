@@ -11,12 +11,12 @@ jobs:
       - image: cimg/python:3.11
     steps:
       - checkout
-      - run:
-          name: Setup VirtualEnv
-          command: |
-            virtualenv venv
-            . venv/bin/activate
-            pip install --no-cache-dir -r ./tests/requirements.txt
+      #- run:
+      #    name: Setup VirtualEnv
+      #    command: |
+      #      virtualenv venv
+      #      . venv/bin/activate
+      #      pip install --no-cache-dir -r ./tests/requirements.txt
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
@@ -37,16 +37,11 @@ jobs:
           command: |
             echo 'export TAG=${CIRCLE_BUILD_NUM}' >> $BASH_ENV
             echo 'export IMAGE_NAME_BASE=ragflow' >> $BASH_ENV 
-            virtualenv venv
-            . venv/bin/activate
-            pip install --no-cache-dir -r ./app/requirements.txt
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
           name: Build and push to Docker Hub
           command: |
-            . venv/bin/activate
-
             docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG ./app
             docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG ./backend
             docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG ./vectorstore

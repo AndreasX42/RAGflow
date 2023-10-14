@@ -1,10 +1,7 @@
 import requests
-from enum import EnumType, Enum
+from enum import EnumType
 import os
 
-####################
-# LLM Models
-####################
 LLM_MODELS = [
     "gpt-3.5-turbo",
     "gpt-4",
@@ -13,30 +10,11 @@ LLM_MODELS = [
     "Llama-2-70b-chat-hf",
 ]
 
-####################
-# Embedding Models
-####################
 EMB_MODELS = ["text-embedding-ada-002"]
 
-
-####################
-# Enumerations
-####################
-class CVGradeAnswerPrompt(Enum):
-    FAST = "fast"
-    ZERO_SHOT = "zero_shot"
-    FEW_SHOT = "few_shot"
-    NONE = "none"
-
-
-class CVGradeDocumentsPrompt(Enum):
-    DEFAULT = "default"
-    NONE = "none"
-
-
-class CVRetrieverSearchType(Enum):
-    SIMILARITY = "similarity"
-    MMR = "mmr"
+CVGradeAnswerPrompt = ["fast", "zero_shot", "few_shot", "none"]
+CVGradeDocumentsPrompt = ["default", "none"]
+CVRetrieverSearchType = ["similarity", "mmr"]
 
 
 BACKEND_HOST = os.environ.get("EVALBACKEND_HOST")

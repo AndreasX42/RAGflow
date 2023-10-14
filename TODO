@@ -1,0 +1,6 @@
+For k8s deployment:
+- use $TAG as variable in deployment config and use sed to change to build number
+  - sed -i 's/\$TAG/{{IMAGE_TAG}}/g' client-deployment.yaml
+or:
+- imperative command
+  - kubectl set image deployment/$name client=andreasx42/ragflow-$img_name:$tag

@@ -111,7 +111,7 @@ async def aupsert_embeddings_for_model(
             return None
 
         collection = CHROMA_CLIENT.create_collection(
-            name=f"userid_{user_id[:32]}_{embedding_model.model}",
+            name=f"userid_{user_id[:8]}_{embedding_model.model}",
             metadata={
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3],
                 "custom_id": collection_id,

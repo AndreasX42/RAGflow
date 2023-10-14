@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vectorstore-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: vectorstore
+  template:
+    metadata:
+      labels:
+        component: vectorstore
+    spec:
+      containers:
+        - name: chromadb-vectorstore
+          image: andreasx42/ragflow-vectorstore:65
+          ports:
+            - containerPort: 8000

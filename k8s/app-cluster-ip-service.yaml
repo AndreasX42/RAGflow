@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: frontend
+  ports:
+    - port: 8501
+      targetPort: 8501

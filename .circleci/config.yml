@@ -38,6 +38,12 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
+          name: Inject build info for frontend display
+          command: |
+            sed -i 's/\$BUILD_NUMBER/{{$CIRCLE_BUILD_NUM}}/g' ./app/main.py
+            sed -i 's/\$BUILD_DATE/{{$NOW}}/g' ./app/main.py
+            sed -i 's/\$GIT_SHA/{{$TAG}}/g' ./app/main.py
+      - run:
           name: Push app image
           command: |
             docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-app:latest ./app
@@ -89,12 +95,6 @@ jobs:
             gcloud config set compute/zone "$GOOGLE_COMPUTE_ZONE"
             gcloud container clusters get-credentials "$GKE_CLUSTER_NAME"
       - run:
-          name: Replace image tags in k8s configuration
-          command: |
-            sed -i 's/\$BUILD_NUMBER/{{$CIRCLE_BUILD_NUM}}/g' ./app/main.py
-            sed -i 's/\$BUILD_DATE/{{$NOW}}/g' ./app/main.py
-            sed -i 's/\$GIT_SHA/{{$TAG}}/g' ./app/main.py
-      - run:
           name: Deploy to GKE k8s cluster
           command: |
             kubectl apply -f ./k8s
@@ -108,7 +108,7 @@ workflows:
   build-deploy:
     jobs:
       #- run_integration_tests
-      #- push_app_image
+      - push_app_image
       #    requires:
       #      - run_integration_tests
       #- push_backend_image

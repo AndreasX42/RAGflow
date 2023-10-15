@@ -9,7 +9,7 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 `Framework for API` [FastAPI](https://fastapi.tiangolo.com/)\
 `Databases` [ChromaDB](https://www.trychroma.com/)\
 `Frontend` [Streamlit](https://www.streamlit.io/)\
-`CI/CD` [Docker](https://www.docker.com/) [Kubernetes](https://kubernetes.io/) [CircleCI](https://circleci.com/)
+`CI/CD` [Docker](https://www.docker.com/) [Kubernetes](https://kubernetes.io/) [CircleCI](https://circleci.com/) [GKE](https://cloud.google.com/kubernetes-engine)
 
 # 🚀 Getting Started
 - Checkout repository

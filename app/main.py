@@ -90,9 +90,9 @@ if __name__ == "__main__":
 
         version_info = """
         <div style="text-align: center; margin-top: 0em; font-size: 0.8em">
-            Build Number: $BUILD_NUMBER<br>
-            Build Date: $BUILD_DATE<br>
+            Build Number: <a href="https://app.circleci.com/pipelines/circleci/6FfqBzs4fBDyTPvBNqnq5x/8HU8omXUEUaEgrpWMj271K/$BUILD_NUMBER" target="_blank">$BUILD_NUMBER</a><br>
             Git Commit SHA: <a href="https://github.com/AndreasX42/RAGflow/commit/$GIT_SHA" target="_blank">$GIT_SHA</a><br>
+            Build Time (UTC): $BUILD_DATE<br>
         </div>
         """
 

@@ -1,24 +1,142 @@
 version: 2.1
 
 executors:
-  hosted_node:
-    machine:
-      image: ubuntu-2004:current
-    resource_class: medium
-    
+  python-docker-executor:
+    docker:
+      - image: cimg/python:3.11
+
 jobs:
-  build:
-    executor: hosted_node
-    environment:
-       PIPELINE_NUMBER: << pipeline.number >>
+  # run integration tests
+  run_integration_tests:
+    executor: python-docker-executor
+    steps:
+      - checkout
+      #- run:
+      #    name: Setup VirtualEnv
+      #    command: |
+      #      virtualenv venv
+      #      . venv/bin/activate
+      #      pip install --no-cache-dir -r ./tests/requirements.txt
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Run Docker Compose to build, start and test
+          command: docker-compose -f docker-compose-test.yaml up --exit-code-from test-suite --build
+      - run:
+          name: Shut services down
+          command: docker-compose -f docker-compose-test.yaml down
+      - store_artifacts:
+          path: /tests/test-reports
+          destination: test-reports
+  # push images to docker hub
+  push_app_image:
+    executor: python-docker-executor
+    steps:
+      - checkout
+      - set_env_vars
+      - docker_login
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Inject build info into frontend
+          command: |
+            sed -i "s/\$BUILD_NUMBER/${PIPELINE_NUMBER}/g" ./app/main.py
+            sed -i "s/\$BUILD_DATE/${NOW}/g" ./app/main.py
+            sed -i "s/\$GIT_SHA/${TAG}/g" ./app/main.py
+      - run:
+          name: Push app image
+          command: |
+            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-app:latest ./app
+            docker push $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
+            docker push $DOCKER_USER/$IMAGE_NAME_BASE-app:latest
+  push_backend_image:
+    executor: python-docker-executor
+    steps:
+      - checkout
+      - set_env_vars
+      - docker_login
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Push backend image
+          command: |
+            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-backend:latest ./backend
+            docker push $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
+            docker push $DOCKER_USER/$IMAGE_NAME_BASE-backend:latest
+  push_vectorstore_image:
+    executor: python-docker-executor
+    steps:
+      - checkout
+      - set_env_vars
+      - docker_login
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Push vectorstore image
+          command: |
+            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:latest ./vectorstore
+            docker push $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG
+            docker push $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:latest
+  # deploy to GKE k8s cluster
+  deploy_to_gke_k8s_cluster:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
+      - set_env_vars
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Setup Google Cloud SDK
+          command: |
+            echo "$GOOGLE_SERVICE_KEY" > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud config set project "$GOOGLE_PROJECT_ID"
+            gcloud config set compute/zone "$GOOGLE_COMPUTE_ZONE"
+            gcloud container clusters get-credentials "$GKE_CLUSTER_NAME"
+      - run:
+          name: Deploy to GKE k8s cluster
+          command: |
+            kubectl apply -f ./k8s
+            kubectl set image deployments/app-deployment app-frontend=$DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
+            kubectl set image deployments/backend-deployment eval-backend=$DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
+            kubectl set image deployments/vectorstore-deployment chromadb-vectorstore=$DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG
+
+# define workflow of pipeline
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - run_integration_tests
+      - push_app_image:
+          requires:
+            - run_integration_tests
+      - push_backend_image:
+          requires:
+            - run_integration_tests
+      - push_vectorstore_image:
+          requires:
+            - run_integration_tests
+      - deploy_to_gke_k8s_cluster:
+          requires:
+            - push_app_image
+            - push_backend_image
+            - push_vectorstore_image
+
+# helper commands
+commands:
+  set_env_vars:
     steps:
       - run:
-          name: show pipeline number
+          name: Setup tag and base image name
           command: |
-                   echo “pipeline.number <<pipeline.number>>”
-                   echo “pipeline.number: $PIPELINE_NUMBER”
-        
-workflows:
-  process:
-    jobs:
-     - build
+            echo 'export TAG=${CIRCLE_SHA1:0:8}' >> $BASH_ENV
+            echo 'export IMAGE_NAME_BASE=ragflow' >> $BASH_ENV
+            echo 'export NOW=$(date +"%Y-%m-%d %H:%M:%S")' >> $BASH_ENV
+            echo 'export PIPELINE_NUMBER=<< pipeline.number >>' >> $BASH_ENV
+  docker_login:
+    steps:
+      - run:
+          name: Login into Docker Hub
+          command: |
+            echo "$DOCKER_PWD" | docker login --username "$DOCKER_USER" --password-stdin

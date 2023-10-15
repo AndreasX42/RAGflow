@@ -88,12 +88,12 @@ if __name__ == "__main__":
             unsafe_allow_html=True,
         )
 
-        # Version information
         version_info = """
         <div style="text-align: center; margin-top: 0em; font-size: 0.8em">
             Build Number: $BUILD_NUMBER<br>
             Build Date: $BUILD_DATE<br>
-            Git Commit SHA: $GIT_SHA<br>
+            Git Commit SHA: <a href="https://github.com/AndreasX42/RAGflow/commit/$GIT_SHA" target="_blank">$GIT_SHA</a><br>
         </div>
         """
+
         st.markdown(version_info, unsafe_allow_html=True)

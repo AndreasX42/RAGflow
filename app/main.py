@@ -7,6 +7,7 @@ from page_documents import page_documents
 from page_dashboard import page_dashboard
 from page_login import page_login
 from page_downloads import page_downloads
+from page_apis import page_apis
 
 
 def main():
@@ -21,7 +22,8 @@ def main():
                     "Parameters",
                     "Documents",
                     "File Manager",
-                    "Authenticate",
+                    "API Keys",
+                    "Login",
                 ],
                 icons=[
                     "house-fill",
@@ -29,7 +31,8 @@ def main():
                     "toggles",
                     "cloud-upload-fill",
                     "file-earmark-text-fill",
-                    "file-earmark-check-fill",
+                    "safe-fill",
+                    "door-open-fill",
                 ],
                 menu_icon="cast",
                 default_index=0,
@@ -51,7 +54,9 @@ def main():
             page_documents()
         if selected == "File Manager":
             page_downloads()
-        if selected == "Authenticate":
+        if selected == "API Keys":
+            page_apis()
+        if selected == "Login":
             page_login()
 
     sideBar()
@@ -76,13 +81,19 @@ if __name__ == "__main__":
 
         st.markdown(auth_button, unsafe_allow_html=True)
 
-        st.markdown("<br>" * 1, unsafe_allow_html=True)
+        st.markdown("<br>" * 0, unsafe_allow_html=True)
         st.markdown("---")
         st.markdown(
             '<div style="text-align: center;"><h6>Made in &nbsp;<a href="https://streamlit.io" target="_blank"><img src="https://streamlit.io/images/brand/streamlit-mark-color.png" alt="Streamlit logo" height="16"></a>&nbsp by <a href="https://github.com/AndreasX42">@AndreasX42</a></h6></div>',
             unsafe_allow_html=True,
         )
-        st.markdown(
-            '<div style="text-align: center; margin-top: 0.75em;"><a href="https://github.com/AndreasX42/RAGflow" target="_blank"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Logo.png" alt="Buy Me A Coffee" height="41" width="174"></a></div>',
-            unsafe_allow_html=True,
-        )
+
+        # Version information
+        version_info = """
+        <div style="text-align: center; margin-top: 0em; font-size: 0.8em">
+            Build Number: $BUILD_NUMBER<br>
+            Build Date: $BUILD_DATE<br>
+            Git Commit SHA: $GIT_SHA<br>
+        </div>
+        """
+        st.markdown(version_info, unsafe_allow_html=True)

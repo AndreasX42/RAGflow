@@ -2,14 +2,19 @@ import streamlit as st
 import os
 import zipfile
 import io
-from utils import list_files_in_directory, get_user_directory, ptree
+from utils import (
+    list_files_in_directory,
+    get_user_directory,
+    ptree,
+    display_user_login_warning,
+)
 
 
 def page_downloads():
     st.title("File Manager")
+    st.subheader("Manager the files in your directory.")
 
-    if "user_id" not in st.session_state or not st.session_state.user_id:
-        st.warning("Warning: Authenticate before downloading data.")
+    if display_user_login_warning():
         return
 
     else:

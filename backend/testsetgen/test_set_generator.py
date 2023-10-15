@@ -171,6 +171,7 @@ async def agenerate_evaluation_set(
     eval_dataset_path: str,
     document_store_path: str,
     user_id: str,
+    api_keys: dict[str, str],
 ):
     """Entry function to generate the evaluation dataset.
 
@@ -189,7 +190,7 @@ async def agenerate_evaluation_set(
         qa_gen_params = qa_gen_params[-1]
 
     # set up Hyperparameters objects at the beginning to evaluate inputs
-    qa_gen_params = QAConfigurations.from_dict(qa_gen_params)
+    qa_gen_params = QAConfigurations.from_dict(qa_gen_params, api_keys)
 
     document_store = glob.glob(f"{document_store_path}/*.pdf")
 

@@ -5,7 +5,7 @@ import streamlit as st
 def page_home():
     st.title("Welcome to RAGflow!")
 
-    tab1, tab2, tab3 = st.tabs(["The App", "How It Works", "About"])
+    tab1, tab2, tab3 = st.tabs(["The App", "Getting Started", "About"])
 
     with tab1:
         # Introductory text
@@ -82,36 +82,29 @@ def page_home():
         )
 
     with tab2:
-        # Introduction
-        st.write(
-            """
-        RAGflow seamlessly integrates the complexities of document processing and hyperparameter evaluation to craft efficient Retrieval Augmented Generation (RAG) systems. Let's delve into its main functional stages:
-        """
-        )
-
         # Functional stages
-        st.header("Functional Stages of RAGflow")
+        st.header("Using This App: A Step-by-Step Guide")
 
-        # 1. Automatic Generation of Question-Answer Pairs
-        st.subheader("1. Automatic Generation of Question-Answer Pairs")
         st.write(
             """
-        The journey begins with RAGflow's capability to dissect user-provided documents. Utilizing advanced algorithms, it auto-generates pertinent question-answer pairs. This foundational step ensures that users have a rich set of data to work with, fostering a smooth transition to the evaluation phase.
-        """
-        )
+        1. Account Setup:
+        Log in or generate a new UUID linked to your account.
+        Ensure you keep this UUID secure!
 
-        # 2. Hyperparameter Evaluation
-        st.subheader("2. Hyperparameter Evaluation")
-        st.write(
-            """
-        Once the Q&A pairs are generated, RAGflow dives into the crux of its functionality. Users are empowered to provide hyperparameters related to text chunking, embedding, and LLM model configurations. The app meticulously evaluates these hyperparameters, determining their efficacy and providing insights. By optimizing these parameters, users are equipped with the knowledge to build robust, high-performing RAG systems.
-        """
-        )
+        2. API Key Submission:
+        Supply all the required API keys, such as those for OpenAI. The keys needed will vary based on the LLMs and services you intend to use.
 
-        # Conclusion
-        st.write(
-            """
-        Embrace RAGflow's intuitive two-step process. Start with auto-generated Q&A datasets and then refine your RAG system's performance through detailed hyperparameter evaluation. Embark on your RAG optimization journey with RAGflow today!
+        3. Document Upload:
+        Upload the documents for which you aim to create a RAG application.
+
+        4. Parameter Configuration:
+        Input the necessary parameters directly or by uploading a JSON file. This is essential for both the evaluation dataset generation and the hyperparameter assessment.
+
+        5. Dashboard Analysis:
+        Navigate to the Dashboard to inspect hyperparameter metrics and view the generated data.
+
+        6. File Management:
+        The File Manager allows you to delete or download files within your directory for added flexibility.       
         """
         )
 

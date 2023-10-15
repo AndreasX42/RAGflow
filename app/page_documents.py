@@ -1,5 +1,6 @@
 import streamlit as st
 from utils import *
+from utils import display_user_login_warning
 
 
 def page_documents():
@@ -7,14 +8,11 @@ def page_documents():
     st.title("Document Store Page")
     st.subheader("Provide the documents that the application should use.")
 
-    if "user_id" not in st.session_state or not st.session_state.user_id:
-        st.warning("Warning: Authenticate before uploading data.")
+    if display_user_login_warning():
         return
 
     else:
         tab1, tab2 = st.tabs(["Upload JSON file", "Provide cloud storage link"])
-
-        doc_save_path = f"{st.session_state.user_file_dir}/document_store/"
 
         with tab1:
             # Upload local files

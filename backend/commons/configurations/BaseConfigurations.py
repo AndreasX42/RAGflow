@@ -79,11 +79,17 @@ class BaseConfigurations(BaseModel):
         return cls.set_length_function(values["length_function_name"])
 
     @staticmethod
-    def get_language_model(model_name: str) -> BaseLanguageModel:
+    def get_language_model(model_name: str, api_keys: dict) -> BaseLanguageModel:
         if model_name in OPENAI_LLM_MODELS:
-            return ChatOpenAI(model_name=model_name, temperature=0.0)
+            return ChatOpenAI(
+                openai_api_key=api_keys["OPENAI_API_KEY"],
+                model_name=model_name,
+                temperature=0.0,
+            )
+
         elif model_name in LLAMA_2_MODELS:
             return ChatAnyscale(
+                anyscale_api_key=api_keys["ANYSCALE_API_KEY"],
                 model_name=f"{ANYSCALE_LLM_PREFIX}{model_name}",
                 anyscale_api_base=ANYSCALE_API_URL,
                 temperature=0.0,
@@ -91,9 +97,11 @@ class BaseConfigurations(BaseModel):
         raise NotImplementedError(f"LLM model '{model_name}' not supported.")
 
     @staticmethod
-    def get_embedding_model(model_name: str) -> Embeddings:
+    def get_embedding_model(model_name: str, api_keys: dict) -> Embeddings:
         if model_name in OPENAI_EMB_MODELS:
-            return OpenAIEmbeddings(model=model_name)
+            return OpenAIEmbeddings(
+                openai_api_key=api_keys["OPENAI_API_KEY"], model=model_name
+            )
 
         raise NotImplementedError(f"Embedding model '{model_name}' not supported.")
 

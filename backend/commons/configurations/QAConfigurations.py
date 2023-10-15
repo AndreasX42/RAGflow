@@ -39,15 +39,18 @@ class QAConfigurations(BaseConfigurations):
         return _data
 
     @classmethod
-    def from_dict(cls, input_dict: dict[str, str]):
+    def from_dict(cls, input_dict: dict[str, str], api_keys: dict[str, str]):
         _input = dict(**input_dict)
-        _input["qa_generator_llm"] = cls.get_language_model(_input["qa_generator_llm"])
+
+        _input["qa_generator_llm"] = cls.get_language_model(
+            _input["qa_generator_llm"], api_keys
+        )
 
         # get the list of embedding models, filter the unique models and map them to LangChain objects
         embedding_models = set(_input["embedding_model_list"])
 
         _input["embedding_model_list"] = [
-            cls.get_embedding_model(model) for model in embedding_models
+            cls.get_embedding_model(model, api_keys) for model in embedding_models
         ]
 
         return cls(**_input)

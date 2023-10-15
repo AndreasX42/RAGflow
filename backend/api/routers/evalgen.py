@@ -22,6 +22,7 @@ class EvalsetGenerationRequest(BaseModel):
     user_id: str = Field(
         min_length=1, description="user id, e.g. used to access cached embeddings."
     )
+    api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
 
     class Config:
         json_schema_extra = {
@@ -30,6 +31,10 @@ class EvalsetGenerationRequest(BaseModel):
                 "qa_gen_params_path": "./tmp/qa_gen_params.json",  # path to list of hyperparameters
                 "eval_dataset_path": "./tmp/eval_data.json",  # path to generated evaluation dataset
                 "user_id": "3e6e131c-d9f3-4085-a412-f5f8875e34f0",  # user id
+                "api_keys": {
+                    "OPENAI_API_KEY": "your_api_key_here",
+                    "ANOTHER_API_KEY": "another_key_here",
+                },
             }
         }
 

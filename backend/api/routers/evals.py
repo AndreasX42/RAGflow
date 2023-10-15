@@ -28,6 +28,7 @@ class EvaluationRunRequest(BaseModel):
     user_id: str = Field(
         min_length=1, description="user id, e.g. used to access cached embeddings"
     )
+    api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
 
     class Config:
         json_schema_extra = {
@@ -38,6 +39,10 @@ class EvaluationRunRequest(BaseModel):
                 "eval_results_path": "./tmp/eval_results.json",  # path to list of eval results
                 "hp_runs_data_path": "./tmp/hp_runs_data.csv",  # path to list of generated predictions and retrieved docs
                 "user_id": "3e6e131c-d9f3-4085-a412-f5f8875e34f0",  # user id
+                "api_keys": {
+                    "OPENAI_API_KEY": "your_api_key_here",
+                    "ANOTHER_API_KEY": "another_key_here",
+                },
             }
         }
 

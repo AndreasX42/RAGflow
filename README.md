@@ -12,10 +12,10 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 `CI/CD` [Docker](https://www.docker.com/) [Kubernetes](https://kubernetes.io/) [CircleCI](https://circleci.com/) [GKE](https://cloud.google.com/kubernetes-engine)
 
 # 🚀 Getting Started
-- Google Kubernetes Engine cluster could be available on
-    -  http://34.30.101.95/
 - CircleCI pushes the Docker images after each successful build to
     - https://hub.docker.com/u/andreasx42
+- Google Kubernetes Engine cluster could be available on
+    -  http://34.30.101.95/ \
 Otherwise:
 - Checkout repository
 - Start application with ‘docker-compose up --build’

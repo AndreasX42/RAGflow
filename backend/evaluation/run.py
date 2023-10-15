@@ -121,6 +121,7 @@ async def arun_evaluation(
     eval_results_path: str,
     hp_runs_data_path: str,
     user_id: str,
+    api_keys: dict,
 ) -> None:
     # load evaluation dataset
     gt_dataset = read_json(eval_dataset_path)
@@ -129,7 +130,7 @@ async def arun_evaluation(
 
     hyperparams_list = read_json(eval_params_path)
 
-    hp_list = [Hyperparameters.from_dict(d) for d in hyperparams_list]
+    hp_list = [Hyperparameters.from_dict(d, api_keys) for d in hyperparams_list]
 
     tasks = [
         arun_eval_for_hp(gt_dataset, hp, document_store, user_id) for hp in hp_list

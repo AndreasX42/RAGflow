@@ -1,15 +1,13 @@
 import streamlit as st
-import json
 from utils import *
-import time
+from utils import display_user_login_warning
 
 
 def page_params():
     st.title("Parameters Page")
     st.subheader("Provide parameters for building and evaluating the system.")
 
-    if "user_id" not in st.session_state or not st.session_state.user_id:
-        st.warning("Warning: Authenticate before uploading data.")
+    if display_user_login_warning():
         return
 
     tab1, tab2 = st.tabs(["QA Generator settings", "Hyperparameters settings"])

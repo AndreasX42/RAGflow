@@ -109,6 +109,7 @@ def start_qa_gen() -> bool:
             "eval_dataset_path": get_eval_data_path(),
             "qa_gen_params_path": get_qa_gen_params_path(),
             "user_id": st.session_state.user_id,
+            "api_keys": st.session_state.api_keys,
         }
 
         response = requests.post(
@@ -136,6 +137,7 @@ def start_hp_run() -> bool:
             "eval_results_path": get_eval_results_path(),
             "hp_runs_data_path": get_hp_runs_data_path(),
             "user_id": st.session_state.user_id,
+            "api_keys": st.session_state.api_keys,
         }
 
         response = requests.post(
@@ -235,6 +237,13 @@ def ptree(startpath, depth=-1):
         for f in files:
             structure_str += "{}{}\n".format(subindent, realname(f, root=root))
     return structure_str
+
+
+def display_user_login_warning():
+    """Default function to warn users to login before using service."""
+    if "user_id" not in st.session_state or not st.session_state.user_id:
+        st.warning("Warning: You need to login before being able to use this service.")
+        return True
 
 
 #

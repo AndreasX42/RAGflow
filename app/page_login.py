@@ -2,7 +2,6 @@ import streamlit as st
 import uuid
 import os
 import re
-from utils import get_document_store_path
 
 
 def page_login():
@@ -37,7 +36,9 @@ def page_login():
         if st.button("Generate new UUID"):
             new_uuid = str(uuid.uuid4())
             set_state(new_uuid)
-            st.success(f"Your new UUID: {st.session_state.user_id}")
+            st.success(
+                f"Your new UUID (save it somewhere safe!): {st.session_state.user_id}"
+            )
 
 
 def set_state(user_id: str) -> None:

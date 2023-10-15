@@ -5,13 +5,14 @@ import pandas as pd
 import json
 import plotly.express as px
 from utils import *
+from utils import display_user_login_warning
 
 
 def page_dashboard():
     st.title("Dashboard Page")
+    st.subheader("Analyse hyperparameter metrics and evaluation dataset.")
 
-    if "user_id" not in st.session_state or not st.session_state.user_id:
-        st.warning("Warning: Authenticate before viewing data.")
+    if display_user_login_warning():
         return
 
     else:
@@ -37,7 +38,7 @@ def page_dashboard():
                 showData = st.multiselect(
                     "Filter: ",
                     df_eval_set.columns,
-                    default=["question", "answer", "source", "id"],
+                    default=["question", "answer", "context", "source", "id"],
                 )
                 st.dataframe(df_eval_set[showData], use_container_width=True)
             else:
@@ -165,6 +166,6 @@ def plot_eval_results(eval_results_path: str):
         plot_bgcolor="#F5F5DC",
         paper_bgcolor="#121212",
         height=600,  # Set the height of the plot
-        width=1000,  # Set the width of the plot
+        width=950,  # Set the width of the plot
     )
     st.plotly_chart(fig)

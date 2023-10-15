@@ -18,7 +18,7 @@ jobs:
       #      . venv/bin/activate
       #      pip install --no-cache-dir -r ./tests/requirements.txt
       - setup_remote_docker:
-          docker_layer_caching: false
+          docker_layer_caching: true
       - run:
           name: Run Docker Compose to build, start and test
           command: docker-compose -f docker-compose-test.yaml up --exit-code-from test-suite --build
@@ -76,10 +76,11 @@ jobs:
     docker:
       - image: google/cloud-sdk
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: Setup Google Cloud SDK
           command: |
-            apt-get install -qq -y gettext
             echo "$GOOGLE_SERVICE_KEY" > ${HOME}/gcloud-service-key.json
             gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
             gcloud config set project "$GOOGLE_PROJECT_ID"

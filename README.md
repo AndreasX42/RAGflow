@@ -4,16 +4,12 @@
 
 RAGflow provides tools for constructing and evaluating Retrieval Augmented Generation (RAG) systems, empowering developers to craft efficient question-answer applications leveraging LLMs. The stack consists of
 
-- [Python](https://www.python.org/)
-- [LangChain](https://www.langchain.com/)
-- [OpenAI](https://www.openai.com/)
-- [Hugging Face](https://huggingface.co/)
-- [ChromaDB](https://www.trychroma.com/)
-- [Streamlit](https://www.streamlit.io/)
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [Docker](https://www.docker.com/)
-- [Kubernetes](https://kubernetes.io/)
-- [CircleCI](https://circleci.com/)
+`Language` [Python](https://www.python.org/)\
+`Frameworks for LLMs` [LangChain](https://www.langchain.com/) [OpenAI](https://www.openai.com/) [Hugging Face](https://huggingface.co/)\
+`Framework for API` [FastAPI](https://fastapi.tiangolo.com/)\
+`Databases` [ChromaDB](https://www.trychroma.com/)\
+`Frontend` [Streamlit](https://www.streamlit.io/)\
+`CI/CD` [Docker](https://www.docker.com/) [Kubernetes](https://kubernetes.io/) [CircleCI](https://circleci.com/)
 
 # 🚀 Getting Started
 - Checkout repository

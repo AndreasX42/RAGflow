@@ -12,8 +12,21 @@ spec:
       labels:
         component: backend
     spec:
+      volumes:
+        - name: backend-storage
+          persistentVolumeClaim:
+            claimName: shared-persistent-volume-claim
       containers:
         - name: eval-backend
-          image: andreasx42/ragflow-backend:66
+          image: andreasx42/ragflow-backend:69
+          env:
+            - name: CHROMADB_HOST
+              value: vectorstore-cluster-ip-service
+            - name: CHROMADB_PORT
+              value: '8000'
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - name: backend-storage
+              mountPath: eval_backend/tmp
+              subPath: tmp

@@ -12,8 +12,21 @@ spec:
       labels:
         component: frontend
     spec:
+      volumes:
+        - name: frontend-storage
+          persistentVolumeClaim:
+            claimName: shared-persistent-volume-claim
       containers:
         - name: app-frontend
-          image: andreasx42/ragflow-app:64
+          image: andreasx42/ragflow-app:68
+          env:
+            - name: EVALBACKEND_HOST
+              value: backend-cluster-ip-service
+            - name: EVALBACKEND_PORT
+              value: '8080'
           ports:
             - containerPort: 8501
+          volumeMounts:
+            - name: frontend-storage
+              mountPath: app/tmp
+              subPath: tmp

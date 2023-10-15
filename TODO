@@ -4,3 +4,9 @@ For k8s deployment:
 or:
 - imperative command
   - kubectl set image deployment/$name client=andreasx42/ragflow-$img_name:$tag
+Secrets:
+- kubectl create secret generic <secret-name> --from-literal key=value
+Nginx installation
+- kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+k8s dashboard:
+- create admin: kubectl -n kubernetes-dashboard create token admin-user

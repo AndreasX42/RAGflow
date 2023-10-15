@@ -12,8 +12,21 @@ spec:
       labels:
         component: vectorstore
     spec:
+      volumes:
+        - name: vectorstore-storage
+          persistentVolumeClaim:
+            claimName: shared-persistent-volume-claim
       containers:
         - name: chromadb-vectorstore
-          image: andreasx42/ragflow-vectorstore:65
+          image: andreasx42/ragflow-vectorstore:70
+          env:
+            - name: IS_PERSISTENT
+              value: "TRUE"
+            - name: ALLOW_RESET
+              value: "TRUE"
           ports:
             - containerPort: 8000
+          volumeMounts:
+            - name: vectorstore-storage
+              mountPath: chroma/chroma
+              subPath: dbs/chromadb

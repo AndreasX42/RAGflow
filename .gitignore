@@ -13,6 +13,7 @@ vectorstore/chromadb/
 *.sqlite3
 
 *.ipynb
+!notebooks/RAGflow getting started.ipynb
 
 # misc
 #resources/*

@@ -12,8 +12,12 @@
 vectorstore/chromadb/
 *.sqlite3
 
+# jupyter notebooks
 *.ipynb
 !notebooks/RAGflow getting started.ipynb
+
+# k8s configs
+k8s/dashboard.yaml
 
 # misc
 #resources/*

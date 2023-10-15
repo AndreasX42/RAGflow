@@ -18,7 +18,7 @@ spec:
             claimName: shared-persistent-volume-claim
       containers:
         - name: app-frontend
-          image: andreasx42/ragflow-app:68
+          image: andreasx42/ragflow-app:latest
           env:
             - name: EVALBACKEND_HOST
               value: backend-cluster-ip-service

@@ -18,7 +18,7 @@ spec:
             claimName: shared-persistent-volume-claim
       containers:
         - name: chromadb-vectorstore
-          image: andreasx42/ragflow-vectorstore:70
+          image: andreasx42/ragflow-vectorstore:latest
           env:
             - name: IS_PERSISTENT
               value: "TRUE"

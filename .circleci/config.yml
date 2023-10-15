@@ -88,19 +88,19 @@ jobs:
             gcloud config set project "$GOOGLE_PROJECT_ID"
             gcloud config set compute/zone "$GOOGLE_COMPUTE_ZONE"
             gcloud container clusters get-credentials "$GKE_CLUSTER_NAME"
-      #- run:
-      #    name: Replace image tags in k8s configuration
-      #    command: |
-      #      sed -i 's/\$TAG/{{IMAGE_TAG}}/g' app-deployment.yaml
-      #      sed -i 's/\$TAG/{{IMAGE_TAG}}/g' backend-deployment.yaml
-      #      sed -i 's/\$TAG/{{IMAGE_TAG}}/g' vectorstore-deployment.yaml
+      - run:
+          name: Replace image tags in k8s configuration
+          command: |
+            sed -i 's/\$BUILD_NUMBER/{{$CIRCLE_BUILD_NUM}}/g' ./app/main.py
+            sed -i 's/\$BUILD_DATE/{{$NOW}}/g' ./app/main.py
+            sed -i 's/\$GIT_SHA/{{$TAG}}/g' ./app/main.py
       - run:
           name: Deploy to GKE k8s cluster
           command: |
             kubectl apply -f ./k8s
-            kubectl set image deployments/app-deployment app-frontend=$DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
-            kubectl set image deployments/backend-deployment eval-backend=$DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
-            kubectl set image deployments/vectorstore-deployment chromadb-vectorstore=$DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG
+            kubectl set image deployments/app-deployment app-frontend=$DOCKER_USER/$IMAGE_NAME_BASE-app:latest
+            kubectl set image deployments/backend-deployment eval-backend=$DOCKER_USER/$IMAGE_NAME_BASE-backend:latest
+            kubectl set image deployments/vectorstore-deployment chromadb-vectorstore=$DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:latest
 
 # define workflow of pipeline
 workflows:
@@ -108,20 +108,20 @@ workflows:
   build-deploy:
     jobs:
       #- run_integration_tests
-      - push_app_image
+      #- push_app_image
       #    requires:
       #      - run_integration_tests
-      - push_backend_image
+      #- push_backend_image
       #    requires:
       #      - run_integration_tests
-      - push_vectorstore_image
+      #- push_vectorstore_image
       #    requires:
       #      - run_integration_tests
-      - deploy_to_gke_k8s_cluster:
-          requires:
-            - push_app_image
-            - push_backend_image
-            - push_vectorstore_image
+      - deploy_to_gke_k8s_cluster
+      #    requires:
+      #      - push_app_image
+      #      - push_backend_image
+      #      - push_vectorstore_image
 
 # helper commands
 commands:
@@ -132,6 +132,7 @@ commands:
           command: |
             echo 'export TAG=${CIRCLE_SHA1:0:8}' >> $BASH_ENV
             echo 'export IMAGE_NAME_BASE=ragflow' >> $BASH_ENV
+            echo 'export NOW=$(date +"%Y-%m-%d %H:%M:%S")' >> $BASH_ENV
 
   docker_login:
     steps:

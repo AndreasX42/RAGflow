@@ -4,7 +4,7 @@ metadata:
   name: shared-persistent-volume-claim
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 2Gi

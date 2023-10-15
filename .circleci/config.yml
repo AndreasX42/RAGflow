@@ -76,6 +76,8 @@ jobs:
     docker:
       - image: google/cloud-sdk
     steps:
+      - checkout
+      - set_env_vars
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -95,7 +97,7 @@ jobs:
       - run:
           name: Deploy to GKE k8s cluster
           command: |
-            kubectl apply -f k8s
+            kubectl apply -f ./k8s
             kubectl set image deployments/app-deployment app-frontend=$DOCKER_USER/$IMAGE_NAME_BASE-app:latest
             kubectl set image deployments/backend-deployment eval-backend=$DOCKER_USER/$IMAGE_NAME_BASE-backend:latest
             kubectl set image deployments/vectorstore-deployment chromadb-vectorstore=$DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:latest

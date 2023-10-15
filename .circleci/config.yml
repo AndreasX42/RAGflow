@@ -8,8 +8,7 @@ executors:
 jobs:
   # run integration tests
   run_integration_tests:
-    docker:
-      - image: cimg/python:3.11
+    executor: python-docker-executor
     steps:
       - checkout
       #- run:
@@ -122,8 +121,8 @@ workflows:
       - deploy_to_gke_k8s_cluster:
           requires:
             - push_app_image
-              push_backend_image
-              push_vectorstore_image
+            - push_backend_image
+            - push_vectorstore_image
 
 # helper commands
 commands:

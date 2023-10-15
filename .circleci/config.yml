@@ -40,9 +40,9 @@ jobs:
       - run:
           name: Inject build info for frontend display
           command: |
-            sed -i 's/\$BUILD_NUMBER/'${CIRCLE_BUILD_NUM}'/g' ./app/main.py
-            sed -i 's/\$BUILD_DATE/'${NOW}'/g' ./app/main.py
-            sed -i 's/\$GIT_SHA/'${TAG}'/g' ./app/main.py
+            sed -i "s/\$BUILD_NUMBER/${CIRCLE_BUILD_NUM}/g" ./app/main.py
+            sed -i "s/\$BUILD_DATE/${NOW}/g" ./app/main.py
+            sed -i "s/\$GIT_SHA/${TAG}/g" ./app/main.py
       - run:
           name: Push app image
           command: |

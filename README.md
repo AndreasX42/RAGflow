@@ -15,6 +15,18 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 - [Kubernetes](https://kubernetes.io/)
 - [CircleCI](https://circleci.com/)
 
+# 🚀 Getting Started
+- Checkout repository
+- Start application with ‘docker-compose up --build’
+    - Application should be available on localhost:8501.
+    - Backend API documentation is available on localhost:8080/docs
+- Or use Kubernetes with 'kubectl apply -f k8s
+    - Application should be available directly on localhost/
+    - For backend API access we use nginx routing with localhost/api/*
+    - Be aware to check deployment configs for image versions
+- CircleCI pushes the Docker images after each successful build to
+    - https://hub.docker.com/u/andreasx42
+
 # 📖 What is Retrievel Augmented Generation (RAG)?
 
 <img src="https://miro.medium.com/v2/resize:fit:4800/format:webp/1*Jq9bEbitg1Pv4oASwEQwJg.png" alt="Description" width="850"/>
@@ -34,7 +46,6 @@ Here is a schematic overview:
 
 ![schematics](https://github.com/AndreasX42/RAGflow/assets/141482745/8ea78a21-8224-4baf-a441-dc4aa8249762)
 
-
 # 🌟 Key Features & Functionalities
 - `Document Store Integration` Provide documents in formats like pdf and docx as knowledge base.
 - `Dynamic Parameter Selection` Customize parameters such as document splitting strategies, embedding model, and question-answering LLMs for evaluations.
@@ -53,12 +64,6 @@ Directory Structure
 - `/tmp` Temporary storage.
 - `/vectorstore` ChromaDB component.
 - `docker-compose.yml` Docker configurations for setting up the local environment.
-    
-# 🚀 Getting Started
-Setup
-- Checkout repository
-- Start application with ‘docker-compose up --build’
-- Frontend should be available on localhost:8501.
     
 # 🌐 Links & Resources
 - TBA

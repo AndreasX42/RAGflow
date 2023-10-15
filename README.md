@@ -12,6 +12,7 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 - [Streamlit](https://www.streamlit.io/)
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [Docker](https://www.docker.com/)
+- [Kubernetes](https://kubernetes.io/)
 - [CircleCI](https://circleci.com/)
 
 # 📖 What is Retrievel Augmented Generation (RAG)?
@@ -28,6 +29,11 @@ Hyperparameter Evaluation
 - Evaluate provided hyperparameters \
 After generating Q&A pairs, dive into hyperparameter evaluation. Provide your hyperparameters, let RAGflow evaluate their efficacy, and obtain insights for crafting robust RAG systems.
 This approach allows you to select efficient document splitting strategies, language and embedding models which could be further finetuned with respect to your document store.
+
+Here is a schematic overview:
+
+![schematics](https://github.com/AndreasX42/RAGflow/assets/141482745/8ea78a21-8224-4baf-a441-dc4aa8249762)
+
 
 # 🌟 Key Features & Functionalities
 - `Document Store Integration` Provide documents in formats like pdf and docx as knowledge base.
@@ -56,8 +62,3 @@ Setup
     
 # 🌐 Links & Resources
 - TBA
-    
-# 📋 TODO
-- Write unit and integration tests for CI
-- Implement better Login/Authentication in Streamlit app
-- Set up CD onto Cloud environment (Kubernetes)

@@ -117,9 +117,9 @@ workflows:
       #- push_vectorstore_image
       #    requires:
       #      - run_integration_tests
-      - deploy_to_gke_k8s_cluster
-      #    requires:
-      #      - push_app_image
+      - deploy_to_gke_k8s_cluster:
+          requires:
+            - push_app_image
       #      - push_backend_image
       #      - push_vectorstore_image
 

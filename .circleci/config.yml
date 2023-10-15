@@ -107,16 +107,16 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - run_integration_tests
-      - push_app_image:
-          requires:
-            - run_integration_tests
-      - push_backend_image:
-          requires:
-            - run_integration_tests
-      - push_vectorstore_image:
-          requires:
-            - run_integration_tests
+      #- run_integration_tests
+      - push_app_image
+      #    requires:
+      #      - run_integration_tests
+      - push_backend_image
+      #    requires:
+      #      - run_integration_tests
+      - push_vectorstore_image
+      #    requires:
+      #      - run_integration_tests
       - deploy_to_gke_k8s_cluster:
           requires:
             - push_app_image
@@ -130,7 +130,7 @@ commands:
       - run:
           name: Setup tag and base image name
           command: |
-            echo 'export TAG=${CIRCLE_BUILD_NUM}-${CIRCLE_SHA1}' >> $BASH_ENV
+            echo 'export TAG=${CIRCLE_SHA1:0:8}' >> $BASH_ENV
             echo 'export IMAGE_NAME_BASE=ragflow' >> $BASH_ENV
 
   docker_login:

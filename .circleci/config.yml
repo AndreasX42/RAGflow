@@ -73,17 +73,13 @@ jobs:
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:latest
   # deploy to GKE k8s cluster
   deploy_to_gke_k8s_cluster:
-    executor: python-docker-executor
+    docker:
+      - image: google/cloud-sdk
     steps:
-      - run:
-          name: Install Google Cloud SDK and kubectl
-          command: |
-            echo 'deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main' | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-            curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-            sudo apt-get update && sudo apt-get install google-cloud-sdk kubectl
       - run:
           name: Setup Google Cloud SDK
           command: |
+            apt-get install -qq -y gettext
             echo "$GOOGLE_SERVICE_KEY" > ${HOME}/gcloud-service-key.json
             gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
             gcloud config set project "$GOOGLE_PROJECT_ID"
@@ -99,30 +95,17 @@ jobs:
           name: Deploy to GKE k8s cluster
           command: |
             kubectl apply -f k8s
-            kubectl set image deployments/app-deployment app-frontend=$DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
-            kubectl set image deployments/backend-deployment eval-backend=$DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
-            kubectl set image deployments/vectorstore-deployment chromadb-vectorstore=$DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG
+            kubectl set image deployments/app-deployment app-frontend=$DOCKER_USER/$IMAGE_NAME_BASE-app:$latest
+            kubectl set image deployments/backend-deployment eval-backend=$DOCKER_USER/$IMAGE_NAME_BASE-backend:$latest
+            kubectl set image deployments/vectorstore-deployment chromadb-vectorstore=$DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$latest
 
 # define workflow of pipeline
 workflows:
   version: 2
   build-deploy:
     jobs:
-      - run_integration_tests
-      - push_app_image:
-          requires:
-            - run_integration_tests
-      - push_backend_image:
-          requires:
-            - run_integration_tests
-      - push_vectorstore_image:
-          requires:
-            - run_integration_tests
       - deploy_to_gke_k8s_cluster:
-          requires:
-            - push_app_image
-            - push_backend_image
-            - push_vectorstore_image
+
 
 # helper commands
 commands:

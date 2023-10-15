@@ -12,16 +12,19 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 `CI/CD` [Docker](https://www.docker.com/) [Kubernetes](https://kubernetes.io/) [CircleCI](https://circleci.com/) [GKE](https://cloud.google.com/kubernetes-engine)
 
 # 🚀 Getting Started
+- Google Kubernetes Engine cluster could be available on
+    -  http://34.30.101.95/
+- CircleCI pushes the Docker images after each successful build to
+    - https://hub.docker.com/u/andreasx42
+Otherwise:
 - Checkout repository
 - Start application with ‘docker-compose up --build’
     - Application should be available on localhost:8501.
     - Backend API documentation is available on localhost:8080/docs
-- Or use Kubernetes with 'kubectl apply -f k8s
+- Or use Kubernetes with 'kubectl apply -f k8s' to deploy locally
     - Application should be available directly on localhost/
     - For backend API access we use nginx routing with localhost/api/*
     - Be aware to check deployment configs for image versions
-- CircleCI pushes the Docker images after each successful build to
-    - https://hub.docker.com/u/andreasx42
 
 # 📖 What is Retrievel Augmented Generation (RAG)?
 

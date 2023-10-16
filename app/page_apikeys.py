@@ -2,7 +2,7 @@ import streamlit as st
 from utils import display_user_login_warning
 
 
-def page_apis():
+def page_apikeys():
     st.title("Provide API Keys")
     st.subheader("Enter the API Keys for all services you want to use.")
 
@@ -14,8 +14,8 @@ def page_apis():
 
     # Create text area to input API keys
     input_text = st.text_area(
-        "Enter the required API keys for your intended use (one per line):",
-        "OPENAI_API_KEY = your_api_key\netc.",
+        "Enter the required API keys for your intended use. The keys will not get stored outside of Streamlits session state.\n\nProvide one 'name=key' pair per line, for example:",
+        "OPENAI_API_KEY = your_openai_key\nANYSCALE_API_KEY = your_anyscale_key",
     )
 
     # Create a submit button

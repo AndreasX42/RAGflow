@@ -1,13 +1,13 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-from page_params import page_params
+from page_parameters import page_parameters
 from page_home import page_home
-from page_documents import page_documents
+from page_documentstore import page_documentstore
 from page_dashboard import page_dashboard
 from page_login import page_login
-from page_downloads import page_downloads
-from page_apis import page_apis
+from page_filemanager import page_filemanager
+from page_apikeys import page_apikeys
 
 
 def main():
@@ -49,13 +49,13 @@ def main():
         if selected == "Dashboard":
             page_dashboard()
         if selected == "Parameters":
-            page_params()
+            page_parameters()
         if selected == "Documents":
-            page_documents()
+            page_documentstore()
         if selected == "File Manager":
-            page_downloads()
+            page_filemanager()
         if selected == "API Keys":
-            page_apis()
+            page_apikeys()
         if selected == "Login":
             page_login()
 

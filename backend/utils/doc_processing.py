@@ -38,8 +38,8 @@ def load_document(file: str) -> list[Document]:
     elif extension == ".docx":
         loader = Docx2txtLoader(file)
     else:
-        logger.warning("Unsupported file type detected!")
-        raise NotImplementedError("Unsupported file type detected!")
+        logger.error(f"Unsupported file type detected, {file}!")
+        raise NotImplementedError(f"Unsupported file type detected, {file}!")
 
     data = loader.load()
     return data

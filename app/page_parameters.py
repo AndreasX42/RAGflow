@@ -3,18 +3,31 @@ from utils import *
 from utils import display_user_login_warning
 
 
-def page_params():
+def page_parameters():
     st.title("Parameters Page")
     st.subheader("Provide parameters for building and evaluating the system.")
 
     if display_user_login_warning():
         return
 
-    tab1, tab2 = st.tabs(["QA Generator settings", "Hyperparameters settings"])
+    tab1, tab2, tab3 = st.tabs(
+        ["QA Generator settings", "Hyperparameters settings", "ReadMe"]
+    )
 
     valid_data = get_valid_params()
 
     with tab1:
+        provide_qa_gen_form(valid_data)
+
+        upload_files(
+            context="qa_params",
+            dropdown_msg="Upload JSON file",
+            ext_list=["json"],
+            file_path=get_qa_gen_params_path(),
+        )
+
+        st.markdown("<br>" * 1, unsafe_allow_html=True)
+
         submit_button = st.button("Start eval set generator", key="SubmitQA")
 
         if submit_button:
@@ -26,40 +39,18 @@ def page_params():
                 else:
                     st.error(result)
 
-        else:
-            st.markdown("<br>" * 1, unsafe_allow_html=True)
-
-            provide_qa_gen_form(valid_data)
-
-            st.markdown("<br>" * 1, unsafe_allow_html=True)
-
-            upload_files(
-                context="qa_params",
-                ext_list=["json"],
-                file_path=get_qa_gen_params_path(),
-            )
-
-            st.markdown("<br>" * 1, unsafe_allow_html=True)
-
-            # Your dictionary
-            st.text("Example of expected input:")
-
-            st.code(
-                """
-            {
-                "chunk_size": 2048,
-                "chunk_overlap": 0,
-                "length_function_name": "text-embedding-ada-002",
-                "qa_generator_llm": "gpt-3.5-turbo",
-                "generate_eval_set": true, # to generate evaluation set, if false we use we load existing set
-                "persist_to_vs": true # if true, for now chromadb resets all user collections
-                "embedding_model_list": list[embedding model names] # list of embedding model names to use for caching in chromadb
-            }
-            
-            """
-            )
-
     with tab2:
+        provide_hp_params_form(valid_data)
+
+        upload_files(
+            context="hp_params",
+            dropdown_msg="Upload JSON file",
+            ext_list=["json"],
+            file_path=get_eval_params_path(),
+        )
+
+        st.markdown("<br>" * 1, unsafe_allow_html=True)
+
         submit_button = st.button("Start hyperparameter evaluation", key="SubmitHP")
 
         if submit_button:
@@ -71,40 +62,44 @@ def page_params():
                 else:
                     st.error(result)
 
-        else:
-            st.markdown("<br>" * 1, unsafe_allow_html=True)
-            provide_hp_params_form(valid_data)
+    with tab3:
+        st.subheader(
+            "The app and the backend expect a handful of different files with the correct names in order to work properly. Below are the required files and their descriptions."
+        )
 
-            st.markdown("<br>" * 1, unsafe_allow_html=True)
-
-            upload_files(
-                context="hp_params", ext_list=["json"], file_path=get_eval_params_path()
+        # Helper function to display paths
+        def display_path(description, path_func):
+            st.markdown(
+                f"**:file_folder: {description}**\n> {path_func()}\n---",
+                unsafe_allow_html=True,
             )
 
-            st.markdown("<br>" * 1, unsafe_allow_html=True)
-
-            # Your dictionary
-            st.text("Example of expected input:")
-
-            st.code(
-                """
-            {
-                "chunk_size": 1024,
-                "chunk_overlap": 10,
-                "num_retrieved_docs": 3,
-                "length_function_name": "len",
-                "search_type": "mmr",
-                "embedding_model": "text-embedding-ada-002",
-                "qa_llm": "gpt-3.5-turbo",
-                "use_llm_grader": true,
-                "grade_answer_prompt": "few_shot",
-                "grade_docs_prompt": "default",
-                "grader_llm": "gpt-3.5-turbo",
-            }
-            
-            # if use_llm_grader=False, no additional parameters have to be declared
-            """
-            )
+        # Display each path with the helper function
+        display_path(
+            "User's directory, consists of an UUID linked to the user.",
+            get_user_directory,
+        )
+        display_path("The Document Store folder:", get_document_store_path)
+        display_path(
+            "JSON file with parameters to generate the question-context-answer triples. The resulting evaluation dataset is written to the next file below.",
+            get_qa_gen_params_path,
+        )
+        display_path(
+            "JSON file with the generated evaluation dataset used for benchmarking RAG systems:",
+            get_eval_data_path,
+        )
+        display_path(
+            "JSON file with hyperparameters used to build the corresponding RAG application:",
+            get_eval_params_path,
+        )
+        display_path(
+            "JSON file with benchmarks/metrics of the RAG system built with provided hyperparameters:",
+            get_eval_results_path,
+        )
+        display_path(
+            "CSV file with additional data from each hyperparameter evaluation run, including predicted answers and corresponding document chunks:",
+            get_hp_runs_data_path,
+        )
 
 
 def provide_hp_params_form(valid_data: dict):

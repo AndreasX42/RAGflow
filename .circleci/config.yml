@@ -132,7 +132,7 @@ commands:
           command: |
             echo 'export TAG=${CIRCLE_SHA1:0:8}' >> $BASH_ENV
             echo 'export IMAGE_NAME_BASE=ragflow' >> $BASH_ENV
-            echo 'export NOW=$(date +"%Y-%m-%d %H:%M:%S")' >> $BASH_ENV
+            echo 'export NOW=$(date --utc +"%Y-%m-%d %H:%M:%S")' >> $BASH_ENV
             echo 'export PIPELINE_NUMBER=<< pipeline.number >>' >> $BASH_ENV
   docker_login:
     steps:

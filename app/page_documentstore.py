@@ -3,7 +3,7 @@ from utils import *
 from utils import display_user_login_warning
 
 
-def page_documents():
+def page_documentstore():
     # Title of the page
     st.title("Document Store Page")
     st.subheader("Provide the documents that the application should use.")
@@ -12,12 +12,12 @@ def page_documents():
         return
 
     else:
-        tab1, tab2 = st.tabs(["Upload JSON file", "Provide cloud storage link"])
+        tab1, tab2 = st.tabs(["Upload Documents", "Provide cloud storage"])
 
         with tab1:
-            # Upload local files
             upload_files(
                 context="docs",
+                dropdown_msg="Upload your documents",
                 ext_list=["pdf", "txt", "docx"],
                 file_path=get_document_store_path(),
                 allow_multiple_files=True,
@@ -31,8 +31,10 @@ def page_documents():
             if cloud_link:
                 st.write(f"You provided the link: {cloud_link}")
 
+        st.markdown("<br>" * 1, unsafe_allow_html=True)
+
         # List all files in the directory
-        st.subheader("Files uploaded")
+        st.subheader("Your Document Store")
         path = get_document_store_path()
         if path:
             structure = ptree(path)

@@ -126,7 +126,7 @@ async def arun_evaluation(
     # load evaluation dataset
     gt_dataset = read_json(eval_dataset_path)
 
-    document_store = glob.glob(f"{document_store_path}/*.pdf")
+    document_store = glob.glob(f"{document_store_path}/*")
 
     hyperparams_list = read_json(eval_params_path)
 

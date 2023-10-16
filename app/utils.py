@@ -8,6 +8,8 @@ import time
 API_HOST = os.environ.get("EVALBACKEND_HOST")
 API_PORT = os.environ.get("EVALBACKEND_PORT")
 
+MAX_FILE_SIZE = 10 * 1024**2  # 10MB according to .streamlit/config
+
 
 def read_json(filename: str):
     """Load dataset from a JSON file."""
@@ -120,7 +122,7 @@ def start_qa_gen() -> bool:
         return "Successfully generated evaluation data."
 
     except requests.HTTPError as http_err:
-        return f"HTTP error occurred: {http_err}"
+        return f"HTTP error occurred: {http_err}\n\nMessage: {response.text}"
 
     except Exception as err:
         return f"An error occurred: {err}"
@@ -156,15 +158,17 @@ def start_hp_run() -> bool:
 
 def upload_files(
     context: str,
+    dropdown_msg: str,
     ext_list: list[str],
     file_path: str,
     allow_multiple_files: Optional[bool] = False,
 ):
     """Function to let the user upload files."""
-    with st.expander("Upload file(s)"):
+
+    with st.expander(dropdown_msg):
         with st.form(f"upload_{context}", clear_on_submit=True):
             selection = st.file_uploader(
-                label=f"Upload file(s) with extension {', '.join(ext_list)}.",
+                label=f"Upload file(s) of format extension {', '.join(ext_list)}.",
                 type=ext_list,
                 accept_multiple_files=allow_multiple_files,
                 key=f"context_{context}",
@@ -174,32 +178,100 @@ def upload_files(
 
             # for now only ["json"] or ["docx", "txt", "pdf"] possible as ext_list
             if submitted and selection is not None:
-                if "json" in ext_list:
-                    # To read file as bytes:
-                    bytes_data = selection.getvalue()
-                    # To convert to a string based on json:
-                    string_data = bytes_data.decode("utf-8")
-                    # Load the JSON to a Python object
-                    data = json.loads(string_data)
-                    # Display the JSON contents
-                    st.write(data)
-                    # save json
-                    write_json(
-                        data,
-                        file_path,
-                    )
+                with st.spinner():
+                    if ext_list == ["json"]:
+                        success = process_json_file(selection, file_path)
+                        if success:
+                            st.success("File(s) uploaded successfully!")
+                            time.sleep(1)
+                    else:
+                        success = process_other_files(selection, file_path, ext_list)
+                        if success:
+                            st.success("File(s) uploaded successfully!")
+                            time.sleep(1)
 
-                    with st.spinner():
-                        st.success("File(s) uploaded successfully!")
-                        time.sleep(2)
+        if context == "qa_params":
+            st.markdown("<br>" * 1, unsafe_allow_html=True)
+            st.text("Example of expected JSON input:")
+            st.code(
+                """
+            {
+                "chunk_size": 2048,
+                "chunk_overlap": 0,
+                "length_function_name": "text-embedding-ada-002",
+                "qa_generator_llm": "gpt-3.5-turbo",
+                "generate_eval_set": true, # to generate evaluation set, if false we use we load existing set
+                "persist_to_vs": true # if true, for now chromadb resets all user collections
+                "embedding_model_list": list[embedding model names] # list of embedding model names to use for caching in chromadb
+            }
+            
+            """
+            )
 
-                else:
-                    for file in selection:
-                        save_uploaded_file(file, file_path)
+        if context == "hp_params":
+            st.markdown("<br>" * 1, unsafe_allow_html=True)
+            st.text("Example of expected JSON input:")
+            st.code(
+                """
+            {
+                "chunk_size": 1024,
+                "chunk_overlap": 10,
+                "num_retrieved_docs": 3,
+                "length_function_name": "len",
+                "search_type": "mmr",
+                "embedding_model": "text-embedding-ada-002",
+                "qa_llm": "gpt-3.5-turbo",
+                "use_llm_grader": true,
+                "grade_answer_prompt": "few_shot",
+                "grade_docs_prompt": "default",
+                "grader_llm": "gpt-3.5-turbo",
+            }
+            
+            # if use_llm_grader=False, no additional parameters have to be declared
+            """
+            )
 
-                    with st.spinner():
-                        st.success("File(s) uploaded successfully!")
-                        time.sleep(2)
+
+def process_json_file(file, file_path):
+    # Ensure file size is within limits
+    if file.size > MAX_FILE_SIZE:
+        st.error(f"File size exceeds {MAX_FILE_SIZE} MB!")
+        return False
+
+    # Attempt to parse JSON to ensure validity
+    bytes_data = file.getvalue()
+    try:
+        string_data = bytes_data.decode("utf-8")
+        data = json.loads(string_data)
+
+    except Exception:
+        st.error("Invalid file format, expected JSON file!")
+        return False
+
+    # Display the JSON contents and save
+    st.write(data)
+    write_json(data, file_path)
+
+    return True
+
+
+def process_other_files(selection, file_path, valid_formats):
+    for file in selection:
+        # Ensure file size is within limits
+        if file.size > MAX_FILE_SIZE:
+            st.error(f"File '{file.name}' exceeds {MAX_FILE_SIZE} MB!")
+            return False
+
+        # For additional validations on file content, insert here
+        _, extension = os.path.splitext(file.name)
+        if extension[1:] not in valid_formats:
+            st.error(f"File '{file.name}' has invalid format!")
+            return False
+
+        # Save the file
+        save_uploaded_file(file, file_path)
+
+    return True
 
 
 def realname(path, root=None):

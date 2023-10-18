@@ -21,10 +21,10 @@ jobs:
           docker_layer_caching: false
       - run:
           name: Run Docker Compose to build, start and test
-          command: docker-compose -f docker-compose-test.yaml up --exit-code-from test-suite --build
+          command: docker-compose -f docker-compose.test.yaml up --exit-code-from test-suite --build
       - run:
           name: Shut services down
-          command: docker-compose -f docker-compose-test.yaml down
+          command: docker-compose -f docker-compose.test.yaml down
       - store_artifacts:
           path: /tests/test-reports
           destination: test-reports

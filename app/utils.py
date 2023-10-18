@@ -90,6 +90,7 @@ def get_valid_params():
     endpoints = {
         "llm_models": "/configs/llm_models",
         "embedding_models": "/configs/embedding_models",
+        "retr_sim_method": "/configs/retriever_similarity_methods",
         "retr_search_types": "/configs/retriever_search_types",
         "grade_answer_prompts": "/configs/grade_answer_prompts",
         "grade_documents_prompts": "/configs/grade_documents_prompts",
@@ -218,6 +219,7 @@ def upload_files(
                 "chunk_overlap": 10,
                 "num_retrieved_docs": 3,
                 "length_function_name": "len",
+                "similarity_method": "cosine",
                 "search_type": "mmr",
                 "embedding_model": "text-embedding-ada-002",
                 "qa_llm": "gpt-3.5-turbo",

@@ -2,6 +2,7 @@ import logging
 import asyncio
 from tqdm.asyncio import tqdm as tqdm_asyncio
 import glob
+import os
 
 from datetime import datetime
 
@@ -50,12 +51,7 @@ async def arun_eval_for_hp(
     # create chunks of all provided documents
     chunks = await aload_and_chunk_docs(hp, document_store)
 
-    retriever = get_retriever(
-        splits=chunks,
-        embedding_model=hp.embedding_model,
-        num_retrieved_docs=hp.num_retrieved_docs,
-        search_type=hp.search_type,
-    )
+    retriever = get_retriever(chunks, hp)
 
     # chunks are no longer needed
     del chunks
@@ -111,6 +107,10 @@ async def arun_eval_for_hp(
     result_dict = hp.to_dict()
     result_dict |= {"scores": scores}
 
+    if os.environ.get("EXECUTION_CONTEXT") == "TEST":
+        result_dict |= {"retriever_params": retriever.dict()}
+        result_dict |= {"vectorstore_params": retriever.vectorstore._collection.dict()}
+
     return result_dict, predicted_answers
 
 
@@ -140,6 +140,8 @@ async def arun_evaluation(
     results = await tqdm_asyncio.gather(*tasks, total=len(tasks))
 
     eval_scores, predicted_answers = list(zip(*results))
+
+    logger.error(eval_scores)
 
     # write eval metrics to json
     write_json(eval_scores, eval_results_path)

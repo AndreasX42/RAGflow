@@ -8,6 +8,7 @@ from backend.commons.configurations.BaseConfigurations import (
     CVGradeAnswerPrompt,
     CVGradeDocumentsPrompt,
     CVRetrieverSearchType,
+    CVSimilarityMethod,
 )
 
 import logging
@@ -25,6 +26,7 @@ class Hyperparameters(BaseConfigurations):
     grade_answer_prompt: CVGradeAnswerPrompt
     grade_docs_prompt: CVGradeDocumentsPrompt
     search_type: CVRetrieverSearchType
+    similarity_method: CVSimilarityMethod
     use_llm_grader: bool
     qa_llm: BaseLanguageModel
     grader_llm: BaseLanguageModel
@@ -32,26 +34,29 @@ class Hyperparameters(BaseConfigurations):
 
     @validator("qa_llm", "grader_llm", pre=True, always=True)
     def check_language_model_name(cls, v, field, values):
-        valid_model_names = LLM_MODELS
-        if v.model_name not in valid_model_names:
-            raise ValueError(f"{v} not in list of valid values {valid_model_names}.")
+        if cls.get_language_model_name(v) not in LLM_MODELS + ["TestDummyLLM"]:
+            raise ValueError(f"{v} not in list of valid values {LLM_MODELS}.")
         return v
 
     @validator("embedding_model", pre=True, always=True)
     def check_embedding_model_name(cls, v):
-        valid_model_names = EMB_MODELS
-        if v.model not in valid_model_names:
-            raise ValueError(f"{v} not in list of valid values {valid_model_names}.")
+        if cls.get_embedding_model_name(v) not in EMB_MODELS + ["TestDummyEmbedding"]:
+            raise ValueError(f"{v} not in list of valid values {EMB_MODELS}.")
         return v
 
     def to_dict(self):
-        _data = self.dict()
-        _data.pop("length_function", None)
+        _data = super().to_dict()
 
         # Modify the dictionary for fields that need special handling
         _data["qa_llm"] = _data["qa_llm"]["model_name"]
         _data["grader_llm"] = _data["grader_llm"]["model_name"]
         _data["embedding_model"] = _data["embedding_model"]["model"]
+
+        # remove unnecessary values again if we don't use a llm for grading
+        if not _data["use_llm_grader"]:
+            _data.pop("grade_answer_prompt", None)
+            _data.pop("grade_docs_prompt", None)
+            _data.pop("grader_llm", None)
 
         return _data
 
@@ -63,7 +68,7 @@ class Hyperparameters(BaseConfigurations):
         if not _input["use_llm_grader"]:
             _input["grade_answer_prompt"] = CVGradeAnswerPrompt.NONE.value
             _input["grade_docs_prompt"] = CVGradeDocumentsPrompt.NONE.value
-            _input["grader_llm"] = LLM_MODELS[0]
+            _input["grader_llm"] = "TestDummyLLM"
 
         # set the actual langchain objects
         _input["embedding_model"] = cls.get_embedding_model(

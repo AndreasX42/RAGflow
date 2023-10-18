@@ -1,21 +1,21 @@
 import numpy as np
 import os
 from enum import Enum
+import uuid
 
 from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
 
-from langchain.schema.embeddings import Embeddings
 from langchain.schema.language_model import BaseLanguageModel
-from langchain.schema.retriever import BaseRetriever
+from langchain.schema.vectorstore import VectorStoreRetriever
 
 # vector db
 from langchain.vectorstores import Chroma
 
 from backend.commons.prompts import QA_ANSWER_PROMPT
-from backend.commons.configurations import CVRetrieverSearchType
+from backend.commons.configurations import Hyperparameters
 
-from typing import Any
+from typing import Any, Optional
 
 import json
 import logging
@@ -24,11 +24,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_retriever(
-    splits: list[Document],
-    embedding_model: Embeddings,
-    num_retrieved_docs: int,
-    search_type: CVRetrieverSearchType,
-) -> BaseRetriever:
+    chunks: list[Document],
+    hp: Hyperparameters,
+) -> VectorStoreRetriever:
     """Sets up a vector database based on the document chunks and the embedding model provided.
         Here we use Chroma for the vectorstore.
 
@@ -43,17 +41,29 @@ def get_retriever(
     """
     logger.info("Constructing vectorstore and retriever.")
 
-    vectorstore = Chroma.from_documents(splits, embedding_model)
+    # Chroma.from_documents gets or creates a collection here and we have to make sure that for every user, for every hyperarameter configuration and for every embedding model a collection gets created or beforehand deleted if it already exists. Otherwise some unexpected things might happen.
+
+    # collection_name = f"hp_id_{hp.id}_userid_{user_id[:8]}_emb_model_{Hyperparameters.#get_embedding_model_name(hp.embedding_model)}_time_{datetime.now().strftime ('%Y_%m_%d_%H_%M_%S_%f')}"
+
+    # TODO: check if simple UUID here is ok
+    vectorstore = Chroma.from_documents(
+        documents=chunks,
+        collection_name=str(uuid.uuid4()),
+        collection_metadata={"hnsw:space": hp.similarity_method.value},
+        embedding=hp.embedding_model,
+    )
+
     retriever = vectorstore.as_retriever(
-        search_type=search_type.value, search_kwargs={"k": num_retrieved_docs}
+        search_type=hp.search_type.value, search_kwargs={"k": hp.num_retrieved_docs}
     )
 
     return retriever
 
 
 def get_qa_llm(
-    retriever: BaseRetriever,
+    retriever: VectorStoreRetriever,
     qa_llm: BaseLanguageModel,
+    return_source_documents: Optional[bool] = True,
 ) -> RetrievalQA:
     """Sets up a LangChain RetrievalQA model based on a retriever and language model that answers
     queries based on retrieved document chunks.
@@ -76,7 +86,7 @@ def get_qa_llm(
         retriever=retriever,
         chain_type_kwargs=chain_type_kwargs,
         input_key="question",
-        return_source_documents=True,
+        return_source_documents=return_source_documents,
     )
 
     return qa_llm
@@ -89,7 +99,7 @@ def read_json(filename: str) -> Any:
         return json.load(file)
 
 
-def write_json(data: dict, filename: str) -> None:
+def write_json(data: list[dict], filename: str) -> None:
     """Function used to store generated QA pairs, i.e. the ground truth.
 
     Args:
@@ -107,9 +117,7 @@ def write_json(data: dict, filename: str) -> None:
             # Assuming the data is a list; you can modify as per your requirements
             json_data.extend(data)
     else:
-        # File doesn't exist; set data as the new_data
-        # This assumes the main structure is a list; modify as needed
-        json_data = data  # [data]
+        json_data = data
 
     # Write the combined data back to the file
     with open(filename, "w", encoding="utf-8") as file:

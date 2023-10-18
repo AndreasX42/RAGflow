@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
 from pydantic import BaseModel, Field
+from uuid import UUID
 
 from backend.evaluation import arun_evaluation
 
@@ -25,9 +26,7 @@ class EvaluationRunRequest(BaseModel):
     hp_runs_data_path: str = Field(
         min_length=3, description="path to list of generated"
     )
-    user_id: str = Field(
-        min_length=1, description="user id, e.g. used to access cached embeddings"
-    )
+    user_id: UUID = Field(description="user id, e.g. used to access cached embeddings")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
 
     class Config:

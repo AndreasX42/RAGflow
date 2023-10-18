@@ -15,6 +15,7 @@ from backend.utils import aload_and_chunk_docs, write_json, read_json
 from backend.commons.configurations import QAConfigurations
 from backend.commons.chroma import ChromaClient
 
+from typing import Optional
 import uuid
 import logging
 
@@ -96,10 +97,12 @@ async def agenerate_eval_set_from_docs(
 
 
 async def aupsert_embeddings_for_model(
-    qa_pairs: list[dict], embedding_model: Embeddings, user_id: str
+    qa_pairs: list[dict],
+    embedding_model: Embeddings,
+    user_id: str,
 ) -> None:
     with ChromaClient() as CHROMA_CLIENT:
-        collection_id = f"userid_{user_id}_{embedding_model.model}"
+        collection_id = f"userid_{user_id}_{QAConfigurations.get_embedding_model_name(embedding_model)}"
 
         # check if collection already exists, if not create a new one with the embeddings
         if [
@@ -111,7 +114,7 @@ async def aupsert_embeddings_for_model(
             return None
 
         collection = CHROMA_CLIENT.create_collection(
-            name=f"userid_{user_id[:8]}_{embedding_model.model}",
+            name=f"userid_{user_id[:8]}_{QAConfigurations.get_embedding_model_name(embedding_model)}",
             metadata={
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3],
                 "custom_id": collection_id,
@@ -120,9 +123,18 @@ async def aupsert_embeddings_for_model(
 
         ids = [qa_pair["metadata"]["id"] for qa_pair in qa_pairs]
 
-        embeddings = await embedding_model.aembed_documents(
-            [qa_pair["answer"] for qa_pair in qa_pairs]
-        )
+        # maybe async function is not implemented for embedding model
+        try:
+            embeddings = await embedding_model.aembed_documents(
+                [qa_pair["answer"] for qa_pair in qa_pairs]
+            )
+        except Exception as ex:
+            logger.error(
+                f"Exception during eval set generation and upserting to ChromaDB, {ex}"
+            )
+            embeddings = embedding_model.embed_documents(
+                [qa_pair["answer"] for qa_pair in qa_pairs]
+            )
 
         collection.upsert(
             ids=ids,
@@ -137,7 +149,9 @@ async def aupsert_embeddings_for_model(
             ],
         )
 
-    logger.info(f"Upserted {embedding_model.model} embeddings to vectorstore.")
+    logger.info(
+        f"Upserted {QAConfigurations.get_embedding_model_name(embedding_model)} embeddings to vectorstore."
+    )
 
 
 async def agenerate_and_save_dataset(
@@ -152,6 +166,14 @@ async def agenerate_and_save_dataset(
 
     # tarnsform list of list of dicts into list of dicts
     gt_dataset = await agenerate_eval_set_from_docs(hp, docs_path)
+
+    # Test: if gt_dataset is empty because of test dummy LLM, we inject a real dataset for test
+    if (
+        os.environ.get("EXECUTION_CONTEXT") == "TEST"
+        and hp.persist_to_vs
+        and not gt_dataset
+    ):
+        gt_dataset = read_json("./resources/input_eval_data.json")
 
     # write eval dataset to json
     write_json(gt_dataset, eval_dataset_path)
@@ -196,11 +218,11 @@ async def agenerate_evaluation_set(
 
     # generate evaluation dataset
     if qa_gen_params.generate_eval_set or not os.path.exists(eval_dataset_path):
-        if os.path.exists(eval_dataset_path):
-            logger.info(
-                "Existing evaluation dataset deleted due to 'generate_eval_set'=True."
-            )
-            os.remove(eval_dataset_path)
+        """if os.path.exists(eval_dataset_path):
+        logger.info(
+            "Existing evaluation dataset deleted due to 'generate_eval_set'=True."
+        )
+        os.remove(eval_dataset_path)"""
 
         # reset chromadb collections for this user
         with ChromaClient() as client:

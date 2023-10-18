@@ -1,0 +1,13 @@
+[
+    {
+        "chunk_size": 512,
+        "chunk_overlap": 10,
+        "length_function_name": "text-embedding-ada-002",
+        "qa_generator_llm": "gpt-3.5-turbo",
+        "persist_to_vs": true,
+        "embedding_model_list": [
+            "text-embedding-ada-002"
+        ],
+        "generate_eval_set": true
+    }
+]

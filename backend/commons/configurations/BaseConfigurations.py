@@ -1,7 +1,8 @@
 from langchain.schema.embeddings import Embeddings
 from langchain.schema.language_model import BaseLanguageModel
+from langchain.llms.fake import FakeListLLM
 
-from langchain.embeddings import OpenAIEmbeddings
+from langchain.embeddings import OpenAIEmbeddings, DeterministicFakeEmbedding
 from langchain.chat_models import ChatOpenAI, ChatAnyscale
 
 import tiktoken
@@ -10,7 +11,7 @@ import logging
 
 from abc import abstractmethod
 from pydantic.v1 import BaseModel, Field, Extra, validator
-from typing import Any
+from typing import Any, Optional
 
 from enum import Enum
 
@@ -45,7 +46,6 @@ EMB_MODELS = [*OPENAI_EMB_MODELS]
 # Enumerations
 ####################
 class CVGradeAnswerPrompt(Enum):
-    FAST = "fast"
     ZERO_SHOT = "zero_shot"
     FEW_SHOT = "few_shot"
     NONE = "none"
@@ -57,8 +57,40 @@ class CVGradeDocumentsPrompt(Enum):
 
 
 class CVRetrieverSearchType(Enum):
-    SIMILARITY = "similarity"
-    MMR = "mmr"
+    BY_SIMILARITY = "similarity"
+    MAXIMAL_MARGINAL_RELEVANCE = "mmr"
+
+
+class CVSimilarityMethod(Enum):
+    COSINE = "cosine"
+    L2_NORM = "l2"
+    INNER_PRODUCT = "ip"
+
+
+####################
+# Test LLM and embedding model for mocks
+####################
+class TestDummyLLM(FakeListLLM):
+    """Langchains FakeListLLM with model name included."""
+
+    model_name: str = "TestDummyLLM"
+
+    def __init__(self):
+        super().__init__(responses=["foo_response"])
+
+    def dict(self, *args, **kwargs):
+        output = super().dict(*args, **kwargs)
+        output["model_name"] = self.model_name
+        return output
+
+
+class TestDummyEmbedding(DeterministicFakeEmbedding):
+    """Langchains DeterministicFakeEmbedding with model name included."""
+
+    model: str = "TestDummyEmbedding"
+
+    def __init__(self):
+        super().__init__(size=2)
 
 
 class BaseConfigurations(BaseModel):
@@ -94,6 +126,10 @@ class BaseConfigurations(BaseModel):
                 anyscale_api_base=ANYSCALE_API_URL,
                 temperature=0.0,
             )
+        # only for testing purposes
+        elif model_name == "TestDummyLLM":
+            return TestDummyLLM()
+
         raise NotImplementedError(f"LLM model '{model_name}' not supported.")
 
     @staticmethod
@@ -102,6 +138,8 @@ class BaseConfigurations(BaseModel):
             return OpenAIEmbeddings(
                 openai_api_key=api_keys["OPENAI_API_KEY"], model=model_name
             )
+        elif model_name == "TestDummyEmbedding":
+            return TestDummyEmbedding()
 
         raise NotImplementedError(f"Embedding model '{model_name}' not supported.")
 
@@ -134,9 +172,10 @@ class BaseConfigurations(BaseModel):
         """Retrieve name of embedding model name from object"""
         return emb.model
 
-    @abstractmethod
-    def to_dict(self):
-        pass
+    def to_dict(self) -> dict:
+        _data = self.dict()
+        _data.pop("length_function", None)
+        return _data
 
     @classmethod
     @abstractmethod

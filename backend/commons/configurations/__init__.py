@@ -3,6 +3,7 @@ from backend.commons.configurations.BaseConfigurations import (
     CVGradeAnswerPrompt,
     CVGradeDocumentsPrompt,
     CVRetrieverSearchType,
+    CVSimilarityMethod,
     LLM_MODELS,
     EMB_MODELS,
 )

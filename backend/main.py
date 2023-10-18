@@ -5,24 +5,19 @@ import asyncio
 from backend.evaluation import arun_evaluation
 from backend.testsetgen import agenerate_evaluation_set
 
-logging.basicConfig(
-    level=20,
-    format="%(asctime)s - %(levelname)s - %(name)s:%(filename)s:%(lineno)d - %(message)s",
-)
-
 logger = logging.getLogger(__name__)
 
 dotenv.load_dotenv(dotenv.find_dotenv(), override=True)
 
 
 async def main(
-    document_store_path: str = "./tmp/document_store/",
-    eval_dataset_path: str = "./tmp/eval_data.json",
-    qa_gen_params_path: str = "./tmp/qa_gen_params.json",
-    eval_params_path: str = "./tmp/eval_params.json",
-    eval_results_path: str = "./tmp/eval_results.json",
-    hp_runs_data_path: str = "./tmp/hp_runs_data.csv",
-    user_id: str = "3e6e131c-d9f3-4185-a492-f5f8875e34f0",
+    document_store_path: str = "./tmp/test/document_store/",
+    eval_dataset_path: str = "./tmp/test/eval_data.json",
+    qa_gen_params_path: str = "./tmp/test/qa_gen_params.json",
+    eval_params_path: str = "./tmp/test/eval_params.json",
+    eval_results_path: str = "./tmp/test/eval_results.json",
+    hp_runs_data_path: str = "./tmp/test/hp_runs_data.csv",
+    user_id: str = "336e131c-d9f3-4185-a402-f5f8875e34f0",
 ):
     """After generating gt_dataset we need to calculate the metrics based on Chunking strategy, type of vectorstore, retriever (similarity search), QA LLM
 
@@ -59,6 +54,9 @@ async def main(
         file_path (str, optional): _description_. Defaults to "./resources".
         eval_gt_path (str, optional): _description_. Defaults to "./resources/eval_data.json".
     """
+    import os
+
+    # api_keys = {"OPENAI_API_KEY": os.environ.get("OPENAI_API_KEY")}
 
     ################################################################
     # First phase: Loading or generating evaluation dataset
@@ -66,10 +64,9 @@ async def main(
 
     logger.info("Checking for evaluation dataset configs.")
 
-    # generate evaluation dataset
-    await agenerate_evaluation_set(
-        qa_gen_params_path, eval_dataset_path, document_store_path, user_id
-    )
+    """await agenerate_evaluation_set(
+        qa_gen_params_path, eval_dataset_path, document_store_path, user_id, {}
+    ) """
 
     ################################################################
     # Second phase: Running evaluations
@@ -84,6 +81,7 @@ async def main(
         eval_results_path,
         hp_runs_data_path,
         user_id,
+        {},
     )
 
 

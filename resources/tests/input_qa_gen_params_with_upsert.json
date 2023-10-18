@@ -1,0 +1,14 @@
+[
+    {
+        "chunk_size": 512,
+        "chunk_overlap": 10,
+        "length_function_name": "len",
+        "qa_generator_llm": "TestDummyLLM",
+        "persist_to_vs": true,
+        "embedding_model_list": [
+            "TestDummyEmbedding",
+            "TestDummyEmbedding"
+        ],
+        "generate_eval_set": true
+    }
+]

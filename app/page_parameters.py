@@ -120,7 +120,12 @@ def provide_hp_params_form(valid_data: dict):
                 value=3,
                 key="number of docs to retrieve",
             ),
-            "search_type": st.selectbox("Search Type", valid_data["retr_search_types"]),
+            "similarity_method": st.selectbox(
+                "Retriever Similarity Method", valid_data["retr_sim_method"]
+            ),
+            "search_type": st.selectbox(
+                "Retriever Search Type", valid_data["retr_search_types"]
+            ),
             "embedding_model": st.selectbox(
                 "Embedding Model",
                 valid_data["embedding_models"],

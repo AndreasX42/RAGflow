@@ -1,0 +1,27 @@
+[
+    {
+        "chunk_size": 512,
+        "chunk_overlap": 10,
+        "length_function_name": "text-embedding-ada-002",
+        "id": 0,
+        "num_retrieved_docs": 3,
+        "grade_answer_prompt": "none",
+        "grade_docs_prompt": "none",
+        "search_type": "similarity",
+        "similarity_method": "cosine",
+        "use_llm_grader": false,
+        "qa_llm": "gpt-3.5-turbo",
+        "grader_llm": "TestDummyLLM",
+        "embedding_model": "text-embedding-ada-002",
+        "scores": {
+            "embedding_cosine_sim": 0.9557482065398994,
+            "correct_ans": -1,
+            "comprehensive_ans": -1,
+            "readable_ans": -1,
+            "retriever_score": -1,
+            "rouge1": 0.5860717991391033,
+            "rouge2": 0.43364456183350564,
+            "timestamp": "2023-10-17 17:44:50,169"
+        }
+    }
+]

@@ -1,0 +1,14 @@
+[
+    {
+        "id": 0,
+        "chunk_size": 512,
+        "chunk_overlap": 10,
+        "length_function_name": "len",
+        "num_retrieved_docs": 2,
+        "similarity_method": "cosine",
+        "search_type": "similarity",
+        "embedding_model": "TestDummyEmbedding",
+        "qa_llm": "TestDummyLLM",
+        "use_llm_grader": false
+    }
+]

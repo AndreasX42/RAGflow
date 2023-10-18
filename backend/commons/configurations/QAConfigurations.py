@@ -8,6 +8,8 @@ from backend.commons.configurations.BaseConfigurations import (
     LLM_MODELS,
 )
 
+from typing import Optional
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,14 +23,12 @@ class QAConfigurations(BaseConfigurations):
 
     @validator("qa_generator_llm", pre=True, always=True)
     def check_language_model_name(cls, v):
-        valid_model_names = LLM_MODELS
-        if v.model_name not in valid_model_names:
-            raise ValueError(f"{v} not in list of valid values {valid_model_names}.")
+        if cls.get_language_model_name(v) not in LLM_MODELS + ["TestDummyLLM"]:
+            raise ValueError(f"{v} not in list of valid values {LLM_MODELS}.")
         return v
 
     def to_dict(self):
-        _data = self.dict()
-        _data.pop("length_function", None)
+        _data = super().to_dict()
 
         # Modify the dictionary for fields that need special handling
         _data["qa_generator_llm"] = _data["qa_generator_llm"]["model_name"]

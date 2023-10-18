@@ -16,7 +16,6 @@ from backend.commons.prompts import (
 
 from backend.evaluation.utils import extract_llm_metric
 
-from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,6 +24,7 @@ from backend.commons.chroma import ChromaClient
 from backend.commons.configurations import (
     CVGradeAnswerPrompt,
     CVGradeDocumentsPrompt,
+    BaseConfigurations,
 )
 
 
@@ -56,7 +56,7 @@ def grade_embedding_similarity(
     # if not available, we calculate them again
     try:
         with ChromaClient() as CHROMA_CLIENT:
-            collection_id = f"userid_{user_id}_{embedding_model.model}"
+            collection_id = f"userid_{user_id}_{BaseConfigurations.get_embedding_model_name(embedding_model)}"
 
             for col in CHROMA_CLIENT.list_collections():
                 if col.metadata.get("custom_id", "") == collection_id:
@@ -73,7 +73,7 @@ def grade_embedding_similarity(
 
     except Exception as ex:
         logger.info(
-            f"Embeddings of {embedding_model.model} for label answers could not be loaded from vectorstore.\n\
+            f"Embeddings of {BaseConfigurations.get_embedding_model_name(embedding_model)} for label answers could not be loaded from vectorstore.\n\
             Collections: {CHROMA_CLIENT.list_collections()}.\n\
             Exception: {ex.args}"
         )

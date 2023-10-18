@@ -7,6 +7,7 @@ from backend.commons.configurations import (
     CVGradeAnswerPrompt,
     CVGradeDocumentsPrompt,
     CVRetrieverSearchType,
+    CVSimilarityMethod,
 )
 
 router = APIRouter(
@@ -23,6 +24,11 @@ async def get_list_of_supported_llm_models():
 @router.get("/embedding_models", status_code=status.HTTP_200_OK)
 async def list_of_embedding_models():
     return EMB_MODELS
+
+
+@router.get("/retriever_similarity_methods", status_code=status.HTTP_200_OK)
+async def list_of_similarity_methods_for_retriever():
+    return [e.value for e in CVSimilarityMethod]
 
 
 @router.get("/retriever_search_types", status_code=status.HTTP_200_OK)

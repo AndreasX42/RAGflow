@@ -1,28 +1,22 @@
 version: "3"
 services:
-  app:
-    build:
-      dockerfile: Dockerfile
-      context: ./app
-    container_name: app-frontend
-    ports:
-      - "8501:8501"
-    environment:
-      - EVALBACKEND_HOST=eval-backend
-      - EVALBACKEND_PORT=8080
-  eval-backend:
+  backend-test:
     build:
       dockerfile: Dockerfile
       context: ./backend
-    container_name: eval-backend
+    container_name: backend-test
     ports:
       - "8080:8080"
     environment:
-      - CHROMADB_HOST=chromadb
+      - CHROMADB_HOST=chromadb-test
       - CHROMADB_PORT=8000
-  chromadb:
+      - EXECUTION_CONTEXT=TEST
+    volumes:
+      - ./backend:/eval_backend/backend
+      - ./resources/tests:/eval_backend/resources
+  chromadb-test:
     image: ghcr.io/chroma-core/chroma:latest
-    container_name: chromadb
+    container_name: chromadb-test
     ports:
       - 8000:8000
     environment:
@@ -34,11 +28,14 @@ services:
       context: ./tests
     container_name: tester
     environment:
-      - EVALBACKEND_HOST=eval-backend
+      - EVALBACKEND_HOST=backend-test
       - EVALBACKEND_PORT=8080
-      - CHROMADB_HOST=chromadb
+      - CHROMADB_HOST=chromadb-test
       - CHROMADB_PORT=8000
     depends_on:
-      - app
-      - eval-backend
-      - chromadb
+      - backend-test
+      - chromadb-test
+    volumes:
+      - ./resources/tests:/tests/resources
+      - ./tests:/tests
+    #restart: always

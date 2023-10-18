@@ -1,0 +1,14 @@
+[
+    {
+        "id": 0,
+        "chunk_size": 512,
+        "chunk_overlap": 10,
+        "length_function_name": "text-embedding-ada-002",
+        "num_retrieved_docs": 3,
+        "similarity_method": "cosine",
+        "search_type": "similarity",
+        "embedding_model": "text-embedding-ada-002",
+        "qa_llm": "gpt-3.5-turbo",
+        "use_llm_grader": false
+    }
+]

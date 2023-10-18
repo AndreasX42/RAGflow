@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
 from pydantic import BaseModel, Field
+from uuid import UUID
 
 from backend.testsetgen import agenerate_evaluation_set
 
@@ -19,9 +20,7 @@ class EvalsetGenerationRequest(BaseModel):
         min_length=3,
         description="path to where the generated qa pairs should be stored.",
     )
-    user_id: str = Field(
-        min_length=1, description="user id, e.g. used to access cached embeddings."
-    )
+    user_id: UUID = Field(description="user id, e.g. used to access cached embeddings.")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
 
     class Config:
@@ -41,8 +40,11 @@ class EvalsetGenerationRequest(BaseModel):
 
 @router.post("/start", status_code=status.HTTP_200_OK)
 async def start_evalset_generation(gen_request: EvalsetGenerationRequest):
+    args = gen_request.model_dump()
+    args["user_id"] = str(args["user_id"])
+
     try:
-        await agenerate_evaluation_set(**gen_request.model_dump())
+        await agenerate_evaluation_set(**args)
     except Exception as ex:
         print(ex)
         raise HTTPException(status_code=400, detail=str(ex))

@@ -18,7 +18,7 @@ jobs:
       #      . venv/bin/activate
       #      pip install --no-cache-dir -r ./tests/requirements.txt
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Run Docker Compose to build, start and test
           command: docker-compose -f docker-compose-test.yaml up --exit-code-from test-suite --build
@@ -36,7 +36,7 @@ jobs:
       - set_env_vars
       - docker_login
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Inject build info into frontend
           command: |
@@ -56,7 +56,7 @@ jobs:
       - set_env_vars
       - docker_login
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Push backend image
           command: |
@@ -70,7 +70,7 @@ jobs:
       - set_env_vars
       - docker_login
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Push vectorstore image
           command: |
@@ -85,7 +85,7 @@ jobs:
       - checkout
       - set_env_vars
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Setup Google Cloud SDK
           command: |

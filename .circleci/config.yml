@@ -21,7 +21,7 @@ jobs:
           docker_layer_caching: false
       - run:
           name: Clear Docker cache
-          command: docker system prune --all --force -- volumes
+          command: docker system prune --all --force --volumes
       - run:
           name: Run Docker Compose to build, start and test
           command: docker-compose -f docker-compose.test.yaml up --exit-code-from test-suite --build

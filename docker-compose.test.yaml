@@ -11,9 +11,9 @@ services:
       - CHROMADB_HOST=chromadb-test
       - CHROMADB_PORT=8000
       - EXECUTION_CONTEXT=TEST
-  #  volumes:
-  #    - ./backend:/eval_backend/backend
-  #    - ./resources/tests:/eval_backend/resources
+    volumes:
+      #    - ./backend:/eval_backend/backend
+      - ./resources/tests:/eval_backend/resources
   chromadb-test:
     image: ghcr.io/chroma-core/chroma:latest
     container_name: chromadb-test
@@ -35,7 +35,7 @@ services:
     depends_on:
       - backend-test
       - chromadb-test
-    #  volumes:
-    #    - ./resources/tests:/tests/resources
+    volumes:
+      - ./resources/tests:/tests/resources
     #    - ./tests:/tests
     #restart: always

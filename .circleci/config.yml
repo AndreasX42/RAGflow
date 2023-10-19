@@ -6,19 +6,10 @@ executors:
       - image: cimg/python:3.11
 
 jobs:
-  # run integration tests
   run_integration_tests:
-    executor: python-docker-executor
+    machine: true
     steps:
       - checkout
-      #- run:
-      #    name: Setup VirtualEnv
-      #    command: |
-      #      virtualenv venv
-      #      . venv/bin/activate
-      #      pip install --no-cache-dir -r ./tests/requirements.txt
-      - setup_remote_docker:
-          docker_layer_caching: false
       - run:
           name: Clear Docker cache
           command: docker system prune --all --force --volumes
@@ -31,7 +22,6 @@ jobs:
       - store_artifacts:
           path: /tests/test-reports
           destination: test-reports
-  # push images to docker hub
   push_app_image:
     executor: python-docker-executor
     steps:
@@ -80,7 +70,6 @@ jobs:
             docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:latest ./vectorstore
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:latest
-  # deploy to GKE k8s cluster
   deploy_to_gke_k8s_cluster:
     docker:
       - image: google/cloud-sdk
@@ -105,7 +94,6 @@ jobs:
             kubectl set image deployments/backend-deployment eval-backend=$DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
             kubectl set image deployments/vectorstore-deployment chromadb-vectorstore=$DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG
 
-# define workflow of pipeline
 workflows:
   version: 2
   build-deploy:
@@ -126,7 +114,6 @@ workflows:
             - push_backend_image
             - push_vectorstore_image
 
-# helper commands
 commands:
   set_env_vars:
     steps:

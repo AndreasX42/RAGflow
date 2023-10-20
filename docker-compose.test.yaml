@@ -14,7 +14,7 @@ services:
       - LOG_LEVEL=DEBUG
       - INPUT_LABEL_DATASET=./resources/input_label_dataset.json
     volumes:
-      - ./backend:/eval_backend/backend #
+      #  - ./backend:/eval_backend/backend #
       - ./resources/tests:/eval_backend/resources
   chromadb-test:
     image: ghcr.io/chroma-core/chroma:latest
@@ -39,5 +39,5 @@ services:
       - chromadb-test
     volumes:
       - ./resources/tests:/tests/resources
-      - ./tests:/tests #
+    #  - ./tests:/tests #
     # restart: always #

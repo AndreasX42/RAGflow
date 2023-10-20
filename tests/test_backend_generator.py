@@ -11,6 +11,9 @@ from tests.utils import (
     BACKEND_PORT,
     CHROMADB_HOST,
     CHROMADB_PORT,
+    LABEL_DATASET_ENDPOINT,
+    DOCUMENT_STORE_PATH,
+    LABEL_DATASET_PATH,
     fetch_data,
     first_user_id,
     second_user_id,
@@ -22,12 +25,12 @@ logger = logging.getLogger(__name__)
 
 
 def test_generator_without_upsert(user_id_without_upsert):
-    """Test QA generator without upserting to ChromaDB. Since we use a fake LLM provided by LangChain for testing purposes to mock a real one, we are not able to generate real QA pairs and the generated eval_data.json file is empty."""
+    """Test QA generator without upserting to ChromaDB. Since we use a fake LLM provided by LangChain for testing purposes to mock a real one, we are not able to generate real QA pairs and the generated label_dataset.json file is empty."""
 
     json_payload = {
-        "document_store_path": "./resources/document_store",
-        "eval_dataset_path": "./resources/output_eval_data_without_upsert.json",
-        "qa_gen_params_path": "./resources/input_qa_gen_params_without_upsert.json",
+        "document_store_path": DOCUMENT_STORE_PATH,
+        "label_dataset_path": "./resources/output_label_dataset_without_upsert.json",
+        "label_dataset_gen_params_path": "./resources/input_label_dataset_gen_params_without_upsert.json",
         "user_id": user_id_without_upsert,
         "api_keys": {},
     }
@@ -36,20 +39,20 @@ def test_generator_without_upsert(user_id_without_upsert):
         method="post",
         host=BACKEND_HOST,
         port=BACKEND_PORT,
-        endpoint="/evalsetgeneration/start",
+        endpoint=LABEL_DATASET_ENDPOINT,
         payload=json_payload,
     )
 
     assert (
         response.status_code == 200
-    ), "The response from the '/evalsetgeneration/start' endpoint should be ok."
+    ), f"The response from the {LABEL_DATASET_ENDPOINT} endpoint should be ok."
 
-    with open(json_payload["eval_dataset_path"], encoding="utf-8") as file:
+    with open(json_payload["label_dataset_path"], encoding="utf-8") as file:
         data = json.load(file)
 
     assert (
         not data
-    ), f"Expected no content in {json_payload['eval_dataset_path']}, but found it not empty"
+    ), f"Expected no content in {json_payload['label_dataset_path']}, but found it not empty"
 
 
 @pytest.mark.parametrize(
@@ -72,9 +75,9 @@ def test_generator_with_upsert(
     user_id = get_fixture_value(user_id_fixture)
 
     json_payload = {
-        "document_store_path": "./resources/document_store",
-        "eval_dataset_path": "./resources/output_eval_data_with_upsert.json",
-        "qa_gen_params_path": "./resources/input_qa_gen_params_with_upsert.json",
+        "document_store_path": DOCUMENT_STORE_PATH,
+        "label_dataset_path": "./resources/output_label_dataset_with_upsert.json",
+        "label_dataset_gen_params_path": "./resources/input_label_dataset_gen_params_with_upsert.json",
         "user_id": user_id,
         "api_keys": {},
     }
@@ -83,14 +86,14 @@ def test_generator_with_upsert(
     if expected_error:
         with pytest.raises(
             expected_error,
-            match="Unprocessable Entity for url: http://backend-test:8080/evalsetgeneration/start",
+            match=f"Unprocessable Entity for url: http://backend-test:8080{LABEL_DATASET_ENDPOINT}",
         ):
             # Assuming the error will arise here when pydantic throws an exception because user id is not a valid UUID
             response = fetch_data(
                 method="post",
                 host=BACKEND_HOST,
                 port=BACKEND_PORT,
-                endpoint="/evalsetgeneration/start",
+                endpoint=LABEL_DATASET_ENDPOINT,
                 payload=json_payload,
             )
 
@@ -101,19 +104,19 @@ def test_generator_with_upsert(
         method="post",
         host=BACKEND_HOST,
         port=BACKEND_PORT,
-        endpoint="/evalsetgeneration/start",
+        endpoint=LABEL_DATASET_ENDPOINT,
         payload=json_payload,
     )
     assert (
         response.status_code == 200
-    ), "The response from the '/evalsetgeneration/start' endpoint should be ok."
+    ), "The response from the {LABEL_DATASET_ENDPOINT} endpoint should be ok."
 
-    with open(json_payload["eval_dataset_path"], encoding="utf-8") as file:
+    with open(json_payload["label_dataset_path"], encoding="utf-8") as file:
         data = json.load(file)
 
     assert (
         data
-    ), f"Expected content in {json_payload['eval_dataset_path']}, but found it empty or null."
+    ), f"Expected content in {json_payload['label_dataset_path']}, but found it empty or null."
     # connect to chromadb
     client = chromadb.HttpClient(
         host=CHROMADB_HOST,
@@ -145,17 +148,3 @@ def test_generator_with_upsert(
     assert len(embeddings) == len(data)
 
     assert len(embeddings[0]) == 2
-
-
-@pytest.fixture(scope="function", autouse=True)
-def cleanup_output_files():
-    # Setup: Anything before the yield is the setup. You can leave it empty if there's no setup.
-
-    yield  # This will allow the test to run.
-
-    # Teardown: Anything after the yield is the teardown.
-    for file in glob.glob("./resources/output_*"):
-        try:
-            os.remove(file)
-        except Exception as e:
-            logger.error(f"Error deleting {file}. Error: {e}")

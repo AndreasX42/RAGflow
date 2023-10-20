@@ -17,21 +17,25 @@ def page_parameters():
     valid_data = get_valid_params()
 
     with tab1:
+        st.write(
+            "The QA generator provides the possibility to generate question-context-answer triples from the provided documents that are used to evaluate hyperparameters and the corresponding RAG model in a consecutive step. You can either provide parameters for the generator through the drop-down menu below or by uploading a JSON file."
+        )
+
         provide_qa_gen_form(valid_data)
 
         upload_files(
             context="qa_params",
             dropdown_msg="Upload JSON file",
             ext_list=["json"],
-            file_path=get_qa_gen_params_path(),
+            file_path=get_label_dataset_gen_params_path(),
         )
 
         st.markdown("<br>" * 1, unsafe_allow_html=True)
 
-        submit_button = st.button("Start eval set generator", key="SubmitQA")
+        submit_button = st.button("Start evaluation dataset generation", key="SubmitQA")
 
         if submit_button:
-            with st.spinner("Running eval set generator..."):
+            with st.spinner("Running generator..."):
                 result = start_qa_gen()
 
                 if "Success" in result:
@@ -40,13 +44,17 @@ def page_parameters():
                     st.error(result)
 
     with tab2:
+        st.write(
+            "The Hyperparameter evaluator provides functionality of benchmarking RAG models with the corresponding parameters. During evaluation a LLM predicts an answer with the provided query and retrieved document chunks. With that we can calculate embedding similarities of label and predicted answers and ROUGE scores to provoide some metrics. We can also provide a LLM that is used for grading the predicted answers and the retrieved documents to extract even more metrics."
+        )
+
         provide_hp_params_form(valid_data)
 
         upload_files(
             context="hp_params",
             dropdown_msg="Upload JSON file",
             ext_list=["json"],
-            file_path=get_eval_params_path(),
+            file_path=get_hyperparameters_path(),
         )
 
         st.markdown("<br>" * 1, unsafe_allow_html=True)
@@ -82,23 +90,23 @@ def page_parameters():
         display_path("The Document Store folder:", get_document_store_path)
         display_path(
             "JSON file with parameters to generate the question-context-answer triples. The resulting evaluation dataset is written to the next file below.",
-            get_qa_gen_params_path,
+            get_label_dataset_gen_params_path,
         )
         display_path(
             "JSON file with the generated evaluation dataset used for benchmarking RAG systems:",
-            get_eval_data_path,
+            get_label_dataset_path,
         )
         display_path(
             "JSON file with hyperparameters used to build the corresponding RAG application:",
-            get_eval_params_path,
+            get_hyperparameters_path,
         )
         display_path(
             "JSON file with benchmarks/metrics of the RAG system built with provided hyperparameters:",
-            get_eval_results_path,
+            get_hyperparameters_results_path,
         )
         display_path(
             "CSV file with additional data from each hyperparameter evaluation run, including predicted answers and corresponding document chunks:",
-            get_hp_runs_data_path,
+            get_hyperparameters_results_data_path,
         )
 
 
@@ -168,7 +176,7 @@ def provide_hp_params_form(valid_data: dict):
             st.write(attributes2)
             write_json(
                 attributes2,
-                get_eval_params_path(),
+                get_hyperparameters_path(),
                 append=True,
             )
 
@@ -213,7 +221,7 @@ def provide_qa_gen_form(valid_data: dict):
                 attributes["embedding_model_list"] = []
 
             # flag not necessary for user
-            attributes["generate_eval_set"] = True
+            attributes["generate_label_dataset"] = True
 
             with st.spinner("Saving to file."):
                 st.write("Saved to file. You've entered the following values:")
@@ -223,5 +231,5 @@ def provide_qa_gen_form(valid_data: dict):
                 # save json
                 write_json(
                     attributes,
-                    get_qa_gen_params_path(),
+                    get_label_dataset_gen_params_path(),
                 )

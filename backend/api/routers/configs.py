@@ -5,7 +5,7 @@ from backend.commons.configurations import (
     LLM_MODELS,
     EMB_MODELS,
     CVGradeAnswerPrompt,
-    CVGradeDocumentsPrompt,
+    CVGradeRetrieverPrompt,
     CVRetrieverSearchType,
     CVSimilarityMethod,
 )
@@ -43,4 +43,4 @@ async def list_of_prompts_for_grading_answers():
 
 @router.get("/grade_documents_prompts", status_code=status.HTTP_200_OK)
 async def list_of_prompts_for_grading_documents_retrieved():
-    return [e.value for e in CVGradeDocumentsPrompt]
+    return [e.value for e in CVGradeRetrieverPrompt]

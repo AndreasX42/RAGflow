@@ -109,14 +109,14 @@ def start_qa_gen() -> bool:
     try:
         json_payload = {
             "document_store_path": get_document_store_path(),
-            "eval_dataset_path": get_eval_data_path(),
-            "qa_gen_params_path": get_qa_gen_params_path(),
+            "label_dataset_path": get_label_dataset_path(),
+            "label_dataset_gen_params_path": get_label_dataset_gen_params_path(),
             "user_id": st.session_state.user_id,
             "api_keys": st.session_state.api_keys,
         }
 
         response = requests.post(
-            f"http://{API_HOST}:{API_PORT}/evalsetgeneration/start", json=json_payload
+            f"http://{API_HOST}:{API_PORT}/label_gen/run", json=json_payload
         )
 
         response.raise_for_status()
@@ -135,16 +135,16 @@ def start_hp_run() -> bool:
     try:
         json_payload = {
             "document_store_path": get_document_store_path(),
-            "eval_dataset_path": get_eval_data_path(),
-            "eval_params_path": get_eval_params_path(),
-            "eval_results_path": get_eval_results_path(),
-            "hp_runs_data_path": get_hp_runs_data_path(),
+            "label_dataset_path": get_label_dataset_path(),
+            "hyperparameters_path": get_hyperparameters_path(),
+            "hyperparameters_results_path": get_hyperparameters_results_path(),
+            "hyperparameters_results_data_path": get_hyperparameters_results_data_path(),
             "user_id": st.session_state.user_id,
             "api_keys": st.session_state.api_keys,
         }
 
         response = requests.post(
-            f"http://{API_HOST}:{API_PORT}/evaluations/start", json=json_payload
+            f"http://{API_HOST}:{API_PORT}/hp_eval/run", json=json_payload
         )
 
         response.raise_for_status()
@@ -201,7 +201,7 @@ def upload_files(
                 "chunk_overlap": 0,
                 "length_function_name": "text-embedding-ada-002",
                 "qa_generator_llm": "gpt-3.5-turbo",
-                "generate_eval_set": true, # to generate evaluation set, if false we use we load existing set
+                "generate_label_dataset": true, # to generate evaluation set, if false we use we load existing set
                 "persist_to_vs": true # if true, for now chromadb resets all user collections
                 "embedding_model_list": list[embedding model names] # list of embedding model names to use for caching in chromadb
             }
@@ -333,26 +333,26 @@ def get_document_store_path() -> str:
     return os.path.join(get_user_directory(), "document_store/")
 
 
-def get_eval_data_path() -> str:
+def get_label_dataset_path() -> str:
     """Return the evaluation data file path."""
-    return os.path.join(get_user_directory(), "eval_data.json")
+    return os.path.join(get_user_directory(), "label_dataset.json")
 
 
-def get_eval_params_path() -> str:
-    """Return the evaluation hyperparameters file path."""
-    return os.path.join(get_user_directory(), "eval_params.json")
-
-
-def get_eval_results_path() -> str:
-    """Return the evaluation results of provided hyperparameters."""
-    return os.path.join(get_user_directory(), "eval_results.json")
-
-
-def get_hp_runs_data_path() -> str:
-    """Return the generated data of the hyperparameter runs."""
-    return os.path.join(get_user_directory(), "hp_runs_data.csv")
-
-
-def get_qa_gen_params_path() -> str:
+def get_label_dataset_gen_params_path() -> str:
     """Return the parameters for the eval set generation."""
-    return os.path.join(get_user_directory(), "qa_gen_params.json")
+    return os.path.join(get_user_directory(), "label_dataset_gen_params.json")
+
+
+def get_hyperparameters_path() -> str:
+    """Return the evaluation hyperparameters file path."""
+    return os.path.join(get_user_directory(), "hyperparameters.json")
+
+
+def get_hyperparameters_results_path() -> str:
+    """Return the evaluation results of provided hyperparameters."""
+    return os.path.join(get_user_directory(), "hyperparameters_results.json")
+
+
+def get_hyperparameters_results_data_path() -> str:
+    """Return the generated data of the hyperparameter runs."""
+    return os.path.join(get_user_directory(), "hyperparameters_results_data.csv")

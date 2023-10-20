@@ -91,7 +91,7 @@ def clean_page_content(page_content: str):
 
 def write_generated_data_to_csv(
     predicted_answers: list[dict],
-    hp_runs_data_path: str,
+    hyperparameters_results_data_path: str,
 ) -> None:
     """Write predicted answerd and retrieved documents to csv."""
     # Create the dataframe
@@ -99,8 +99,8 @@ def write_generated_data_to_csv(
         [convert_element_to_df(element) for element in predicted_answers], axis=0
     )
 
-    if os.path.exists(hp_runs_data_path):
-        base_df = pd.read_csv(hp_runs_data_path)
+    if os.path.exists(hyperparameters_results_data_path):
+        base_df = pd.read_csv(hyperparameters_results_data_path)
     else:
         base_df = pd.DataFrame()
 
@@ -114,4 +114,6 @@ def write_generated_data_to_csv(
     )
 
     # Write df to csv
-    result.sort_values(by=["hp_id"]).to_csv(hp_runs_data_path, index=False)
+    result.sort_values(by=["hp_id"]).to_csv(
+        hyperparameters_results_data_path, index=False
+    )

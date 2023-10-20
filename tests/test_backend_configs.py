@@ -11,7 +11,7 @@ LLM_MODELS = [
 EMB_MODELS = ["text-embedding-ada-002"]
 
 CVGradeAnswerPrompt = ["zero_shot", "few_shot", "none"]
-CVGradeDocumentsPrompt = ["default", "none"]
+CVGradeRetrieverPrompt = ["default", "none"]
 CVRetrieverSearchType = ["similarity", "mmr"]
 CVSimilarityMethod = ["cosine", "l2", "ip"]
 
@@ -24,7 +24,7 @@ def test_backend_config_endpoints():
         "/configs/retriever_similarity_methods": CVSimilarityMethod,
         "/configs/retriever_search_types": CVRetrieverSearchType,
         "/configs/grade_answer_prompts": CVGradeAnswerPrompt,
-        "/configs/grade_documents_prompts": CVGradeDocumentsPrompt,
+        "/configs/grade_documents_prompts": CVGradeRetrieverPrompt,
     }
 
     for endpoint, expected_values in endpoints.items():

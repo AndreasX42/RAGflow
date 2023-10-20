@@ -3,20 +3,20 @@ from starlette import status
 from pydantic import BaseModel, Field
 from uuid import UUID
 
-from backend.testsetgen import agenerate_evaluation_set
+from backend.generation import agenerate_evaluation_set
 
 router = APIRouter(
-    prefix="/evalsetgeneration",
+    prefix="/label_gen",
     tags=["QA evaluation set generation"],
 )
 
 
 class EvalsetGenerationRequest(BaseModel):
     document_store_path: str = Field(min_length=3, description="path to documents")
-    qa_gen_params_path: str = Field(
+    label_dataset_gen_params_path: str = Field(
         min_length=3, description="path to configurations for qa generation"
     )
-    eval_dataset_path: str = Field(
+    label_dataset_path: str = Field(
         min_length=3,
         description="path to where the generated qa pairs should be stored.",
     )
@@ -27,8 +27,8 @@ class EvalsetGenerationRequest(BaseModel):
         json_schema_extra = {
             "example": {
                 "document_store_path": "./tmp/document_store/",  # path to documents
-                "qa_gen_params_path": "./tmp/qa_gen_params.json",  # path to list of hyperparameters
-                "eval_dataset_path": "./tmp/eval_data.json",  # path to generated evaluation dataset
+                "label_dataset_gen_params_path": "./tmp/label_dataset_gen_params.json",  # path to list of hyperparameters
+                "label_dataset_path": "./tmp/label_dataset.json",  # path to generated evaluation dataset
                 "user_id": "3e6e131c-d9f3-4085-a412-f5f8875e34f0",  # user id
                 "api_keys": {
                     "OPENAI_API_KEY": "your_api_key_here",
@@ -38,7 +38,7 @@ class EvalsetGenerationRequest(BaseModel):
         }
 
 
-@router.post("/start", status_code=status.HTTP_200_OK)
+@router.post("/run", status_code=status.HTTP_200_OK)
 async def start_evalset_generation(gen_request: EvalsetGenerationRequest):
     args = gen_request.model_dump()
     args["user_id"] = str(args["user_id"])

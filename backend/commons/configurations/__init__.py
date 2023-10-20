@@ -1,7 +1,7 @@
 from backend.commons.configurations.BaseConfigurations import (
     BaseConfigurations,
     CVGradeAnswerPrompt,
-    CVGradeDocumentsPrompt,
+    CVGradeRetrieverPrompt,
     CVRetrieverSearchType,
     CVSimilarityMethod,
     LLM_MODELS,

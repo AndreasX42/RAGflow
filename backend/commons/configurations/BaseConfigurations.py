@@ -51,7 +51,7 @@ class CVGradeAnswerPrompt(Enum):
     NONE = "none"
 
 
-class CVGradeDocumentsPrompt(Enum):
+class CVGradeRetrieverPrompt(Enum):
     DEFAULT = "default"
     NONE = "none"
 

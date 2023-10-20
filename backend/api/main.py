@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from backend.api.routers import configs, evals, evalgen
+from backend.api.routers import configs, hp_eval, label_gen
 
 app = FastAPI(
     title="FastAPI RAGflow Backend Documentation",
@@ -11,5 +11,5 @@ app = FastAPI(
 )
 
 app.include_router(configs.router)
-app.include_router(evals.router)
-app.include_router(evalgen.router)
+app.include_router(label_gen.router)
+app.include_router(hp_eval.router)

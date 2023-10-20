@@ -8,6 +8,6 @@
         "embedding_model_list": [
             "text-embedding-ada-002"
         ],
-        "generate_eval_set": true
+        "generate_label_dataset": true
     }
 ]

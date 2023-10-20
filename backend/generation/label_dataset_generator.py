@@ -42,7 +42,7 @@ async def get_qa_from_chunk(
         return []
 
 
-async def agenerate_eval_set_from_doc(
+async def agenerate_label_dataset_from_doc(
     hp: QAConfigurations,
     doc_path: str,
 ) -> list[dict[str, str]]:
@@ -74,11 +74,11 @@ async def agenerate_eval_set_from_doc(
     return qa_pairs
 
 
-async def agenerate_eval_set_from_docs(
+async def agenerate_label_dataset_from_docs(
     hp: QAConfigurations,
     docs_path: list[str],
 ) -> list[dict]:
-    """Asynchronous wrapper around the agenerate_eval_set function.
+    """Asynchronous wrapper around the agenerate_label_dataset function.
 
     Args:
         qa_gen_configs (dict): _description_
@@ -87,7 +87,7 @@ async def agenerate_eval_set_from_docs(
     Returns:
         list[dict]: _description_
     """
-    tasks = [agenerate_eval_set_from_doc(hp, doc_path) for doc_path in docs_path]
+    tasks = [agenerate_label_dataset_from_doc(hp, doc_path) for doc_path in docs_path]
 
     results = await tqdm_asyncio.gather(*tasks)
 
@@ -128,7 +128,7 @@ async def aupsert_embeddings_for_model(
             embeddings = await embedding_model.aembed_documents(
                 [qa_pair["answer"] for qa_pair in qa_pairs]
             )
-        except Exception as ex:
+        except NotImplementedError as ex:
             logger.error(
                 f"Exception during eval set generation and upserting to ChromaDB, {ex}"
             )
@@ -157,7 +157,7 @@ async def aupsert_embeddings_for_model(
 async def agenerate_and_save_dataset(
     hp: QAConfigurations,
     docs_path: str,
-    eval_dataset_path: str,
+    label_dataset_path: str,
     user_id: str,
 ):
     """Generate a new evaluation dataset and save it to a JSON file."""
@@ -165,23 +165,23 @@ async def agenerate_and_save_dataset(
     logger.info("Starting QA generation suite.")
 
     # tarnsform list of list of dicts into list of dicts
-    gt_dataset = await agenerate_eval_set_from_docs(hp, docs_path)
+    label_dataset = await agenerate_label_dataset_from_docs(hp, docs_path)
 
-    # Test: if gt_dataset is empty because of test dummy LLM, we inject a real dataset for test
+    # Test: if label_dataset is empty because of test dummy LLM, we inject a real dataset for test
     if (
         os.environ.get("EXECUTION_CONTEXT") == "TEST"
         and hp.persist_to_vs
-        and not gt_dataset
+        and not label_dataset
     ):
-        gt_dataset = read_json("./resources/input_eval_data.json")
+        label_dataset = read_json(os.environ.get("INPUT_LABEL_DATASET"))
 
     # write eval dataset to json
-    write_json(gt_dataset, eval_dataset_path)
+    write_json(label_dataset, label_dataset_path)
 
     # cache answers of qa pairs in vectorstore for each embedding model in hyperparams list
     if hp.persist_to_vs:
         tasks = [
-            aupsert_embeddings_for_model(gt_dataset, embedding_model, user_id)
+            aupsert_embeddings_for_model(label_dataset, embedding_model, user_id)
             for embedding_model in hp.embedding_model_list
         ]
 
@@ -189,8 +189,8 @@ async def agenerate_and_save_dataset(
 
 
 async def agenerate_evaluation_set(
-    qa_gen_params_path: str,
-    eval_dataset_path: str,
+    label_dataset_gen_params_path: str,
+    label_dataset_path: str,
     document_store_path: str,
     user_id: str,
     api_keys: dict[str, str],
@@ -198,31 +198,35 @@ async def agenerate_evaluation_set(
     """Entry function to generate the evaluation dataset.
 
     Args:
-        qa_gen_params (dict): _description_
-        eval_dataset_path (str): _description_
+        label_dataset_gen_params (dict): _description_
+        label_dataset_path (str): _description_
 
     Returns:
         _type_: _description_
     """
     logger.info("Checking for evaluation dataset configs.")
 
-    qa_gen_params = read_json(qa_gen_params_path)
+    label_dataset_gen_params = read_json(label_dataset_gen_params_path)
 
-    if isinstance(qa_gen_params, list):
-        qa_gen_params = qa_gen_params[-1]
+    if isinstance(label_dataset_gen_params, list):
+        label_dataset_gen_params = label_dataset_gen_params[-1]
 
     # set up Hyperparameters objects at the beginning to evaluate inputs
-    qa_gen_params = QAConfigurations.from_dict(qa_gen_params, api_keys)
+    label_dataset_gen_params = QAConfigurations.from_dict(
+        label_dataset_gen_params, api_keys
+    )
 
     document_store = glob.glob(f"{document_store_path}/*")
 
     # generate evaluation dataset
-    if qa_gen_params.generate_eval_set or not os.path.exists(eval_dataset_path):
-        """if os.path.exists(eval_dataset_path):
+    if label_dataset_gen_params.generate_label_dataset or not os.path.exists(
+        label_dataset_path
+    ):
+        """if os.path.exists(label_dataset_path):
         logger.info(
-            "Existing evaluation dataset deleted due to 'generate_eval_set'=True."
+            "Existing evaluation dataset deleted due to 'generate_label_dataset'=True."
         )
-        os.remove(eval_dataset_path)"""
+        os.remove(label_dataset_path)"""
 
         # reset chromadb collections for this user
         with ChromaClient() as client:
@@ -234,5 +238,5 @@ async def agenerate_evaluation_set(
                     client.delete_collection(name=collection.name)
 
         await agenerate_and_save_dataset(
-            qa_gen_params, document_store, eval_dataset_path, user_id
+            label_dataset_gen_params, document_store, label_dataset_path, user_id
         )

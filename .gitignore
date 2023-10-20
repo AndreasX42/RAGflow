@@ -4,6 +4,7 @@
 # local stuff
 .venv/
 .vscode/
+tmp/
 
 **/.ipynb_checkpoints
 **/__pycache__

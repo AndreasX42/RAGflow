@@ -6,7 +6,7 @@ from backend.commons.configurations.BaseConfigurations import (
     LLM_MODELS,
     EMB_MODELS,
     CVGradeAnswerPrompt,
-    CVGradeDocumentsPrompt,
+    CVGradeRetrieverPrompt,
     CVRetrieverSearchType,
     CVSimilarityMethod,
 )
@@ -24,7 +24,7 @@ class Hyperparameters(BaseConfigurations):
     id: int = Field(ge=0)
     num_retrieved_docs: int = Field(ge=0)
     grade_answer_prompt: CVGradeAnswerPrompt
-    grade_docs_prompt: CVGradeDocumentsPrompt
+    grade_docs_prompt: CVGradeRetrieverPrompt
     search_type: CVRetrieverSearchType
     similarity_method: CVSimilarityMethod
     use_llm_grader: bool
@@ -67,7 +67,7 @@ class Hyperparameters(BaseConfigurations):
         # set default values if use_grader_llm=False and additional values not set
         if not _input["use_llm_grader"]:
             _input["grade_answer_prompt"] = CVGradeAnswerPrompt.NONE.value
-            _input["grade_docs_prompt"] = CVGradeDocumentsPrompt.NONE.value
+            _input["grade_docs_prompt"] = CVGradeRetrieverPrompt.NONE.value
             _input["grader_llm"] = "TestDummyLLM"
 
         # set the actual langchain objects

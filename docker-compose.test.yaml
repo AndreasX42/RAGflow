@@ -11,7 +11,7 @@ services:
       - CHROMADB_HOST=chromadb-test
       - CHROMADB_PORT=8000
       - EXECUTION_CONTEXT=TEST
-      - LOG_LEVEL=DEBUG
+      - LOG_LEVEL=INFO
       - INPUT_LABEL_DATASET=./resources/input_label_dataset.json
     volumes:
       #  - ./backend:/eval_backend/backend #

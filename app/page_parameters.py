@@ -113,7 +113,6 @@ def page_parameters():
 def provide_hp_params_form(valid_data: dict):
     with st.expander("Hyperparameters settings"):
         attributes2 = {
-            "id": st.number_input("ID", value=0, key="id for this HP config"),
             "chunk_size": st.number_input("Chunk Size", value=512, key="chunk size"),
             "chunk_overlap": st.number_input(
                 "Chunk Overlap", value=10, key="chunk overlap"

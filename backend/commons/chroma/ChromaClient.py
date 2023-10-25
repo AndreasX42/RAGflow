@@ -16,6 +16,9 @@ class ChromaClient:
             settings=Settings(anonymized_telemetry=False),
         )
 
+    def get_client(self):
+        return self.chroma_client
+
     def __enter__(self):
         return self.chroma_client
 

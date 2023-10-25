@@ -61,7 +61,9 @@ class Hyperparameters(BaseConfigurations):
         return _data
 
     @classmethod
-    def from_dict(cls, input_dict: dict[str, str], api_keys: dict[str, str]):
+    def from_dict(
+        cls, input_dict: dict[str, str], hp_id: str, api_keys: dict[str, str]
+    ):
         _input = dict(**input_dict)
 
         # set default values if use_grader_llm=False and additional values not set
@@ -69,6 +71,8 @@ class Hyperparameters(BaseConfigurations):
             _input["grade_answer_prompt"] = CVGradeAnswerPrompt.NONE.value
             _input["grade_docs_prompt"] = CVGradeRetrieverPrompt.NONE.value
             _input["grader_llm"] = "TestDummyLLM"
+
+        _input["id"] = hp_id
 
         # set the actual langchain objects
         _input["embedding_model"] = cls.get_embedding_model(

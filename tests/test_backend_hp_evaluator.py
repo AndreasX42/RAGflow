@@ -1,8 +1,7 @@
 import json
 import logging
-import glob
+import chromadb
 import pytest
-import os
 
 from tests.utils import (
     BACKEND_HOST,
@@ -25,8 +24,18 @@ from tests.utils import (
 logger = logging.getLogger(__name__)
 
 
-def test_backend_evaluator(first_user_id):
+@pytest.mark.parametrize(
+    "user_id_fixture, num_hp_run",
+    [("first_user_id", 0), ("second_user_id", 1), ("first_user_id", 2)],
+)
+def test_backend_evaluator(user_id_fixture, num_hp_run, request):
     """Test the evaluation of provided hyperparameter configurations."""
+
+    def get_fixture_value(fixture_name):
+        """Get the value associated with a fixture name."""
+        return request.getfixturevalue(fixture_name)
+
+    user_id = get_fixture_value(user_id_fixture)
 
     json_payload = {
         "document_store_path": DOCUMENT_STORE_PATH,
@@ -34,7 +43,7 @@ def test_backend_evaluator(first_user_id):
         "hyperparameters_path": HYPERPARAMETERS_PATH,
         "hyperparameters_results_path": HYPERPARAMETERS_RESULTS_PATH,
         "hyperparameters_results_data_path": HYPERPARAMETERS_RESULTS_DATA_PATH,
-        "user_id": first_user_id,
+        "user_id": user_id,
         "api_keys": {},
     }
 
@@ -46,6 +55,34 @@ def test_backend_evaluator(first_user_id):
         payload=json_payload,
     )
 
+    client = chromadb.HttpClient(
+        host=CHROMADB_HOST,
+        port=CHROMADB_PORT,
+    )
+
+    collections_list = client.list_collections()
+    collection_names = [col.name for col in collections_list]
+
+    # Check if hp_id get incremented correctly for users, the second evaluation of first user should create a collection with hpid_1 as suffix
+    if len(collections_list) in range(3, 6):
+        for i in range(3):
+            assert (
+                f"userid_{user_id[:8]}_hpid_{i}" in collection_names
+            ), "First user with 3 hp evals should have 3 corresponding collections now"
+    elif len(collections_list) in range(6, 9):
+        for i in range(3):
+            assert (
+                f"userid_{user_id[:8]}_hpid_{i}" in collection_names
+            ), "Second user with 3 hp evals should have 3 corresponding collections now"
+    elif len(collections_list) in range(9, 12):
+        for i in range(3, 6):
+            assert (
+                f"userid_{user_id[:8]}_hpid_{i}" in collection_names
+            ), "First user with next 3 hp evals should have 6 corresponding collections now"
+    else:
+        assert False, "Unexpected collections_list length"
+
+    # Check if hyperparameters from json were set correctly
     assert (
         response.status_code == 200
     ), f"The response from the {HP_EVALUATION_ENDPOINT} endpoint should be ok."
@@ -57,8 +94,8 @@ def test_backend_evaluator(first_user_id):
     with open(json_payload["hyperparameters_path"], encoding="utf-8") as file:
         hyperparameters_list = json.load(file)
 
-    hyperparameters_results = hyperparameters_results_list[0]
-    hyperparameters = hyperparameters_list[0]
+    hyperparameters_results = hyperparameters_results_list[num_hp_run]
+    hyperparameters = hyperparameters_list[num_hp_run]
 
     assert (
         hyperparameters["similarity_method"]

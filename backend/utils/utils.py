@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from enum import Enum
-import uuid
+from datetime import datetime
 
 from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
@@ -14,6 +14,7 @@ from langchain.vectorstores import Chroma
 
 from backend.commons.prompts import QA_ANSWER_PROMPT
 from backend.commons.configurations import Hyperparameters
+from backend.commons.chroma import ChromaClient
 
 from typing import Any, Optional
 
@@ -24,8 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_retriever(
-    chunks: list[Document],
-    hp: Hyperparameters,
+    chunks: list[Document], hp: Hyperparameters, user_id: str
 ) -> VectorStoreRetriever:
     """Sets up a vector database based on the document chunks and the embedding model provided.
         Here we use Chroma for the vectorstore.
@@ -41,16 +41,19 @@ def get_retriever(
     """
     logger.info("Constructing vectorstore and retriever.")
 
-    # Chroma.from_documents gets or creates a collection here and we have to make sure that for every user, for every hyperarameter configuration and for every embedding model a collection gets created or beforehand deleted if it already exists. Otherwise some unexpected things might happen.
+    # TODO: why is user_id here an UUID??
+    user_id = str(user_id)
 
-    # collection_name = f"hp_id_{hp.id}_userid_{user_id[:8]}_emb_model_{Hyperparameters.#get_embedding_model_name(hp.embedding_model)}_time_{datetime.now().strftime ('%Y_%m_%d_%H_%M_%S_%f')}"
-
-    # TODO: check if simple UUID here is ok
     vectorstore = Chroma.from_documents(
         documents=chunks,
-        collection_name=str(uuid.uuid4()),
-        collection_metadata={"hnsw:space": hp.similarity_method.value},
         embedding=hp.embedding_model,
+        client=ChromaClient().get_client(),
+        collection_name=f"userid_{user_id[:8]}_hpid_{hp.id}",
+        collection_metadata={
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3],
+            "custom_id": f"userid_{user_id}_hpid_{hp.id}",
+            "hnsw:space": hp.similarity_method.value,
+        },
     )
 
     retriever = vectorstore.as_retriever(
@@ -68,9 +71,7 @@ def get_qa_llm(
     """Sets up a LangChain RetrievalQA model based on a retriever and language model that answers
     queries based on retrieved document chunks.
 
-
     Args:
-        retriever (BaseRetriever): the retriever
         qa_llm (Optional[BaseLanguageModel], optional): language model.
 
     Returns:
@@ -99,7 +100,7 @@ def read_json(filename: str) -> Any:
         return json.load(file)
 
 
-def write_json(data: list[dict], filename: str) -> None:
+def write_json(data: list[dict], filename: str, append: Optional[bool] = True) -> None:
     """Function used to store generated QA pairs, i.e. the ground truth.
 
     Args:
@@ -110,7 +111,7 @@ def write_json(data: list[dict], filename: str) -> None:
     logger.info(f"Writting JSON to {filename}.")
 
     # Check if file exists
-    if os.path.exists(filename):
+    if os.path.exists(filename) and append:
         # File exists, read the data
         with open(filename, "r", encoding="utf-8") as file:
             json_data = json.load(file)

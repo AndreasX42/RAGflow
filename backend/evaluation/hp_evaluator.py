@@ -10,6 +10,7 @@ from backend.utils import get_retriever, get_qa_llm, write_json, read_json
 from backend.utils.doc_processing import aload_and_chunk_docs
 from backend.evaluation.utils import process_retrieved_docs, write_generated_data_to_csv
 from backend.commons.configurations import Hyperparameters
+from backend.commons.chroma import ChromaClient
 
 from backend.evaluation.metrics import (
     answer_embedding_similarity,
@@ -50,7 +51,8 @@ async def arun_eval_for_hp(
     # create chunks of all provided documents
     chunks = await aload_and_chunk_docs(hp, document_store)
 
-    retriever = get_retriever(chunks, hp)
+    # get retriever from chunks
+    retriever = get_retriever(chunks, hp, user_id)
 
     # chunks are no longer needed
     del chunks
@@ -113,6 +115,42 @@ async def arun_eval_for_hp(
     return result_dict, predicted_answers
 
 
+def prepare_evaluation_run(
+    hyperparameters_path: str, user_id: str, api_keys: dict
+) -> list[Hyperparameters]:
+    """Preparation steps before running evaluation. Primarily we have to increment the hyperparameter ids correctly."""
+
+    def extract_hpid(s):
+        import re
+
+        match = re.search(r"hpid_(\d+)", s)
+        return int(match.group(1)) if match else 0
+
+    hyperparams_list = read_json(hyperparameters_path)
+
+    # find all previous hp runs with corresponding ids
+    with ChromaClient() as client:
+        collections = client.list_collections()
+
+        hp_ids = [
+            extract_hpid(col.name)
+            for col in collections
+            if col.name.startswith(f"userid_{user_id[:8]}_") and "_hpid_" in col.name
+        ]
+
+        if not hp_ids or all(id == -1 for id in hp_ids):
+            next_id = 0
+        else:
+            next_id = max(hp_ids) + 1
+
+    hp_list = [
+        Hyperparameters.from_dict(config, id, api_keys)
+        for id, config in enumerate(hyperparams_list, start=next_id)
+    ]
+
+    return hp_list
+
+
 async def arun_evaluation(
     document_store_path: str,
     hyperparameters_path: str,
@@ -136,11 +174,10 @@ async def arun_evaluation(
     # load evaluation dataset
     label_dataset = read_json(label_dataset_path)
 
+    # preprocess hyperparameter configs from json file
+    hp_list = prepare_evaluation_run(hyperparameters_path, user_id, api_keys)
+
     document_store = glob.glob(f"{document_store_path}/*")
-
-    hyperparams_list = read_json(hyperparameters_path)
-
-    hp_list = [Hyperparameters.from_dict(d, api_keys) for d in hyperparams_list]
 
     tasks = [
         arun_eval_for_hp(label_dataset, hp, document_store, user_id) for hp in hp_list
@@ -150,6 +187,13 @@ async def arun_evaluation(
     results = await tqdm_asyncio.gather(*tasks, total=len(tasks))
 
     eval_scores, predicted_answers = list(zip(*results))
+
+    # delete processed hyperparameters from input json
+    write_json(
+        data=[],
+        filename=hyperparameters_path,
+        append=True if os.environ.get("EXECUTION_CONTEXT", "") == "TEST" else False,
+    )
 
     # write eval metrics to json
     write_json(eval_scores, hyperparameters_results_path)

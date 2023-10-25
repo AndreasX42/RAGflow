@@ -49,8 +49,10 @@ class EvaluationRunRequest(BaseModel):
 
 @router.post("/run", status_code=status.HTTP_200_OK)
 async def start_evaluation_run(eval_request: EvaluationRunRequest):
+    args = eval_request.model_dump()
+    args["user_id"] = str(args["user_id"])
     try:
-        await arun_evaluation(**eval_request.model_dump())
+        await arun_evaluation(**args)
     except Exception as ex:
         print(ex)
         raise HTTPException(status_code=400, detail=str(ex))

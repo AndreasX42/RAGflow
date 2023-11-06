@@ -59,9 +59,9 @@ Directory Structure
 - `/app` Frontend components and resources in Streamlit.
 - `/backend` Backend services and APIs.
 - `/tests` Test scripts and test data.
-- `/tmp` Temporary storage.
+- `/notebooks` Jupyter notebooks with different experiments.
+- `/resources` Data storage.
 - `/vectorstore` ChromaDB component.
-- `docker-compose.yml` Docker configurations for setting up the local environment.
     
 # 🌐 Links & Resources
 - TBA

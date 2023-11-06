@@ -25,11 +25,14 @@ services:
       - ./backend:/eval_backend/backend
       - ./tmp:/eval_backend/tmp
     environment:
+      - EXECUTION_CONTEXT=DEV
       - CHROMADB_HOST=chromadb
       - CHROMADB_PORT=8000
     restart: always
   chromadb:
-    image: ghcr.io/chroma-core/chroma:latest
+    build:
+      dockerfile: Dockerfile
+      context: ./vectorstore
     container_name: chromadb
     ports:
       - "8000:8000"

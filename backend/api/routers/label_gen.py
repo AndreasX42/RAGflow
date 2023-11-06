@@ -6,12 +6,11 @@ from uuid import UUID
 from backend.generation import agenerate_evaluation_set
 
 router = APIRouter(
-    prefix="/label_gen",
-    tags=["QA evaluation set generation"],
+    tags=["Evaluation label set generation"],
 )
 
 
-class EvalsetGenerationRequest(BaseModel):
+class GenerationRequest(BaseModel):
     document_store_path: str = Field(min_length=3, description="path to documents")
     label_dataset_gen_params_path: str = Field(
         min_length=3, description="path to configurations for qa generation"
@@ -38,8 +37,8 @@ class EvalsetGenerationRequest(BaseModel):
         }
 
 
-@router.post("/run", status_code=status.HTTP_200_OK)
-async def start_evalset_generation(gen_request: EvalsetGenerationRequest):
+@router.post("/generation", status_code=status.HTTP_200_OK)
+async def start_evalset_generation(gen_request: GenerationRequest):
     args = gen_request.model_dump()
     args["user_id"] = str(args["user_id"])
 

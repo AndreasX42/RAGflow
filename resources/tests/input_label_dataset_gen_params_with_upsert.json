@@ -8,7 +8,6 @@
         "embedding_model_list": [
             "TestDummyEmbedding",
             "TestDummyEmbedding"
-        ],
-        "generate_label_dataset": true
+        ]
     }
 ]

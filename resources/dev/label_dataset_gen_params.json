@@ -7,7 +7,6 @@
         "persist_to_vs": true,
         "embedding_model_list": [
             "text-embedding-ada-002"
-        ],
-        "generate_label_dataset": true
+        ]
     }
 ]

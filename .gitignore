@@ -16,6 +16,9 @@ vectorstore/chromadb/
 # jupyter notebooks
 *.ipynb
 !notebooks/RAGflow getting started.ipynb
+!notebooks/Embedding Model Finetuning with Llamaindex.ipynb
+!notebooks/Retrieval methods.ipynb
+!notebooks/agents.ipynb
 
 # k8s configs
 k8s/dashboard.yaml

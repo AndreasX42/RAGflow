@@ -1,28 +1,39 @@
-# openai
-openai
-tiktoken
+# Core dependencies for the AI and ML operations
+openai==0.28.1
+tiktoken==0.5.1
+langchain==0.0.330
+opencv-python==4.8.1.78
+Cython==3.0.5
+pydantic==2.4.2
+pandas==2.1.2
+numpy==1.26.1
+scikit-learn==1.3.2
 
-# langchain
-langchain
-docx2txt
-unstructured
-pypdf
-pdf2image
-pdfminer
-pdfminer.six
+# PDF and document processing
+simsimd==3.5.3
+docx2txt==0.8
+pypdf==3.17.0
+pdf2image==1.16.3
+pdfminer.six==20221105
 
-# evaluate
-evaluate
-Cython
-rouge_score
-absl-py
+# OCR and unstructured data handling
+unstructured==0.10.28
+unstructured-pytesseract==0.3.12
+unstructured-inference==0.7.10
 
-# misc
-pydantic
-pandas
-numpy
-scikit-learn
-python-dotenv
-chromadb
-fastapi
-uvicorn
+# Evaluation metrics
+evaluate==0.4.1
+rouge_score==0.1.2
+absl-py==2.0.0
+
+# Web framework and API
+fastapi==0.104.1
+uvicorn==0.24.0.post1
+python-dotenv==1.0.0
+
+# Database connector
+chromadb==0.4.15
+
+# Notebooks and external APIs
+lark==1.1.8  # selfqueryretriever
+cohere==4.32  # for reranker

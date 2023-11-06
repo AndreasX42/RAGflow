@@ -219,9 +219,6 @@ def provide_qa_gen_form(valid_data: dict):
             else:
                 attributes["embedding_model_list"] = []
 
-            # flag not necessary for user
-            attributes["generate_label_dataset"] = True
-
             with st.spinner("Saving to file."):
                 st.write("Saved to file. You've entered the following values:")
                 # This is just a mockup to show you how to display the attributes.

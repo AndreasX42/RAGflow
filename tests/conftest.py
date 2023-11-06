@@ -17,8 +17,6 @@ def cleanup_output_files():
 
     # Teardown: Anything after the yield is the teardown.
     for file in glob.glob("./resources/output_*"):
-        if file == HYPERPARAMETERS_RESULTS_PATH:
-            continue
         try:
             os.remove(file)
         except Exception as e:

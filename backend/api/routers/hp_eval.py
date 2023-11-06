@@ -7,12 +7,11 @@ from backend.evaluation import arun_evaluation
 
 
 router = APIRouter(
-    prefix="/hp_eval",
-    tags=["Hyperparameter evaluations"],
+    tags=["Hyperparameter evaluation"],
 )
 
 
-class EvaluationRunRequest(BaseModel):
+class EvaluationRequest(BaseModel):
     document_store_path: str = Field(min_length=3, description="path to documents")
     label_dataset_path: str = Field(
         min_length=3, description="path to generated evaluation dataset"
@@ -47,8 +46,8 @@ class EvaluationRunRequest(BaseModel):
         }
 
 
-@router.post("/run", status_code=status.HTTP_200_OK)
-async def start_evaluation_run(eval_request: EvaluationRunRequest):
+@router.post("/evaluation", status_code=status.HTTP_200_OK)
+async def start_evaluation_run(eval_request: EvaluationRequest):
     args = eval_request.model_dump()
     args["user_id"] = str(args["user_id"])
     try:

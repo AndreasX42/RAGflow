@@ -15,7 +15,6 @@ from backend.utils import aload_and_chunk_docs, write_json, read_json
 from backend.commons.configurations import QAConfigurations
 from backend.commons.chroma import ChromaClient
 
-from typing import Optional
 import uuid
 import logging
 
@@ -26,6 +25,7 @@ async def get_qa_from_chunk(
     chunk: Document,
     qa_generator_chain: QAGenerationChain,
 ) -> list[dict]:
+    """Generate QA from provided text document chunk."""
     try:
         # return list of qa pairs
         qa_pairs = qa_generator_chain.run(chunk.page_content)
@@ -61,9 +61,9 @@ async def agenerate_label_dataset_from_doc(
     # load data and chunk doc
     chunks = await aload_and_chunk_docs(hp, [doc_path])
 
-    llm = hp.qa_generator_llm
     qa_generator_chain = QAGenerationChain.from_llm(
-        llm, prompt=QA_GENERATION_PROMPT_SELECTOR.get_prompt(llm)
+        hp.qa_generator_llm,
+        prompt=QA_GENERATION_PROMPT_SELECTOR.get_prompt(hp.qa_generator_llm),
     )
 
     tasks = [get_qa_from_chunk(chunk, qa_generator_chain) for chunk in chunks]
@@ -101,8 +101,9 @@ async def aupsert_embeddings_for_model(
     embedding_model: Embeddings,
     user_id: str,
 ) -> None:
+    """Embeds and upserts each generated answer into vectorstore. This is helpful if you want to run different hyperparameter runs with the same embedding model because you only have to embed these answers once. The embeddings are used during evaluation to check similarity of generated and predicted answers."""
     with ChromaClient() as CHROMA_CLIENT:
-        collection_id = f"userid_{user_id}_{QAConfigurations.get_embedding_model_name(embedding_model)}"
+        collection_id = f"userid_{user_id}_qaid_0_{QAConfigurations.get_embedding_model_name(embedding_model)}"
 
         # check if collection already exists, if not create a new one with the embeddings
         if [
@@ -114,7 +115,7 @@ async def aupsert_embeddings_for_model(
             return None
 
         collection = CHROMA_CLIENT.create_collection(
-            name=f"userid_{user_id[:8]}_{QAConfigurations.get_embedding_model_name(embedding_model)}",
+            name=f"userid_{user_id[:8]}_qaid_0_{QAConfigurations.get_embedding_model_name(embedding_model)}",
             metadata={
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3],
                 "custom_id": collection_id,
@@ -164,10 +165,10 @@ async def agenerate_and_save_dataset(
 
     logger.info("Starting QA generation suite.")
 
-    # tarnsform list of list of dicts into list of dicts
+    # generate label dataset
     label_dataset = await agenerate_label_dataset_from_docs(hp, docs_path)
 
-    # Test: if label_dataset is empty because of test dummy LLM, we inject a real dataset for test
+    # During test execution: if label_dataset is empty because of test dummy LLM, we inject a real dataset for test
     if (
         os.environ.get("EXECUTION_CONTEXT") == "TEST"
         and hp.persist_to_vs
@@ -178,7 +179,7 @@ async def agenerate_and_save_dataset(
     # write eval dataset to json
     write_json(label_dataset, label_dataset_path)
 
-    # cache answers of qa pairs in vectorstore for each embedding model in hyperparams list
+    # cache answers of qa pairs in vectorstore for each embedding model provided
     if hp.persist_to_vs:
         tasks = [
             aupsert_embeddings_for_model(label_dataset, embedding_model, user_id)
@@ -212,32 +213,29 @@ async def agenerate_evaluation_set(
     if isinstance(label_dataset_gen_params, list):
         label_dataset_gen_params = label_dataset_gen_params[-1]
 
-    # set up Hyperparameters objects at the beginning to evaluate inputs
+    # set up QAConfiguration object at the beginning to evaluate inputs
     label_dataset_gen_params = QAConfigurations.from_dict(
         label_dataset_gen_params, api_keys
     )
 
+    # get list of all documents in document_store_path
     document_store = glob.glob(f"{document_store_path}/*")
 
-    # generate evaluation dataset
-    if label_dataset_gen_params.generate_label_dataset or not os.path.exists(
-        label_dataset_path
-    ):
-        """if os.path.exists(label_dataset_path):
-        logger.info(
-            "Existing evaluation dataset deleted due to 'generate_label_dataset'=True."
-        )
-        os.remove(label_dataset_path)"""
+    # TODO: Reset chromadb collection of the last QA generation, since currently only one QA generation run is supported
+    with ChromaClient() as client:
+        # Filter collections specific to the user_id.
+        user_collections = [
+            collection
+            for collection in client.list_collections()
+            if collection.metadata.get("custom_id", "").startswith(f"userid_{user_id}_")
+        ]
 
-        # reset chromadb collections for this user
-        with ChromaClient() as client:
-            collections = client.list_collections()
-            for collection in collections:
-                if collection.metadata.get("custom_id", "").startswith(
-                    f"userid_{user_id}_"
-                ):
-                    client.delete_collection(name=collection.name)
+        # Check if there are any collections with the QA identifier and delete them.
+        if any(["_qaid_0_" in collection.name for collection in user_collections]):
+            for collection in user_collections:
+                client.delete_collection(name=collection.name)
 
-        await agenerate_and_save_dataset(
-            label_dataset_gen_params, document_store, label_dataset_path, user_id
-        )
+    # start generation process
+    await agenerate_and_save_dataset(
+        label_dataset_gen_params, document_store, label_dataset_path, user_id
+    )

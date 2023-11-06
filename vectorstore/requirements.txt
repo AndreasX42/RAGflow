@@ -1,2 +1,2 @@
-chromadb
-uvicorn
+chromadb==0.4.15
+uvicorn==0.24.0.post1

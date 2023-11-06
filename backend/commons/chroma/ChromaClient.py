@@ -23,4 +23,5 @@ class ChromaClient:
         return self.chroma_client
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.chroma_client.stop()
+        # TODO: self.chroma_client.stop()
+        pass

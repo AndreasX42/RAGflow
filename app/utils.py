@@ -116,7 +116,7 @@ def start_qa_gen() -> bool:
         }
 
         response = requests.post(
-            f"http://{API_HOST}:{API_PORT}/label_gen/run", json=json_payload
+            f"http://{API_HOST}:{API_PORT}/generation", json=json_payload
         )
 
         response.raise_for_status()
@@ -144,7 +144,7 @@ def start_hp_run() -> bool:
         }
 
         response = requests.post(
-            f"http://{API_HOST}:{API_PORT}/hp_eval/run", json=json_payload
+            f"http://{API_HOST}:{API_PORT}/evaluation", json=json_payload
         )
 
         response.raise_for_status()
@@ -201,7 +201,6 @@ def upload_files(
                 "chunk_overlap": 0,
                 "length_function_name": "text-embedding-ada-002",
                 "qa_generator_llm": "gpt-3.5-turbo",
-                "generate_label_dataset": true, # to generate evaluation set, if false we use we load existing set
                 "persist_to_vs": true # if true, for now chromadb resets all user collections
                 "embedding_model_list": list[embedding model names] # list of embedding model names to use for caching in chromadb
             }

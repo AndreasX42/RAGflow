@@ -10,3 +10,9 @@ Nginx installation
 - kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
 k8s dashboard:
 - create admin: kubectl -n kubernetes-dashboard create token admin-user
+
+
+HuggingFaceEmbeddings(
+model_name=model_name,
+model_kwargs={"device": "cuda"},
+encode_kwargs={"device": "cuda", "batch_size": 100})

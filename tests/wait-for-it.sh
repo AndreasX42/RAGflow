@@ -32,8 +32,9 @@ wait_for()
     WAITFORIT_start_ts=$(date +%s)
     while :
     do
-        # Use curl to check the /api/v1/heartbeat endpoint
-        if curl -s -o /dev/null -w "%{http_code}" "http://$WAITFORIT_HOST:$WAITFORIT_PORT/api/v1/heartbeat" | grep -q '200'; then
+        (echo > /dev/tcp/$WAITFORIT_HOST/$WAITFORIT_PORT) >/dev/null 2>&1
+        result=$?
+        if [[ $result -eq 0 ]]; then
             WAITFORIT_end_ts=$(date +%s)
             echoerr "$WAITFORIT_cmdname: $WAITFORIT_HOST:$WAITFORIT_PORT is available after $((WAITFORIT_end_ts - WAITFORIT_start_ts)) seconds"
             break

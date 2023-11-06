@@ -10,8 +10,8 @@ BACKEND_PORT = os.environ.get("EVALBACKEND_PORT")
 CHROMADB_HOST = os.environ.get("CHROMADB_HOST")
 CHROMADB_PORT = os.environ.get("CHROMADB_PORT")
 
-LABEL_DATASET_ENDPOINT = "/label_gen/run"
-HP_EVALUATION_ENDPOINT = "/hp_eval/run"
+LABEL_DATASET_ENDPOINT = "/generation"
+HP_EVALUATION_ENDPOINT = "/evaluation"
 
 DOCUMENT_STORE_PATH = "./resources/document_store"
 LABEL_DATASET_PATH = "./resources/input_label_dataset.json"

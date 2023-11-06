@@ -17,7 +17,6 @@ class QAConfigurations(BaseConfigurations):
     """Class to model qa generation configs."""
 
     qa_generator_llm: BaseLanguageModel
-    generate_label_dataset: bool
     persist_to_vs: bool
     embedding_model_list: list[Embeddings]
 

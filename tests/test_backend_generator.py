@@ -5,8 +5,8 @@ import chromadb
 import logging
 
 from tests.utils import (
-    BACKEND_HOST,
-    BACKEND_PORT,
+    RAGFLOW_HOST,
+    RAGFLOW_PORT,
     CHROMADB_HOST,
     CHROMADB_PORT,
     LABEL_DATASET_ENDPOINT,
@@ -35,8 +35,8 @@ def test_generator_without_upsert(user_id_without_upsert):
 
     response = fetch_data(
         method="post",
-        host=BACKEND_HOST,
-        port=BACKEND_PORT,
+        host=RAGFLOW_HOST,
+        port=RAGFLOW_PORT,
         endpoint=LABEL_DATASET_ENDPOINT,
         payload=json_payload,
     )
@@ -84,13 +84,13 @@ def test_generator_with_upsert(
     if expected_error:
         with pytest.raises(
             expected_error,
-            match=f"Unprocessable Entity for url: http://backend-test:8080{LABEL_DATASET_ENDPOINT}",
+            match=f"Unprocessable Entity for url: http://ragflow-test:8080{LABEL_DATASET_ENDPOINT}",
         ):
             # Assuming the error will arise here when pydantic throws an exception because user id is not a valid UUID
             response = fetch_data(
                 method="post",
-                host=BACKEND_HOST,
-                port=BACKEND_PORT,
+                host=RAGFLOW_HOST,
+                port=RAGFLOW_PORT,
                 endpoint=LABEL_DATASET_ENDPOINT,
                 payload=json_payload,
             )
@@ -100,8 +100,8 @@ def test_generator_with_upsert(
     # case for valid payload data
     response = fetch_data(
         method="post",
-        host=BACKEND_HOST,
-        port=BACKEND_PORT,
+        host=RAGFLOW_HOST,
+        port=RAGFLOW_PORT,
         endpoint=LABEL_DATASET_ENDPOINT,
         payload=json_payload,
     )

@@ -1,4 +1,4 @@
-from tests.utils import BACKEND_HOST, BACKEND_PORT, fetch_data
+from tests.utils import RAGFLOW_HOST, RAGFLOW_PORT, fetch_data
 
 LLM_MODELS = [
     "gpt-3.5-turbo",
@@ -16,7 +16,7 @@ CVRetrieverSearchType = ["similarity", "mmr"]
 CVSimilarityMethod = ["cosine", "l2", "ip"]
 
 
-def test_backend_config_endpoints():
+def test_ragflow_config_endpoints():
     """Fetch data for all endpoints."""
     endpoints = {
         "/configs/llm_models": LLM_MODELS,
@@ -29,7 +29,7 @@ def test_backend_config_endpoints():
 
     for endpoint, expected_values in endpoints.items():
         response = fetch_data(
-            method="get", host=BACKEND_HOST, port=BACKEND_PORT, endpoint=endpoint
+            method="get", host=RAGFLOW_HOST, port=RAGFLOW_PORT, endpoint=endpoint
         ).json()
 
         # Assert that the fetched data matches the enum values

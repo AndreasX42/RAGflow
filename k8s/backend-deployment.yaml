@@ -17,7 +17,7 @@ spec:
           persistentVolumeClaim:
             claimName: shared-persistent-volume-claim
       containers:
-        - name: eval-backend
+        - name: ragflow-backend
           image: andreasx42/ragflow-backend:latest
           env:
             - name: CHROMADB_HOST
@@ -28,5 +28,5 @@ spec:
             - containerPort: 8080
           volumeMounts:
             - name: backend-storage
-              mountPath: eval_backend/tmp
+              mountPath: backend/tmp
               subPath: tmp

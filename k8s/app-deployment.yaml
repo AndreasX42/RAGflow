@@ -20,9 +20,9 @@ spec:
         - name: app-frontend
           image: andreasx42/ragflow-app:latest
           env:
-            - name: EVALBACKEND_HOST
+            - name: RAGFLOW_HOST
               value: backend-cluster-ip-service
-            - name: EVALBACKEND_PORT
+            - name: RAGFLOW_PORT
               value: '8080'
           ports:
             - containerPort: 8501

@@ -57,7 +57,7 @@ Here is a schematic overview:
 Directory Structure
 - `/.circleci` CircleCI integration config for CI/CD pipeline.
 - `/app` Frontend components and resources in Streamlit.
-- `/backend` Backend services and APIs.
+- `/ragflow` Backend services and APIs.
 - `/tests` Test scripts and test data.
 - `/notebooks` Jupyter notebooks with different experiments.
 - `/resources` Data storage.

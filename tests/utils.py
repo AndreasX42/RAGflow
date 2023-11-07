@@ -4,8 +4,8 @@ import requests
 import pytest
 
 # Constants
-BACKEND_HOST = os.environ.get("EVALBACKEND_HOST")
-BACKEND_PORT = os.environ.get("EVALBACKEND_PORT")
+RAGFLOW_HOST = os.environ.get("RAGFLOW_HOST")
+RAGFLOW_PORT = os.environ.get("RAGFLOW_PORT")
 
 CHROMADB_HOST = os.environ.get("CHROMADB_HOST")
 CHROMADB_PORT = os.environ.get("CHROMADB_PORT")

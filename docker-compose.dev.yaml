@@ -11,19 +11,19 @@ services:
       - ./app:/app
       - ./tmp:/app/tmp
     environment:
-      - EVALBACKEND_HOST=eval-backend
-      - EVALBACKEND_PORT=8080
+      - RAGFLOW_HOST=ragflow-backend
+      - RAGFLOW_PORT=8080
     restart: always
-  eval-backend:
+  ragflow-backend:
     build:
       dockerfile: Dockerfile
-      context: ./backend
-    container_name: eval-backend
+      context: ./ragflow
+    container_name: ragflow-backend
     ports:
       - "8080:8080"
     volumes:
-      - ./backend:/eval_backend/backend
-      - ./tmp:/eval_backend/tmp
+      - ./ragflow:/backend/ragflow
+      - ./tmp:/backend/tmp
     environment:
       - EXECUTION_CONTEXT=DEV
       - CHROMADB_HOST=chromadb

@@ -4,8 +4,8 @@ import chromadb
 import pytest
 
 from tests.utils import (
-    BACKEND_HOST,
-    BACKEND_PORT,
+    RAGFLOW_HOST,
+    RAGFLOW_PORT,
     CHROMADB_HOST,
     CHROMADB_PORT,
     HP_EVALUATION_ENDPOINT,
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
     "user_id_fixture, num_hp_run",
     [("first_user_id", 0), ("second_user_id", 1), ("first_user_id", 2)],
 )
-def test_backend_evaluator(user_id_fixture, num_hp_run, request):
+def test_ragflow_evaluator(user_id_fixture, num_hp_run, request):
     """Test the evaluation of provided hyperparameter configurations."""
 
     def get_fixture_value(fixture_name):
@@ -49,8 +49,8 @@ def test_backend_evaluator(user_id_fixture, num_hp_run, request):
 
     response = fetch_data(
         method="post",
-        host=BACKEND_HOST,
-        port=BACKEND_PORT,
+        host=RAGFLOW_HOST,
+        port=RAGFLOW_PORT,
         endpoint=HP_EVALUATION_ENDPOINT,
         payload=json_payload,
     )

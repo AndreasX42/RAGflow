@@ -1,7 +1,7 @@
 version: "3"
 services:
   backend-test:
-    image: ragflow-backend:latest
+    image: andreasx42/ragflow-backend:latest
     container_name: backend-test
     ports:
       - "8080:8080"
@@ -14,7 +14,7 @@ services:
     volumes:
       - ./resources/tests:/eval_backend/resources
   chromadb-test:
-    image: ragflow-vectorstore:latest
+    image: andreasx42/ragflow-vectorstore:latest
     container_name: chromadb-test
     ports:
       - 8000:8000
@@ -22,7 +22,7 @@ services:
       - IS_PERSISTENT=TRUE
       - ALLOW_RESET=TRUE
   test-suite:
-    image: ragflow-test:latest
+    image: andreasx42/ragflow-test:latest
     container_name: tester
     environment:
       - EVALBACKEND_HOST=backend-test

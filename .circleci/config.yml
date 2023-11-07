@@ -81,7 +81,7 @@ jobs:
       - run:
           name: Run Docker Compose to build, start and test
           command: | 
-            docker-compose -f docker-compose.integration.test.yaml up --exit-code-from test-suite --build
+            docker-compose -f docker-compose.integration.test.yaml up --exit-code-from test-suite
       - run:
           name: Shut services down
           command: docker-compose -f docker-compose.test.yaml down

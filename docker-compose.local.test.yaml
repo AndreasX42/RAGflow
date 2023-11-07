@@ -14,7 +14,7 @@ services:
       - LOG_LEVEL=INFO
       - INPUT_LABEL_DATASET=./resources/input_label_dataset.json
     volumes:
-      #  - ./backend:/eval_backend/backend #
+      - ./backend:/eval_backend/backend
       - ./resources/tests:/eval_backend/resources
   chromadb-test:
     build:
@@ -41,5 +41,4 @@ services:
       - chromadb-test
     volumes:
       - ./resources/tests:/tests/resources
-    #  - ./tests:/tests #
-    # restart: always #
+      - ./tests:/tests

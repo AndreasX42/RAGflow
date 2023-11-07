@@ -2,7 +2,6 @@
 openai==0.28.1
 tiktoken==0.5.1
 langchain==0.0.330
-opencv-python==4.8.1.78
 Cython==3.0.5
 pydantic==2.4.2
 pandas==2.1.2
@@ -21,6 +20,7 @@ unstructured==0.10.27
 # TODO: Starting with unstructured==0.10.28 we need additionally pytesseract and inference packages
 #unstructured-pytesseract==0.3.12
 #unstructured-inference==0.7.10
+#opencv-python==4.8.1.78
 
 # Evaluation metrics
 evaluate==0.4.1

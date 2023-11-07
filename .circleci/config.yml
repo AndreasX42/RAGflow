@@ -84,7 +84,7 @@ jobs:
             docker-compose -f docker-compose.integration.test.yaml up --exit-code-from test-suite
       - run:
           name: Shut services down
-          command: docker-compose -f docker-compose.test.yaml down
+          command: docker-compose -f docker-compose.integration.test.yaml down
       - store_artifacts:
           path: /tests/test-reports
           destination: test-reports

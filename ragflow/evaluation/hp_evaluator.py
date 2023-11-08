@@ -15,7 +15,8 @@ from ragflow.commons.chroma import ChromaClient
 from ragflow.evaluation.metrics import (
     answer_embedding_similarity,
     predicted_answer_accuracy,
-    retriever_accuracy,
+    retriever_precision,
+    retriever_recall,
     rouge_score,
 )
 
@@ -39,20 +40,25 @@ async def arun_eval_for_hp(
         dict: _description_
     """
     scores = {
-        "embedding_cosine_sim": -1,
-        "correct_ans": -1,
-        "comprehensive_ans": -1,
-        "readable_ans": -1,
-        "retriever_score": -1,
+        "answer_similarity_score": -1,
+        "retriever_precision_mrr@3": -1,
+        "retriever_precision_mrr@5": -1,
+        "retriever_precision_mrr@10": -1,
         "rouge1": -1,
         "rouge2": -1,
+        "rougeLCS": -1,
+        # metrics below use LLM for grading
+        "correctness_score": -1,
+        "comprehensiveness_score": -1,
+        "readability_score": -1,
+        "retriever_recall": -1,
     }
 
     # create chunks of all provided documents
     chunks = await aload_and_chunk_docs(hp, document_store)
 
     # get retriever from chunks
-    retriever = get_retriever(chunks, hp, user_id)
+    retriever, retrieverForGrading = get_retriever(chunks, hp, user_id, for_eval=True)
 
     # chunks are no longer needed
     del chunks
@@ -69,14 +75,20 @@ async def arun_eval_for_hp(
     process_retrieved_docs(predicted_answers, hp.id)
 
     # Calculate embedding similarities of label and predicted answers
-    emb_sim_score = answer_embedding_similarity.grade_embedding_similarity(
+    scores[
+        "answer_similarity_score"
+    ] = answer_embedding_similarity.grade_embedding_similarity(
         label_dataset, predicted_answers, hp.embedding_model, user_id
     )
 
-    scores["embedding_cosine_sim"] = emb_sim_score
+    (
+        scores["retriever_precision_mrr@3"],
+        scores["retriever_precision_mrr@5"],
+        scores["retriever_precision_mrr@10"],
+    ) = await retriever_precision.grade_retriever(label_dataset, retrieverForGrading)
 
     # Calculate ROUGE scores
-    scores["rouge1"], scores["rouge2"] = rouge_score.grade_rouge(
+    scores["rouge1"], scores["rouge2"], scores["rougeLCS"] = rouge_score.grade_rouge(
         label_dataset, predicted_answers
     )
 
@@ -84,9 +96,9 @@ async def arun_eval_for_hp(
     if hp.use_llm_grader:
         # grade predicted answers
         (
-            scores["correct_ans"],
-            scores["comprehensive_ans"],
-            scores["readable_ans"],
+            scores["correctness_score"],
+            scores["comprehensiveness_score"],
+            scores["readability_score"],
         ) = predicted_answer_accuracy.grade_predicted_answer(
             label_dataset,
             predicted_answers,
@@ -95,7 +107,7 @@ async def arun_eval_for_hp(
         )
 
         # grade quality of retrieved documents used to answer the questions
-        scores["retriever_score"] = retriever_accuracy.grade_retriever(
+        scores["retriever_recall"] = retriever_recall.grade_retriever(
             label_dataset,
             predicted_answers,
             hp.grader_llm,
@@ -103,8 +115,8 @@ async def arun_eval_for_hp(
         )
 
     # preprocess dict before writing to json and add additional information like a timestamp
-    scores |= {"timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}
     result_dict = hp.to_dict()
+    result_dict |= {"timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]}
     result_dict |= {"scores": scores}
 
     # if in test mode store additional information about retriever and vectorstore objects

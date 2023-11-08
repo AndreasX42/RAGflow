@@ -67,9 +67,17 @@ def split_data(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         length_function=length_function,
+        add_start_index=True,
     )
 
     chunks = text_splitter.split_documents(data)
+
+    # add end_index
+    for chunk in chunks:
+        chunk.metadata["end_index"] = chunk.metadata["start_index"] + len(
+            chunk.page_content
+        )
+
     return chunks
 
 

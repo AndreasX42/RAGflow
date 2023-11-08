@@ -25,4 +25,4 @@ def grade_rouge(
     rouge_score = evaluate.load("rouge")
     score = rouge_score.compute(references=label_answers, predictions=predicted_answers)
 
-    return score["rouge1"], score["rouge2"]
+    return score["rouge1"], score["rouge2"], score["rougeL"]

@@ -2,26 +2,27 @@
     {
         "chunk_size": 512,
         "chunk_overlap": 10,
-        "length_function_name": "text-embedding-ada-002",
+        "length_function_name": "len",
         "id": 0,
         "num_retrieved_docs": 3,
-        "grade_answer_prompt": "none",
-        "grade_docs_prompt": "none",
         "search_type": "similarity",
         "similarity_method": "cosine",
         "use_llm_grader": false,
         "qa_llm": "gpt-3.5-turbo",
-        "grader_llm": "TestDummyLLM",
         "embedding_model": "text-embedding-ada-002",
+        "timestamp": "2023-11-08 20:14:36,501",
         "scores": {
-            "embedding_cosine_sim": 0.9557482065398994,
-            "correct_ans": -1,
-            "comprehensive_ans": -1,
-            "readable_ans": -1,
-            "retriever_score": -1,
-            "rouge1": 0.5860717991391033,
-            "rouge2": 0.43364456183350564,
-            "timestamp": "2023-10-17 17:44:50,169"
+            "answer_similarity_score": 0.9455289276479025,
+            "retriever_precision_mrr@3": 0.654818325434439,
+            "retriever_precision_mrr@5": 0.6714060031595576,
+            "retriever_precision_mrr@10": 0.680941096817874,
+            "rouge1": 0.5848481755355666,
+            "rouge2": 0.4622595944607476,
+            "rougeLCS": 0.524537744702827,
+            "correctness_score": -1,
+            "comprehensiveness_score": -1,
+            "readability_score": -1,
+            "retriever_recall": -1
         }
     }
 ]

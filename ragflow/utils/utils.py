@@ -7,16 +7,16 @@ from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
 
 from langchain.schema.language_model import BaseLanguageModel
-from langchain.schema.vectorstore import VectorStoreRetriever
+from langchain.schema.vectorstore import VectorStoreRetriever, VectorStore
 
 # vector db
-from langchain.vectorstores import Chroma
+from langchain.vectorstores.chroma import Chroma
 
 from ragflow.commons.prompts import QA_ANSWER_PROMPT
 from ragflow.commons.configurations import Hyperparameters
 from ragflow.commons.chroma import ChromaClient
 
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import json
 import logging
@@ -25,19 +25,20 @@ logger = logging.getLogger(__name__)
 
 
 def get_retriever(
-    chunks: list[Document], hp: Hyperparameters, user_id: str
-) -> VectorStoreRetriever:
+    chunks: list[Document], hp: Hyperparameters, user_id: str, for_eval: bool = False
+) -> Union[tuple[VectorStoreRetriever, VectorStoreRetriever], VectorStoreRetriever]:
     """Sets up a vector database based on the document chunks and the embedding model provided.
         Here we use Chroma for the vectorstore.
 
     Args:
-        splits (list[Document]): _description_
-        embedding_model (Embeddings): _description_
-        num_retrieved_docs (int): _description_
-        search_type (Optional[str], optional): _description_. Defaults to "mmr".
+        chunks (list[Document]): _description_
+        hp (Hyperparameters): _description_
+        user_id (str): _description_
+        for_eval (bool): for evaluation we return a second retriever with k=10
 
     Returns:
-        BaseRetriever: _description_
+        tuple[VectorStoreRetriever, VectorStoreRetriever]: Returns two retrievers, one for predicting the
+        answers and one for grading the retrieval where we need to have the top 10 documents returned
     """
     logger.info("Constructing vectorstore and retriever.")
 
@@ -60,7 +61,14 @@ def get_retriever(
         search_type=hp.search_type.value, search_kwargs={"k": hp.num_retrieved_docs}
     )
 
-    return retriever
+    if not for_eval:
+        return retriever
+
+    retrieverForGrading = vectorstore.as_retriever(
+        search_type=hp.search_type.value, search_kwargs={"k": 10}
+    )
+
+    return retriever, retrieverForGrading
 
 
 def get_qa_llm(

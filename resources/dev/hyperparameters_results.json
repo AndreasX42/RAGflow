@@ -13,16 +13,16 @@
         "timestamp": "2023-11-08 20:14:36,501",
         "scores": {
             "answer_similarity_score": 0.9455289276479025,
-            "retriever_precision_mrr@3": 0.654818325434439,
-            "retriever_precision_mrr@5": 0.6714060031595576,
-            "retriever_precision_mrr@10": 0.680941096817874,
+            "retriever_mrr@3": 0.654818325434439,
+            "retriever_mrr@5": 0.6714060031595576,
+            "retriever_mrr@10": 0.680941096817874,
             "rouge1": 0.5848481755355666,
             "rouge2": 0.4622595944607476,
             "rougeLCS": 0.524537744702827,
             "correctness_score": -1,
             "comprehensiveness_score": -1,
             "readability_score": -1,
-            "retriever_recall": -1
+            "retriever_semantic_accuracy": -1
         }
     }
 ]

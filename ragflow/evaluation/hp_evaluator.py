@@ -15,8 +15,8 @@ from ragflow.commons.chroma import ChromaClient
 from ragflow.evaluation.metrics import (
     answer_embedding_similarity,
     predicted_answer_accuracy,
-    retriever_precision,
-    retriever_recall,
+    retriever_mrr_accuracy,
+    retriever_semantic_accuracy,
     rouge_score,
 )
 
@@ -41,9 +41,9 @@ async def arun_eval_for_hp(
     """
     scores = {
         "answer_similarity_score": -1,
-        "retriever_precision_mrr@3": -1,
-        "retriever_precision_mrr@5": -1,
-        "retriever_precision_mrr@10": -1,
+        "retriever_mrr@3": -1,
+        "retriever_mrr@5": -1,
+        "retriever_mrr@10": -1,
         "rouge1": -1,
         "rouge2": -1,
         "rougeLCS": -1,
@@ -51,7 +51,7 @@ async def arun_eval_for_hp(
         "correctness_score": -1,
         "comprehensiveness_score": -1,
         "readability_score": -1,
-        "retriever_recall": -1,
+        "retriever_semantic_accuracy": -1,
     }
 
     # create chunks of all provided documents
@@ -82,10 +82,10 @@ async def arun_eval_for_hp(
     )
 
     (
-        scores["retriever_precision_mrr@3"],
-        scores["retriever_precision_mrr@5"],
-        scores["retriever_precision_mrr@10"],
-    ) = await retriever_precision.grade_retriever(label_dataset, retrieverForGrading)
+        scores["retriever_mrr@3"],
+        scores["retriever_mrr@5"],
+        scores["retriever_mrr@10"],
+    ) = await retriever_mrr_accuracy.grade_retriever(label_dataset, retrieverForGrading)
 
     # Calculate ROUGE scores
     scores["rouge1"], scores["rouge2"], scores["rougeLCS"] = rouge_score.grade_rouge(
@@ -107,7 +107,9 @@ async def arun_eval_for_hp(
         )
 
         # grade quality of retrieved documents used to answer the questions
-        scores["retriever_recall"] = retriever_recall.grade_retriever(
+        scores[
+            "retriever_semantic_accuracy"
+        ] = retriever_semantic_accuracy.grade_retriever(
             label_dataset,
             predicted_answers,
             hp.grader_llm,

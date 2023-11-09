@@ -116,7 +116,7 @@ def plot_hyperparameters_results(hyperparameters_results_path: str):
 
     # Extract scores and timestamps into separate DataFrames
     scores_df = df["scores"].apply(pd.Series)
-    scores_df["timestamp"] = pd.to_datetime(scores_df["timestamp"])
+    scores_df["timestamp"] = pd.to_datetime(df["timestamp"])
     # Sort DataFrame based on timestamps for chronological order
     scores_df = scores_df.sort_values(by="timestamp")
     df = df.loc[scores_df.index]
@@ -130,12 +130,16 @@ def plot_hyperparameters_results(hyperparameters_results_path: str):
         id_vars=["index"],
         value_vars=[
             "answer_similarity_score",
+            "retriever_mrr@3",
+            "retriever_mrr@5",
+            "retriever_mrr@10",
+            "rouge1",
+            "rouge2",
+            "rougeLCS",
             "correctness_score",
             "comprehensiveness_score",
             "readability_score",
-            "retriever_accuracy",
-            "rouge1",
-            "rouge2",
+            "retriever_semantic_accuracy",
         ],
     )
     # Merge on 'index' to get the correct x_values and x_ticks

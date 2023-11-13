@@ -4,7 +4,6 @@
 # local stuff
 .venv/
 .vscode/
-tmp/
 
 **.bin
 **/.ipynb_checkpoints

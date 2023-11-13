@@ -87,18 +87,16 @@ def get_qa_llm(
     """
     logger.debug("Setting up QA LLM with provided retriever.")
 
-    chain_type_kwargs = {"prompt": QA_ANSWER_PROMPT}
-
-    qa_llm = RetrievalQA.from_chain_type(
+    qa_llm_r = RetrievalQA.from_chain_type(
         llm=qa_llm,
         chain_type="stuff",
         retriever=retriever,
-        chain_type_kwargs=chain_type_kwargs,
+        chain_type_kwargs={"prompt": QA_ANSWER_PROMPT},
         input_key="question",
         return_source_documents=return_source_documents,
     )
 
-    return qa_llm
+    return qa_llm_r
 
 
 def read_json(filename: str) -> Any:

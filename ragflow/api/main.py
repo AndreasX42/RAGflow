@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI
 
-from ragflow.api.routers import configs, hp_eval, label_gen
+from ragflow.api.routers import configs, evals, gens, chats
 
 app = FastAPI(
     title="FastAPI RAGflow Documentation",
@@ -13,5 +13,6 @@ app = FastAPI(
 )
 
 app.include_router(configs.router)
-app.include_router(label_gen.router)
-app.include_router(hp_eval.router)
+app.include_router(gens.router)
+app.include_router(evals.router)
+app.include_router(chats.router)

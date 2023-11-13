@@ -8,6 +8,7 @@ from page_dashboard import page_dashboard
 from page_login import page_login
 from page_filemanager import page_filemanager
 from page_apikeys import page_apikeys
+from page_chat import page_chat
 
 
 def main():
@@ -20,6 +21,7 @@ def main():
                     "Home",
                     "Dashboard",
                     "Parameters",
+                    "Q&A Chats",
                     "Documents",
                     "File Manager",
                     "API Keys",
@@ -29,6 +31,7 @@ def main():
                     "house-fill",
                     "clipboard2-pulse-fill",
                     "toggles",
+                    "chat-text-fill",
                     "cloud-upload-fill",
                     "file-earmark-text-fill",
                     "safe-fill",
@@ -50,6 +53,8 @@ def main():
             page_dashboard()
         if selected == "Parameters":
             page_parameters()
+        if selected == "Q&A Chats":
+            page_chat()
         if selected == "Documents":
             page_documentstore()
         if selected == "File Manager":

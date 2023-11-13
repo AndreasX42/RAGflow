@@ -26,6 +26,7 @@ services:
       - ./tmp:/backend/tmp
     environment:
       - EXECUTION_CONTEXT=DEV
+      - LOG_LEVEL=INFO
       - CHROMADB_HOST=chromadb
       - CHROMADB_PORT=8000
     restart: always

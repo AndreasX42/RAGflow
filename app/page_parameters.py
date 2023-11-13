@@ -1,6 +1,9 @@
+import json
+import pandas as pd
 import streamlit as st
 from utils import *
-from utils import display_user_login_warning
+
+from streamlit import chat_message
 
 
 def page_parameters():
@@ -10,9 +13,7 @@ def page_parameters():
     if display_user_login_warning():
         return
 
-    tab1, tab2, tab3 = st.tabs(
-        ["QA Generator settings", "Hyperparameters settings", "ReadMe"]
-    )
+    tab1, tab2 = st.tabs(["QA Generator settings", "Hyperparameters settings"])
 
     valid_data = get_valid_params()
 
@@ -69,45 +70,6 @@ def page_parameters():
                     st.success(result)
                 else:
                     st.error(result)
-
-    with tab3:
-        st.subheader(
-            "The app and the backend expect a handful of different files with the correct names in order to work properly. Below are the required files and their descriptions."
-        )
-
-        # Helper function to display paths
-        def display_path(description, path_func):
-            st.markdown(
-                f"**:file_folder: {description}**\n> {path_func()}\n---",
-                unsafe_allow_html=True,
-            )
-
-        # Display each path with the helper function
-        display_path(
-            "User's directory, consists of an UUID linked to the user.",
-            get_user_directory,
-        )
-        display_path("The Document Store folder:", get_document_store_path)
-        display_path(
-            "JSON file with parameters to generate the question-context-answer triples. The resulting evaluation dataset is written to the next file below.",
-            get_label_dataset_gen_params_path,
-        )
-        display_path(
-            "JSON file with the generated evaluation dataset used for benchmarking RAG systems:",
-            get_label_dataset_path,
-        )
-        display_path(
-            "JSON file with hyperparameters used to build the corresponding RAG application:",
-            get_hyperparameters_path,
-        )
-        display_path(
-            "JSON file with benchmarks/metrics of the RAG system built with provided hyperparameters:",
-            get_hyperparameters_results_path,
-        )
-        display_path(
-            "CSV file with additional data from each hyperparameter evaluation run, including predicted answers and corresponding document chunks:",
-            get_hyperparameters_results_data_path,
-        )
 
 
 def provide_hp_params_form(valid_data: dict):

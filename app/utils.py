@@ -129,6 +129,60 @@ def start_qa_gen() -> bool:
         return f"An error occurred: {err}"
 
 
+def get_docs_from_query(hp_id: int, prompt: str) -> bool:
+    """Start QA eval set generation."""
+
+    try:
+        json_payload = {
+            "hp_id": hp_id,
+            "hyperparameters_results_path": get_hyperparameters_results_path(),
+            "user_id": st.session_state.user_id,
+            "api_keys": st.session_state.api_keys,
+            "query": prompt,
+        }
+
+        response = requests.post(
+            f"http://{API_HOST}:{API_PORT}/chats/get_docs", json=json_payload
+        )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except requests.HTTPError as http_err:
+        return f"HTTP error occurred: {http_err}\n\nMessage: {response.text}"
+
+    except Exception as err:
+        return f"An error occurred: {err}"
+
+
+def get_rag_response_stream(hp_id: int, query: str):
+    s = requests.Session()
+    string = ""
+    json_payload = {
+        "hp_id": hp_id,
+        "hyperparameters_results_path": get_hyperparameters_results_path(),
+        "user_id": st.session_state.user_id,
+        "api_keys": st.session_state.api_keys,
+        "query": query,
+    }
+
+    import time
+
+    with st.empty():
+        with s.post(
+            f"http://{API_HOST}:{API_PORT}/chats/query_stream",
+            stream=True,
+            json=json_payload,
+        ) as r:
+            for line in r.iter_content():
+                string += line.decode("utf-8", errors="ignore")
+                time.sleep(0.01)
+                st.write(string)
+
+    return string
+
+
 def start_hp_run() -> bool:
     """Start Hyperparameters evaluation."""
 

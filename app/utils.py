@@ -156,9 +156,7 @@ def get_docs_from_query(hp_id: int, prompt: str) -> bool:
         return f"An error occurred: {err}"
 
 
-def get_rag_response_stream(hp_id: int, query: str):
-    s = requests.Session()
-    string = ""
+def get_rag_response_stream(hp_id: int, query: str) -> tuple[str, dict]:
     json_payload = {
         "hp_id": hp_id,
         "hyperparameters_results_path": get_hyperparameters_results_path(),
@@ -167,7 +165,10 @@ def get_rag_response_stream(hp_id: int, query: str):
         "query": query,
     }
 
-    import time
+    answer = ""
+    source_docs = ""
+
+    s = requests.Session()
 
     with st.empty():
         with s.post(
@@ -175,12 +176,19 @@ def get_rag_response_stream(hp_id: int, query: str):
             stream=True,
             json=json_payload,
         ) as r:
-            for line in r.iter_content():
-                string += line.decode("utf-8", errors="ignore")
-                time.sleep(0.01)
-                st.write(string)
+            for new_token in r.iter_content():
+                new_token = new_token.decode("utf-8", errors="ignore")
 
-    return string
+                # if we start receiving the source documents which starts with '{' we stop writing to streamlit app
+                if not "{" in new_token and not source_docs:
+                    answer += new_token
+                    st.write(answer)
+                    time.sleep(0.01)
+
+                else:
+                    source_docs += new_token
+
+    return answer, json.loads(source_docs)
 
 
 def start_hp_run() -> bool:

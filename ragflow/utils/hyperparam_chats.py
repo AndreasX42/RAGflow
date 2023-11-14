@@ -1,6 +1,7 @@
 import json
 import asyncio
 from uuid import UUID
+from langchain.schema.messages import BaseMessage
 import pandas as pd
 
 from langchain.vectorstores.chroma import Chroma
@@ -12,6 +13,7 @@ from langchain.retrievers.multi_query import MultiQueryRetriever
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.schema import LLMResult, Document
+from langchain.chat_models.base import BaseChatModel
 
 from langchain.chains.conversational_retrieval.prompts import (
     CONDENSE_QUESTION_PROMPT,
@@ -20,14 +22,15 @@ from langchain.chains.conversational_retrieval.prompts import (
 
 from ragflow.commons.chroma import ChromaClient
 from ragflow.commons.configurations import Hyperparameters
+from ragflow.commons.prompts import QA_ANSWER_PROMPT
 
-from typing import Any, List
+from typing import Any, Dict, List, Optional, Sequence
 
 import logging
 
 logger = logging.getLogger(__name__)
 
-chats_cache = {}
+chats_cache: Dict[str, Dict[int, ConversationalRetrievalChain]] = {}
 
 
 class AsyncCallbackHandler(AsyncIteratorCallbackHandler):
@@ -36,12 +39,52 @@ class AsyncCallbackHandler(AsyncIteratorCallbackHandler):
 
     def __init__(self) -> None:
         super().__init__()
+        self.source_documents = None
 
     async def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
         self.queue.put_nowait(token)
 
+    async def on_chat_model_start(
+        self,
+        serialized: Dict[str, Any],
+        messages: List[List[BaseMessage]],
+        *,
+        run_id: UUID,
+        parent_run_id: UUID | None = None,
+        tags: List[str] | None = None,
+        metadata: Dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> Any:
+        pass
+
     async def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
+        # if source documents were extracted
+        if self.source_documents:
+            self.queue.put_nowait(self.source_documents)
+
         self.done.set()
+
+
+class RetrieverCallbackHandler(AsyncIteratorCallbackHandler):
+    def __init__(self, streaming_callback_handler: AsyncCallbackHandler) -> None:
+        super().__init__()
+        self.streaming_callback_handler = streaming_callback_handler
+
+    async def on_retriever_end(
+        self, source_docs, *, run_id, parent_run_id, tags, **kwargs
+    ):
+        source_docs_d = (
+            [
+                {"page_content": doc.page_content, "metadata": doc.metadata}
+                for doc in source_docs
+            ]
+            if source_docs
+            else None
+        )
+
+        self.streaming_callback_handler.source_documents = json.dumps(
+            {"source_documents": source_docs_d}
+        )
 
 
 async def aquery_chat(
@@ -52,15 +95,14 @@ async def aquery_chat(
     query: str,
     stream_it: AsyncCallbackHandler,
 ):
-    llm = getOrCreateChatModel(hp_id, hyperparameters_results_path, user_id, api_keys)
+    llm = getOrCreateChatModel(
+        hp_id, hyperparameters_results_path, user_id, api_keys, stream_it
+    )
 
-    # attach callback to llm
-    llm.combine_docs_chain.llm_chain.llm.streaming = True
-    llm.combine_docs_chain.llm_chain.llm.callbacks = [stream_it]
-
-    logger.error(llm)
-
-    await llm.acall(query)
+    await llm.acall(
+        query,
+        callbacks=[RetrieverCallbackHandler(streaming_callback_handler=stream_it)],
+    )
 
 
 async def create_gen(
@@ -108,7 +150,11 @@ async def get_docs(
 
 
 def getOrCreateChatModel(
-    hp_id: int, hyperparameters_results_path: str, user_id: str, api_keys: dict
+    hp_id: int,
+    hyperparameters_results_path: str,
+    user_id: str,
+    api_keys: dict,
+    streaming_callback: Optional[AsyncCallbackHandler] = None,
 ) -> None:
     # if model has not been loaded yet
     if (
@@ -161,17 +207,32 @@ def getOrCreateChatModel(
             search_type=hp.search_type.value, search_kwargs={"k": hp.num_retrieved_docs}
         )
 
+        # streaming and non-streaming models, create new instance for streaming model
+        streaming_llm = Hyperparameters.get_language_model(
+            model_name=Hyperparameters.get_language_model_name(hp.qa_llm),
+            api_keys=api_keys,
+        )
+
+        if isinstance(streaming_llm, BaseChatModel):
+            streaming_llm.streaming = True
+            streaming_llm.callbacks = [streaming_callback]
+
+        # llm model from hp for non streaming chains
+        non_streaming_llm = hp.qa_llm
+
         # LLM chain for generating new question from user query and chat history
-        question_generator = LLMChain(llm=hp.qa_llm, prompt=CONDENSE_QUESTION_PROMPT)
+        question_generator = LLMChain(
+            llm=non_streaming_llm, prompt=CONDENSE_QUESTION_PROMPT
+        )
 
         # llm that answers the newly generated condensed question
         doc_qa_chain = load_qa_chain(
-            hp.qa_llm.copy(), chain_type="stuff", prompt=QA_PROMPT
+            streaming_llm, chain_type="stuff", prompt=QA_ANSWER_PROMPT
         )
 
         # advanced retriever using multiple similar queries
         multi_query_retriever = MultiQueryRetriever.from_llm(
-            retriever=retriever, llm=hp.qa_llm
+            retriever=retriever, llm=non_streaming_llm, include_original=True
         )
 
         # memory object to store the chat history
@@ -179,14 +240,15 @@ def getOrCreateChatModel(
             memory_key="chat_history", k=5, return_messages=True, output_key="result"
         )
 
-        qa_llm = ConversationalRetrievalChain.from_llm(
+        qa_llm = ConversationalRetrievalChain(
             retriever=multi_query_retriever,
             combine_docs_chain=doc_qa_chain,
             question_generator=question_generator,
-            return_generated_question=False,
-            return_source_documents=False,
             memory=memory,
             output_key="result",
+            return_source_documents=True,
+            return_generated_question=True,
+            response_if_no_docs_found="I don't know the answer to this question.",
         )
 
         # cache llm
@@ -195,5 +257,16 @@ def getOrCreateChatModel(
 
         chats_cache[user_id][hp_id] = qa_llm
 
+        logger.info(
+            f"\nCreated new ConversationalRetrievalChain for {user_id}:{hp_id}."
+        )
+
     # model is already loaded
-    return chats_cache[user_id][hp_id]
+
+    logger.info(f"\nRetrieving ConversationalRetrievalChain for {user_id}:{hp_id}.")
+
+    # add new streaming callback to qa llm
+    qa_llm = chats_cache[user_id][hp_id]
+    qa_llm.combine_docs_chain.llm_chain.llm.callbacks = [streaming_callback]
+
+    return qa_llm

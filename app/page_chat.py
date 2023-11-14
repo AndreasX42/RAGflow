@@ -63,26 +63,29 @@ def page_chat():
     if st.session_state.messages[-1]["role"] != "assistant":
         with st.chat_message("assistant"):
             # get and display answer
-            answer = get_rag_response_stream(hp_id, query)
+            answer, source_docs = get_rag_response_stream(hp_id, query)
 
             # display retrieved documents
             if "I don't know".lower() not in answer.lower():
-                display_documents(hp_id, query)
+                display_documents(source_docs)
 
         message = {"role": "assistant", "content": answer}
         st.session_state.messages.append(message)
 
 
-def display_documents(hp_id: int, query: str):
-    documents = get_docs_from_query(hp_id, query)
-
-    for idx, doc in enumerate(documents):
+def display_documents(documents: list[dict]):
+    for idx, doc in enumerate(documents["source_documents"]):
         with st.expander(f"Document {idx + 1}"):
             st.text(f"Source: {os.path.basename(doc['metadata']['source'])}")
             st.text(
                 f"Index location: {doc['metadata']['start_index']}-{doc['metadata']['end_index']}"
             )
             st.text_area("Content", value=doc["page_content"], height=150)
+
+
+def retrieve_source_documents(hp_id: int, query: str):
+    documents = get_docs_from_query(hp_id, query)
+    display_documents(documents)
 
 
 def load_hp_results() -> pd.DataFrame:

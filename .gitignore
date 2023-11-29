@@ -9,7 +9,8 @@
 **/.ipynb_checkpoints
 **/__pycache__
 
-# vectorstore
+# db
+postgres/
 vectorstore/chromadb/
 *.sqlite3
 

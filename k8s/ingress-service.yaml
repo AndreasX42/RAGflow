@@ -1,35 +1,36 @@
-    apiVersion: networking.k8s.io/v1
-    # UPDATE API
-    kind: Ingress
-    metadata:
-      name: ingress-service
-      annotations:
-        nginx.ingress.kubernetes.io/use-regex: 'true'
-        # ADD ANNOTATION
-        nginx.ingress.kubernetes.io/rewrite-target: /$1
-        # UPDATE ANNOTATION
-    spec:
-      ingressClassName: nginx 
-      rules:
-        - http:
-            paths:
-              - path: /?(.*)
-                # UPDATE PATH
-                pathType: ImplementationSpecific
-                # ADD PATHTYPE
-                backend:
-                  service:
-                    # UPDATE SERVICE FIELDS
-                    name: app-cluster-ip-service
-                    port:
-                      number: 8501
-              - path: /api/?(.*)
-                # UPDATE PATH
-                pathType: ImplementationSpecific
-                # ADD PATHTYPE
-                backend:
-                  service:
-                    # UPDATE SERVICE FIELDS
-                    name: backend-cluster-ip-service
-                    port:
-                      number: 8080
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header X-Script-Name /pgadmin;
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  ingressClassName: nginx 
+  rules:
+    - http:
+        paths:
+          - path: /api/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: backend-cluster-ip-service
+                port:
+                  number: 8080
+          - path: /pgadmin/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: pgadmin-cluster-ip-service
+                port:
+                  number: 5050
+          - path: /?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: app-cluster-ip-service
+                port:
+                  number: 8501

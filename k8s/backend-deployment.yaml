@@ -24,6 +24,32 @@ spec:
               value: vectorstore-cluster-ip-service
             - name: CHROMADB_PORT
               value: '8000'
+            - name: POSTGRES_HOST
+              value: postgres-cluster-ip-service
+            - name: POSTGRES_PORT
+              value: '5432'
+            - name: POSTGRES_DRIVER
+              value: psycopg2
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: POSTGRES_DATABASE
+            - name: PGVECTOR_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: PGVECTOR_DATABASE
           ports:
             - containerPort: 8080
           volumeMounts:

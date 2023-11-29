@@ -25,6 +25,14 @@ services:
       - ./ragflow:/backend/ragflow
       - ./tmp:/backend/tmp
     environment:
+      - JWT_SECRET_KEY=brjia5mOUlE3RN0CFy
+      - POSTGRES_DATABASE=postgres_db
+      - PGVECTOR_DATABASE=vector_db
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=my_password
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DRIVER=psycopg2
       - EXECUTION_CONTEXT=DEV
       - LOG_LEVEL=INFO
       - CHROMADB_HOST=chromadb
@@ -38,9 +46,28 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./vectorstore/chromadb:/chroma/chroma
+      - ./vectorstore/chroma:/chroma/chroma
       - ./vectorstore:/vectorstore
     environment:
       - IS_PERSISTENT=TRUE
       - ALLOW_RESET=TRUE
+    restart: always
+  postgres:
+    image: ankane/pgvector:v0.5.1
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    restart: always
+  pgadmin:
+    image: dpage/pgadmin4:8.0
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=my_password
+    ports:
+      - "5050:80"
     restart: always

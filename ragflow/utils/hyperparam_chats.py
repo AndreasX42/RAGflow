@@ -11,13 +11,11 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.chains import ConversationalRetrievalChain
 from langchain.retrievers.multi_query import MultiQueryRetriever
 from langchain.memory import ConversationBufferWindowMemory
-from langchain.memory import ConversationBufferWindowMemory
 from langchain.schema import LLMResult, Document
 from langchain.chat_models.base import BaseChatModel
 
 from langchain.chains.conversational_retrieval.prompts import (
     CONDENSE_QUESTION_PROMPT,
-    QA_PROMPT,
 )
 
 from ragflow.commons.chroma import ChromaClient
@@ -62,6 +60,7 @@ class AsyncCallbackHandler(AsyncIteratorCallbackHandler):
         if self.source_documents:
             self.queue.put_nowait(self.source_documents)
 
+        self.source_documents = None
         self.done.set()
 
 
@@ -73,7 +72,7 @@ class RetrieverCallbackHandler(AsyncIteratorCallbackHandler):
     async def on_retriever_end(
         self, source_docs, *, run_id, parent_run_id, tags, **kwargs
     ):
-        source_docs_d = (
+        source_docs_list = (
             [
                 {"page_content": doc.page_content, "metadata": doc.metadata}
                 for doc in source_docs
@@ -83,7 +82,7 @@ class RetrieverCallbackHandler(AsyncIteratorCallbackHandler):
         )
 
         self.streaming_callback_handler.source_documents = json.dumps(
-            {"source_documents": source_docs_d}
+            {"source_documents": source_docs_list}
         )
 
 
@@ -203,9 +202,7 @@ def getOrCreateChatModel(
         )
 
         # baseline retriever built from vectorstore collection
-        retriever = index.as_retriever(
-            search_type=hp.search_type.value, search_kwargs={"k": hp.num_retrieved_docs}
-        )
+        retriever = index.as_retriever(search_type="similarity", search_kwargs={"k": 1})
 
         # streaming and non-streaming models, create new instance for streaming model
         streaming_llm = Hyperparameters.get_language_model(
@@ -263,7 +260,7 @@ def getOrCreateChatModel(
 
     # model is already loaded
 
-    logger.info(f"\nRetrieving ConversationalRetrievalChain for {user_id}:{hp_id}.")
+    logger.info(f"\nRetrieved ConversationalRetrievalChain for {user_id}:{hp_id}.")
 
     # add new streaming callback to qa llm
     qa_llm = chats_cache[user_id][hp_id]

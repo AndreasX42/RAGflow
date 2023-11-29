@@ -11,6 +11,10 @@ def page_chat():
     if display_user_login_warning():
         return
 
+    if not os.path.exists(get_hyperparameters_results_path()):
+        st.warning("No hyperparameter results available. Run some evaluation.")
+        return
+
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {"role": "assistant", "content": "How may I help you?"}
@@ -35,11 +39,16 @@ def page_chat():
         st.dataframe(df[showData], use_container_width=True)
 
     # select chat model from hyperparam run id
+    hp_id = 0
     hp_id = st.selectbox(
         "Select chat model from hyperparameter evaluations", options=list(df.id)
     )
     # Check if hp_id changed and clear chat history if it did
-    if "hp_id" in st.session_state and hp_id != st.session_state.hp_id:
+    if (
+        "hp_id" in st.session_state
+        and hp_id != st.session_state.hp_id
+        or "hp_id" not in st.session_state
+    ):
         st.session_state.messages = [
             {"role": "assistant", "content": "How may I help you?"}
         ]
@@ -66,7 +75,7 @@ def page_chat():
             answer, source_docs = get_rag_response_stream(hp_id, query)
 
             # display retrieved documents
-            if "I don't know".lower() not in answer.lower():
+            if "I don't know".lower() not in answer.lower() and source_docs is not None:
                 display_documents(source_docs)
 
         message = {"role": "assistant", "content": answer}

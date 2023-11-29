@@ -5,8 +5,6 @@ from pydantic import BaseModel, Field
 from uuid import UUID
 
 from ragflow.utils.hyperparam_chats import AsyncCallbackHandler
-
-
 from ragflow.utils.hyperparam_chats import query_chat, create_gen, get_docs
 
 router = APIRouter(

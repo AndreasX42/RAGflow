@@ -5,6 +5,8 @@ import json
 from typing import Optional
 import time
 
+from streamlit.components.v1 import html
+
 API_HOST = os.environ.get("RAGFLOW_HOST")
 API_PORT = os.environ.get("RAGFLOW_PORT")
 
@@ -188,7 +190,7 @@ def get_rag_response_stream(hp_id: int, query: str) -> tuple[str, dict]:
                 else:
                     source_docs += new_token
 
-    return answer, json.loads(source_docs)
+    return answer, None if source_docs == "" else json.loads(source_docs)
 
 
 def start_hp_run() -> bool:
@@ -377,8 +379,119 @@ def ptree(startpath, depth=-1):
 def display_user_login_warning():
     """Default function to warn users to login before using service."""
     if "user_id" not in st.session_state or not st.session_state.user_id:
+        user_data, success = get_auth_user()
+        if success:
+            st.session_state.user_id = str(user_data.get("id"))
+            return False
+
         st.warning("Warning: You need to login before being able to use this service.")
         return True
+
+
+# Helper functions for login page
+
+
+# Helper Functions
+def user_login(username, password):
+    """Send login request to the backend and return the response."""
+    response = requests.post(
+        f"http://{API_HOST}:{API_PORT}/auth/login",
+        data={"username": username, "password": password},
+    )
+
+    if response.status_code == 200:
+        access_token = response.cookies.get("access_token")
+
+        # JavaScript to set the cookie in the browser
+        cookie_js = f"""
+        <script>
+        document.cookie = "access_token={access_token}; path=/;";
+        </script>
+        """
+
+        html(cookie_js)
+
+        return response.json(), True
+
+    return response.json(), False
+
+
+def user_logout():
+    """Send login request to the backend and return the response."""
+    response = requests.get(
+        f"http://{API_HOST}:{API_PORT}/auth/logout",
+    )
+
+    if response.status_code == 200:
+        # JavaScript to clear the cookie in the browser
+        clear_cookie_js = """
+        <script>
+        document.cookie = "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        </script>
+        """
+
+        html(clear_cookie_js)
+
+        return True
+
+    return False
+
+
+def get_auth_user():
+    """Send login request to the backend and return the response."""
+    token = get_cookie_value()
+
+    if not token:
+        return {}, False
+
+    response = requests.get(
+        f"http://{API_HOST}:{API_PORT}/auth/user", cookies={"access_token": token}
+    )
+
+    return response.json(), response.status_code == 200
+
+
+def user_register(username, email, password):
+    """Send registration request to the backend and return the response."""
+    response = requests.post(
+        f"http://{API_HOST}:{API_PORT}/users",
+        json={
+            "username": username,
+            "email": email,
+            "password": password,
+        },
+    )
+
+    return response.json(), response.status_code == 201
+
+
+def get_cookie_value(key: str = "access_token"):
+    """
+    WARNING: This uses unsupported feature of Streamlit
+    Returns the cookies as a dictionary of kv pairs
+    """
+    from streamlit.web.server.websocket_headers import _get_websocket_headers
+    from urllib.parse import unquote
+
+    headers = _get_websocket_headers()
+    if headers is None:
+        return {}
+
+    if "Cookie" not in headers:
+        return {}
+
+    cookie_string = headers["Cookie"]
+    # A sample cookie string: "K1=V1; K2=V2; K3=V3"
+    cookie_kv_pairs = cookie_string.split(";")
+
+    cookie_dict = {}
+    for kv in cookie_kv_pairs:
+        k_and_v = kv.split("=")
+        k = k_and_v[0].strip()
+        v = k_and_v[1].strip()
+        cookie_dict[k] = unquote(v)
+
+    return cookie_dict.get(key)
 
 
 #

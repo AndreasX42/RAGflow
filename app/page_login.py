@@ -1,55 +1,91 @@
 import streamlit as st
-import uuid
-import os
-import re
+import time
+
+from utils import *
 
 
 def page_login():
-    st.title("Authentication Page")
-    st.subheader("Enter your UUID to authenticate.")
+    # Session State to track if user is logged in
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
 
-    tab1, tab2 = st.tabs(["Enter existing key", "Generate new key"])
+    if "user_id" not in st.session_state:
+        st.session_state.user_id = ""
 
+    # Tabs for Login and Registration
+    tab1, tab2 = st.tabs(["Login", "Register"])
+
+    # Login Tab
     with tab1:
-        if "user_id" not in st.session_state:
-            st.session_state.user_id = ""
+        # Check if user is already logged in
+        response, success = get_auth_user()
+        if success:
+            st.session_state.user_id = str(response.get("id"))
+            st.success(f"Already signed in as '{response.get('username')}'.")
 
-        # Check if a UUID is already set in session state or not
+        elif not st.session_state.logged_in:
+            with st.form("login_form"):
+                st.subheader("Login")
+                # Input fields for username and password
+                login_username = st.text_input("Username", key="login_username")
+                login_password = st.text_input(
+                    "Password", type="password", key="login_password"
+                )
 
-        # Input for existing or newly generated UUID
-        existing_uuid = st.text_input("Enter your UUID (if you have one):")
-        if (
-            existing_uuid
-            and not is_valid_uuid(existing_uuid)
-            or not os.path.exists(f"./tmp/{existing_uuid}/")
-        ):
-            existing_uuid = ""
-            st.error("Please provide a valid UUID format.")
+                # Submit button for the form
+                submit_button = st.form_submit_button("Login")
 
-        else:
-            if existing_uuid:
-                set_state(existing_uuid)
-                st.success(f"Authenticated your UUID: {st.session_state.user_id}")
+                if submit_button:
+                    # Attempt to login
+                    response, success = user_login(login_username, login_password)
+                    if success:
+                        st.session_state.logged_in = True
+                        st.session_state.user_id = str(response.get("id"))
+                        st.success(
+                            f"Logged in successfully as {response.get('username')}."
+                        )
+                    else:
+                        st.error(
+                            f"Login failed: {response.get('detail', 'Unknown error')}"
+                        )
 
+        if get_cookie_value() or st.session_state.user_id:
+            with st.form("logout_form"):
+                st.subheader("Logout")
+                logout_button = st.form_submit_button("Logout")
+                if logout_button:
+                    success = user_logout()
+
+                    if success:
+                        st.session_state.logged_in = False
+                        st.session_state.user_id = ""
+                        st.success("You are logged out!")
+
+                    else:
+                        st.error("Error logging out")
+
+                    time.sleep(1)
+                    st.rerun()
+
+    # Registration Tab
     with tab2:
-        # If no UUID in session, show button to generate a new UUID
-        if st.button("Generate new UUID"):
-            new_uuid = str(uuid.uuid4())
-            set_state(new_uuid)
-            st.success(
-                f"Your new UUID (save it somewhere safe!): {st.session_state.user_id}"
+        with st.form("register_form"):
+            st.subheader("Register")
+            reg_username = st.text_input("Username", key="reg_username")
+            reg_email = st.text_input("Email", key="reg_email")
+            reg_password = st.text_input(
+                "Password", type="password", key="reg_password"
             )
 
+            if st.form_submit_button("Register"):
+                reg_response, success = user_register(
+                    reg_username, reg_email, reg_password
+                )
 
-def set_state(user_id: str) -> None:
-    st.session_state.user_id = user_id
-    st.session_state.user_file_dir = f"./tmp/{st.session_state.user_id}/"
-    os.makedirs(f"./tmp/{st.session_state.user_id}/", exist_ok=True)
+                if success:
+                    st.success(
+                        f"Registered successfully! Please log in, {reg_response.get('username')}."
+                    )
 
-
-def is_valid_uuid(val):
-    regex = re.compile(
-        r"^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\Z", re.I
-    )
-    match = regex.match(val)
-    return bool(match)
+                else:
+                    st.error(f"Registration failed! Info: {reg_response['detail']}")

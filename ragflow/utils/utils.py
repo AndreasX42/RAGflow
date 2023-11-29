@@ -7,7 +7,7 @@ from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
 
 from langchain.schema.language_model import BaseLanguageModel
-from langchain.schema.vectorstore import VectorStoreRetriever, VectorStore
+from langchain.schema.vectorstore import VectorStoreRetriever
 
 # vector db
 from langchain.vectorstores.chroma import Chroma
@@ -42,7 +42,7 @@ def get_retriever(
     """
     logger.info("Constructing vectorstore and retriever.")
 
-    # TODO: why is user_id here an UUID??
+    # TODO: why is user_id here in UUID format here?
     user_id = str(user_id)
 
     vectorstore = Chroma.from_documents(
@@ -61,6 +61,7 @@ def get_retriever(
         search_type=hp.search_type.value, search_kwargs={"k": hp.num_retrieved_docs}
     )
 
+    # if we are evaluating the semantic accuracy of the retriever as well, we have to return a second version of the retriever with different settings
     if not for_eval:
         return retriever
 

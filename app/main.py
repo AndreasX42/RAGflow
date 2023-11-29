@@ -9,6 +9,7 @@ from page_login import page_login
 from page_filemanager import page_filemanager
 from page_apikeys import page_apikeys
 from page_chat import page_chat
+from utils import get_auth_user
 
 
 def main():
@@ -74,6 +75,12 @@ if __name__ == "__main__":
         layout="wide",
         initial_sidebar_state="expanded",
     )
+
+    # set user_id attribute in session state after browser refresh if user already authenticated
+    if "user_id" not in st.session_state or not st.session_state.user_id:
+        user_data, success = get_auth_user()
+        if success:
+            st.session_state.user_id = str(user_data.get("id"))
 
     main()
 

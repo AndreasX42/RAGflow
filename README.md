@@ -7,7 +7,7 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 `Language` [Python](https://www.python.org/)\
 `Frameworks for LLMs` [LangChain](https://www.langchain.com/) [OpenAI](https://www.openai.com/) [Hugging Face](https://huggingface.co/)\
 `Framework for API` [FastAPI](https://fastapi.tiangolo.com/)\
-`Databases` [ChromaDB](https://www.trychroma.com/)\
+`Databases` [ChromaDB](https://www.trychroma.com/) [Postgres](https://www.postgresql.org/)\
 `Frontend` [Streamlit](https://www.streamlit.io/)\
 `CI/CD` [Docker](https://www.docker.com/) [Kubernetes](https://kubernetes.io/) [CircleCI](https://circleci.com/) [GKE](https://cloud.google.com/kubernetes-engine)
 

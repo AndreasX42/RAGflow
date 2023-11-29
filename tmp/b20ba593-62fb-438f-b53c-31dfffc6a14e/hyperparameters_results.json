@@ -1,0 +1,60 @@
+[
+    {
+        "chunk_size": 512,
+        "chunk_overlap": 100,
+        "length_function_name": "len",
+        "id": 0,
+        "num_retrieved_docs": 4,
+        "grade_answer_prompt": "few_shot",
+        "grade_docs_prompt": "default",
+        "search_type": "mmr",
+        "similarity_method": "cosine",
+        "use_llm_grader": true,
+        "qa_llm": "gpt-3.5-turbo",
+        "grader_llm": "gpt-3.5-turbo",
+        "embedding_model": "text-embedding-ada-002",
+        "timestamp": "2023-11-22 16:13:25,868",
+        "scores": {
+            "answer_similarity_score": 0.9444591860352868,
+            "retriever_mrr@3": 0.7027027027027026,
+            "retriever_mrr@5": 0.7229729729729729,
+            "retriever_mrr@10": 0.7274774774774774,
+            "rouge1": 0.5515176155413686,
+            "rouge2": 0.3953020024701468,
+            "rougeLCS": 0.4624403034855532,
+            "correctness_score": 0.7927927927927928,
+            "comprehensiveness_score": 0.6756756756756758,
+            "readability_score": 0.9729729729729729,
+            "retriever_semantic_accuracy": 0.6756756756756757
+        }
+    },
+    {
+        "chunk_size": 382,
+        "chunk_overlap": 10,
+        "length_function_name": "len",
+        "id": 1,
+        "num_retrieved_docs": 5,
+        "grade_answer_prompt": "few_shot",
+        "grade_docs_prompt": "default",
+        "search_type": "mmr",
+        "similarity_method": "l2",
+        "use_llm_grader": true,
+        "qa_llm": "gpt-3.5-turbo",
+        "grader_llm": "gpt-3.5-turbo",
+        "embedding_model": "text-embedding-ada-002",
+        "timestamp": "2023-11-22 16:45:54,689",
+        "scores": {
+            "answer_similarity_score": 0.9501504773717713,
+            "retriever_mrr@3": 0.7342342342342342,
+            "retriever_mrr@5": 0.7477477477477477,
+            "retriever_mrr@10": 0.7552552552552552,
+            "rouge1": 0.5400035495369417,
+            "rouge2": 0.3721074705377185,
+            "rougeLCS": 0.4389231740593764,
+            "correctness_score": 0.7837837837837838,
+            "comprehensiveness_score": 0.6936936936936937,
+            "readability_score": 0.9729729729729729,
+            "retriever_semantic_accuracy": 0.7297297297297297
+        }
+    }
+]

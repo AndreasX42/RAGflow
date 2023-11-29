@@ -1,7 +1,17 @@
 import os
 from fastapi import FastAPI
 
-from ragflow.api.routers import configs, evals, gens, chats
+from ragflow.api.routers import (
+    configs_router,
+    evals_router,
+    gens_router,
+    chats_router,
+    auth_router,
+    user_router,
+)
+
+import ragflow.api.services.user_service as user_service
+from ragflow.api.database import Base, engine
 
 app = FastAPI(
     title="FastAPI RAGflow Documentation",
@@ -12,7 +22,11 @@ app = FastAPI(
     root_path="" if os.environ.get("EXECUTION_CONTEXT") in ["DEV", "TEST"] else "/api",
 )
 
-app.include_router(configs.router)
-app.include_router(gens.router)
-app.include_router(evals.router)
-app.include_router(chats.router)
+app.include_router(configs_router.router)
+app.include_router(gens_router.router)
+app.include_router(evals_router.router)
+app.include_router(chats_router.router)
+app.include_router(auth_router.router)
+app.include_router(user_router.router)
+
+Base.metadata.create_all(bind=engine)

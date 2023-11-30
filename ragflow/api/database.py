@@ -16,12 +16,6 @@ if HOST == "localhost":
 
 DATABASE_URL = f"postgresql+{DRIVER}://{USER}:{PWD}@{HOST}/{DB}"
 
-import logging
-
-logger = logging.getLogger(__name__)
-logger.error(f"\n HI {DATABASE_URL}\n")
-
-
 engine = create_engine(DATABASE_URL)
 
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)

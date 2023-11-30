@@ -8,10 +8,18 @@ services:
     ports:
       - "8080:8080"
     environment:
+      - JWT_SECRET_KEY=brjia5mOUlE3RN0CFy
+      - POSTGRES_DATABASE=postgres_db
+      - PGVECTOR_DATABASE=vector_db
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=my_password
+      - POSTGRES_HOST=postgres-test
+      - POSTGRES_PORT=5432
+      - POSTGRES_DRIVER=psycopg2
+      - EXECUTION_CONTEXT=TEST
+      - LOG_LEVEL=INFO
       - CHROMADB_HOST=chromadb-test
       - CHROMADB_PORT=8000
-      - EXECUTION_CONTEXT=TEST
-      - LOG_LEVEL=DEBUG
       - INPUT_LABEL_DATASET=./resources/input_label_dataset.json
     volumes:
       - ./ragflow:/backend/ragflow
@@ -42,3 +50,13 @@ services:
     volumes:
       - ./resources/tests:/tests/resources
       - ./tests:/tests
+  postgres-test:
+    image: ankane/pgvector:v0.5.1
+    container_name: postgres-test
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    restart: always

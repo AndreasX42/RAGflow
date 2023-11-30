@@ -10,4 +10,4 @@ COPY ./ ./
 
 RUN chmod +x wait-for-it.sh
 
-ENTRYPOINT ["/bin/bash", "-c", "./wait-for-it.sh chromadb-test:8000 --timeout=60 && ./wait-for-it.sh ragflow-test:8080 --timeout=60 -- pytest"]
+ENTRYPOINT ["/bin/bash", "-c", "./wait-for-it.sh chromadb-test:8000 --timeout=60 && ./wait-for-it.sh postgres-test:5432 --timeout=60 && ./wait-for-it.sh ragflow-test:8080 --timeout=60 -- pytest"]

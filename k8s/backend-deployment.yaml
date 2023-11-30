@@ -50,6 +50,11 @@ spec:
                 secretKeyRef:
                   name: pgsecrets
                   key: PGVECTOR_DATABASE
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: JWT_SECRET_KEY
           ports:
             - containerPort: 8080
           volumeMounts:

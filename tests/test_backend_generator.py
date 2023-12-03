@@ -58,7 +58,7 @@ def test_generator_without_upsert(user_id_without_upsert):
     [
         ("first_user_id", 1, None),
         ("second_user_id", 2, None),
-        ("third_user_id_with_invalid_uuid", -1, requests.exceptions.HTTPError),
+        ("third_user_id_with_invalid_user_id", -1, requests.exceptions.HTTPError),
     ],
 )
 def test_generator_with_upsert(

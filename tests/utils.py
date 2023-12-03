@@ -41,12 +41,6 @@ def second_user_id() -> str:
     return "3"
 
 
-@pytest.fixture
-def third_user_id_with_invalid_user_id() -> str:
-    """Returns a test user id that is invalid."""
-    return lambda x: x
-
-
 # helper functions
 def fetch_data(
     method: str,

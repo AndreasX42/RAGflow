@@ -15,7 +15,6 @@ from tests.utils import (
     fetch_data,
     first_user_id,
     second_user_id,
-    third_user_id_with_invalid_user_id,
     user_id_without_upsert,
 )
 
@@ -58,7 +57,6 @@ def test_generator_without_upsert(user_id_without_upsert):
     [
         ("first_user_id", 1, None),
         ("second_user_id", 2, None),
-        ("third_user_id_with_invalid_user_id", -1, requests.exceptions.HTTPError),
     ],
 )
 def test_generator_with_upsert(

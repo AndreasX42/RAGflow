@@ -17,7 +17,6 @@ from tests.utils import (
     fetch_data,
     first_user_id,
     second_user_id,
-    third_user_id_with_invalid_user_id,
     user_id_without_upsert,
 )
 

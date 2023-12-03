@@ -25,7 +25,7 @@ class EvaluationRequest(BaseModel):
         min_length=3,
         description="path to list of additional data generated during hp eval",
     )
-    user_id: int = Field(ge=1, description="user id from db")
+    user_id: str = Field(description="user id from db")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
 
     class Config:

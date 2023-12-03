@@ -18,7 +18,7 @@ class GenerationRequest(BaseModel):
         min_length=3,
         description="path to where the generated qa pairs should be stored.",
     )
-    user_id: int = Field(ge=1, description="user id from db")
+    user_id: str = Field(description="user id from db")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
 
     class Config:

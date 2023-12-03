@@ -42,9 +42,9 @@ def second_user_id() -> str:
 
 
 @pytest.fixture
-def third_user_id_with_invalid_uuid() -> str:
-    """Returns a test user id that is an invalid UUID."""
-    return "12345"
+def third_user_id_with_invalid_user_id() -> str:
+    """Returns a test user id that is invalid."""
+    return "-1"
 
 
 # helper functions

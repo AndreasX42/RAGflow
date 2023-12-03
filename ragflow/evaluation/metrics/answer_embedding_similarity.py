@@ -21,7 +21,8 @@ def grade_embedding_similarity(
         label_dataset (list[dict]): The evaluation ground truth dataset of QA pairs
         predictions (list[dict]): A dict containing the predicted answers from the queries and the retrieved document chunks
         embedding_model (Embeddings): The embedding model
-        user_id (str): The user id, probably in UUID format, used to query the embeddings of the answers from the evaluation dataset from ChromaDB.
+        user_id (str): The user id
+        answers from the evaluation dataset from ChromaDB.
 
     Returns:
         float: The average similarity score.

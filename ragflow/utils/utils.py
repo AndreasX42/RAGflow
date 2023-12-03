@@ -42,9 +42,6 @@ def get_retriever(
     """
     logger.info("Constructing vectorstore and retriever.")
 
-    # TODO: why is user_id here in UUID format here?
-    user_id = str(user_id)
-
     vectorstore = Chroma.from_documents(
         documents=chunks,
         embedding=hp.embedding_model,

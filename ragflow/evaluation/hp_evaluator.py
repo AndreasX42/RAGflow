@@ -182,7 +182,7 @@ async def arun_evaluation(
         label_dataset_path (str): Path to the evaluation ground truth dataset
         hyperparameters_results_path (str): Path to the JSON file where results should get stored
         hyperparameters_results_data_path (str): Path to the CSV file where additional evaluation data should get stored
-        user_id (str): The userd id, probably in UUID format
+        user_id (str): The userd id
         api_keys (dict): All required API keys for the LLM endpoints
     """
     # load evaluation dataset

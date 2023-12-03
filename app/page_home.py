@@ -88,8 +88,7 @@ def page_home():
         st.write(
             """
         1. Account Setup:
-        Log in or generate a new UUID linked to your account.
-        Ensure you keep this UUID secure!
+        Log in or register.
 
         2. API Key Submission:
         Supply all the required API keys, such as those for OpenAI. The keys needed will vary based on the LLMs and services you intend to use.

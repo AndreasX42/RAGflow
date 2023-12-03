@@ -15,7 +15,7 @@ from tests.utils import (
     fetch_data,
     first_user_id,
     second_user_id,
-    third_user_id_with_invalid_uuid,
+    third_user_id_with_invalid_user_id,
     user_id_without_upsert,
 )
 
@@ -86,7 +86,7 @@ def test_generator_with_upsert(
             expected_error,
             match=f"Unprocessable Entity for url: http://ragflow-test:8080{LABEL_DATASET_ENDPOINT}",
         ):
-            # Assuming the error will arise here when pydantic throws an exception because user id is not a valid UUID
+            # Assuming the error will arise here when pydantic throws an exception because user id is not valid
             response = fetch_data(
                 method="post",
                 host=RAGFLOW_HOST,

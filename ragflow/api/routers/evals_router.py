@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
 from pydantic import BaseModel, Field
-from uuid import UUID
 
 from ragflow.evaluation import arun_evaluation
 
@@ -26,7 +25,7 @@ class EvaluationRequest(BaseModel):
         min_length=3,
         description="path to list of additional data generated during hp eval",
     )
-    user_id: UUID = Field(description="user id, e.g. used to access cached embeddings")
+    user_id: int = Field(ge=1, description="user id from db")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
 
     class Config:
@@ -37,7 +36,7 @@ class EvaluationRequest(BaseModel):
                 "label_dataset_path": "./tmp/label_dataset.json",  # path to generated evaluation dataset
                 "hyperparameters_results_path": "./tmp/hyperparameters_results.json",  # path to list of eval results
                 "hyperparameters_results_data_path": "./tmp/hyperparameters_results_data.csv",  # path to list of generated predictions and retrieved docs
-                "user_id": "3e6e131c-d9f3-4085-a412-f5f8875e34f0",  # user id
+                "user_id": "1",  # user id
                 "api_keys": {
                     "OPENAI_API_KEY": "your_api_key_here",
                     "ANOTHER_API_KEY": "another_key_here",
@@ -48,10 +47,8 @@ class EvaluationRequest(BaseModel):
 
 @router.post("/evaluation", status_code=status.HTTP_200_OK)
 async def start_evaluation_run(eval_request: EvaluationRequest):
-    args = eval_request.model_dump()
-    args["user_id"] = str(args["user_id"])
     try:
-        await arun_evaluation(**args)
+        await arun_evaluation(**eval_request.model_dump())
     except Exception as ex:
         print(ex)
         raise HTTPException(status_code=400, detail=str(ex))

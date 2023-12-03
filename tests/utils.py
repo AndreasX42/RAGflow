@@ -26,19 +26,19 @@ HYPERPARAMETERS_RESULTS_DATA_PATH = (
 @pytest.fixture
 def user_id_without_upsert() -> str:
     """Returns a test user id of 0."""
-    return "10000000-0000-0000-0000-000000000000"
+    return "1"
 
 
 @pytest.fixture
 def first_user_id() -> str:
     """Returns a test user id of 0."""
-    return "20000000-0000-0000-0000-000000000000"
+    return "2"
 
 
 @pytest.fixture
 def second_user_id() -> str:
     """Returns a test user id of 1."""
-    return "30000000-0000-0000-0000-000000000000"
+    return "3"
 
 
 @pytest.fixture

@@ -46,7 +46,7 @@ def get_retriever(
         documents=chunks,
         embedding=hp.embedding_model,
         client=ChromaClient().get_client(),
-        collection_name=f"userid_{user_id[:8]}_hpid_{hp.id}",
+        collection_name=f"userid_{user_id}_hpid_{hp.id}",
         collection_metadata={
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3],
             "custom_id": f"userid_{user_id}_hpid_{hp.id}",

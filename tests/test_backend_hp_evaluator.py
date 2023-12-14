@@ -66,17 +66,17 @@ def test_ragflow_evaluator(user_id_fixture, num_hp_run, request):
     if len(collections_list) in range(3, 6):
         for i in range(3):
             assert (
-                f"userid_{user_id[:8]}_hpid_{i}" in collection_names
+                f"userid_{user_id}_hpid_{i}" in collection_names
             ), "First user with 3 hp evals should have 3 corresponding collections now"
     elif len(collections_list) in range(6, 9):
         for i in range(3):
             assert (
-                f"userid_{user_id[:8]}_hpid_{i}" in collection_names
+                f"userid_{user_id}_hpid_{i}" in collection_names
             ), "Second user with 3 hp evals should have 3 corresponding collections now"
     elif len(collections_list) in range(9, 12):
         for i in range(3, 6):
             assert (
-                f"userid_{user_id[:8]}_hpid_{i}" in collection_names
+                f"userid_{user_id}_hpid_{i}" in collection_names
             ), "First user with next 3 hp evals should have 6 corresponding collections now"
     else:
         assert False, "Unexpected collections_list length"

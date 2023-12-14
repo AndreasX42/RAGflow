@@ -103,22 +103,21 @@ async def aupsert_embeddings_for_model(
 ) -> None:
     """Embeds and upserts each generated answer into vectorstore. This is helpful if you want to run different hyperparameter runs with the same embedding model because you only have to embed these answers once. The embeddings are used during evaluation to check similarity of generated and predicted answers."""
     with ChromaClient() as CHROMA_CLIENT:
-        collection_id = f"userid_{user_id}_qaid_0_{QAConfigurations.get_embedding_model_name(embedding_model)}"
+        collection_name = f"userid_{user_id}_qaid_0_{QAConfigurations.get_embedding_model_name(embedding_model)}"
 
         # check if collection already exists, if not create a new one with the embeddings
         if [
             collection
             for collection in CHROMA_CLIENT.list_collections()
-            if collection.metadata.get("custom_id", "") == collection_id
+            if collection.name.startswith(f"userid_{user_id}_")
         ]:
             logger.info(f"Collection {collection_id} already exists, skipping it.")
             return None
 
         collection = CHROMA_CLIENT.create_collection(
-            name=f"userid_{user_id[:8]}_qaid_0_{QAConfigurations.get_embedding_model_name(embedding_model)}",
+            name=collection_name,
             metadata={
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3],
-                "custom_id": collection_id,
             },
         )
 
@@ -131,7 +130,7 @@ async def aupsert_embeddings_for_model(
             )
         except NotImplementedError as ex:
             logger.error(
-                f"Exception during eval set generation and upserting to ChromaDB, {ex}"
+                f"Exception during eval set generation and upserting to vectorstore, {ex}"
             )
             embeddings = embedding_model.embed_documents(
                 [qa_pair["answer"] for qa_pair in qa_pairs]
@@ -221,13 +220,12 @@ async def agenerate_evaluation_set(
     # get list of all documents in document_store_path
     document_store = glob.glob(f"{document_store_path}/*")
 
-    # TODO: Reset chromadb collection of the last QA generation, since currently only one QA generation run is supported
     with ChromaClient() as client:
         # Filter collections specific to the user_id.
         user_collections = [
             collection
             for collection in client.list_collections()
-            if collection.metadata.get("custom_id", "").startswith(f"userid_{user_id}_")
+            if collection.name.startswith(f"userid_{user_id}_")
         ]
 
         # Check if there are any collections with the QA identifier and delete them.

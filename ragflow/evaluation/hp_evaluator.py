@@ -149,7 +149,7 @@ def prepare_evaluation_run(
         hp_ids = [
             extract_hpid(col.name)
             for col in collections
-            if col.name.startswith(f"userid_{user_id[:8]}_") and "_hpid_" in col.name
+            if col.name.startswith(f"userid_{user_id}_") and "_hpid_" in col.name
         ]
 
         if not hp_ids or all(id == -1 for id in hp_ids):

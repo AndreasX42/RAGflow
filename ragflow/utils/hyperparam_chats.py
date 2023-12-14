@@ -173,7 +173,7 @@ def getOrCreateChatModel(
 
         with ChromaClient() as client:
             for col in client.list_collections():
-                if col.name == f"userid_{user_id[:8]}_hpid_{hp_id}":
+                if col.name == f"userid_{user_id}_hpid_{hp_id}":
                     collection = col
                     break
 

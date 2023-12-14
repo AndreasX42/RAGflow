@@ -9,9 +9,6 @@ WORKDIR /backend
 COPY ./requirements.txt ./
 RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
 
-# libgl1 necessary for opencv-python package which is not used at the moment
-# RUN apt-get update && apt-get install -y libgl1
-
 # Copy all into image
 COPY ./ ./ragflow
 

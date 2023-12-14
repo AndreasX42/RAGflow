@@ -49,7 +49,6 @@ def get_retriever(
         collection_name=f"userid_{user_id}_hpid_{hp.id}",
         collection_metadata={
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[:-3],
-            "custom_id": f"userid_{user_id}_hpid_{hp.id}",
             "hnsw:space": hp.similarity_method.value,
         },
     )

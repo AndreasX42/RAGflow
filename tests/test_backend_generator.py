@@ -137,8 +137,7 @@ def test_generator_with_upsert(
     ), "Name of collection should contain first 8 chars of user id and embedding model name."
 
     assert (
-        collection.metadata["custom_id"]
-        == f"userid_{user_id}_qaid_0_TestDummyEmbedding"
+        collection.name == f"userid_{user_id}_qaid_0_TestDummyEmbedding"
     ), "The metadata dict of collection should also contain the entire user id"
     embeddings = collection.get(include=["embeddings"])["embeddings"]
 

@@ -37,10 +37,10 @@ def grade_embedding_similarity(
     # try using embeddings of answers of evaluation set from vectorstore that were stored in ChromaDB in generation process, otherwise we calculate them again
     try:
         with ChromaClient() as CHROMA_CLIENT:
-            collection_id = f"userid_{user_id}_qaid_0_{BaseConfigurations.get_embedding_model_name(embedding_model)}"
+            collection_name = f"userid_{user_id}_qaid_0_{BaseConfigurations.get_embedding_model_name(embedding_model)}"
 
             for col in CHROMA_CLIENT.list_collections():
-                if col.metadata.get("custom_id", "") == collection_id:
+                if col.name == collection_name:
                     collection = col
                     break
 

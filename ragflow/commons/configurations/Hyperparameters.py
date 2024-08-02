@@ -32,14 +32,20 @@ class Hyperparameters(BaseConfigurations):
     grader_llm: BaseLanguageModel
     embedding_model: Embeddings
 
+    @classmethod
     @validator("qa_llm", "grader_llm", pre=True, always=True)
     def check_language_model_name(cls, v, field, values):
+        """Validation to check if provided LLM model is supported."""
+
         if cls.get_language_model_name(v) not in LLM_MODELS + ["TestDummyLLM"]:
             raise ValueError(f"{v} not in list of valid values {LLM_MODELS}.")
         return v
 
+    @classmethod
     @validator("embedding_model", pre=True, always=True)
     def check_embedding_model_name(cls, v):
+        """Validation to check if provided embedding model is supported."""
+
         if cls.get_embedding_model_name(v) not in EMB_MODELS + ["TestDummyEmbedding"]:
             raise ValueError(f"{v} not in list of valid values {EMB_MODELS}.")
         return v

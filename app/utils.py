@@ -9,7 +9,6 @@ from streamlit.components.v1 import html
 
 API_HOST = os.environ.get("RAGFLOW_HOST")
 API_PORT = os.environ.get("RAGFLOW_PORT")
-
 MAX_FILE_SIZE = 10 * 1024**2  # 10MB according to .streamlit/config
 
 

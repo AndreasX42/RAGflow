@@ -111,7 +111,7 @@ async def aupsert_embeddings_for_model(
             for collection in CHROMA_CLIENT.list_collections()
             if collection.name.startswith(f"userid_{user_id}_")
         ]:
-            logger.info(f"Collection {collection_id} already exists, skipping it.")
+            logger.info(f"Collection {collection_name} already exists, skipping it.")
             return None
 
         collection = CHROMA_CLIENT.create_collection(

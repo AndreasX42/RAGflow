@@ -106,8 +106,11 @@ class BaseConfigurations(BaseModel):
         arbitrary_types_allowed = True
         extra = Extra.forbid
 
+    @classmethod
     @validator("length_function", pre=False, always=True)
     def populate_length_function(cls, v: callable, values: dict[str, str]):
+        """Convert provided length function name to actual function."""
+
         return cls.set_length_function(values["length_function_name"])
 
     @staticmethod

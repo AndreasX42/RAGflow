@@ -11,7 +11,6 @@ from page_apikeys import page_apikeys
 from page_chat import page_chat
 from utils import get_auth_user
 
-
 def main():
     # Display selected page with the respective function
     def sideBar():

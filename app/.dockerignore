@@ -4,11 +4,6 @@
 .cache
 **.log
 
-# data/chromadb
-data/datasets.zip
-data/desc.docx
-chromadb/
-
 # Byte-compiled / optimized / DLL files
 **/__pycache__
 **/*.pyc

@@ -20,7 +20,6 @@ class QAConfigurations(BaseConfigurations):
     persist_to_vs: bool
     embedding_model_list: list[Embeddings]
 
-    @classmethod
     @validator("qa_generator_llm", pre=True, always=True)
     def check_language_model_name(cls, v):
         """Validation to check if provided LLM model is supported."""

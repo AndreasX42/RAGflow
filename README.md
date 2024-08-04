@@ -12,18 +12,19 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 `CI/CD` [Docker](https://www.docker.com/) [Kubernetes](https://kubernetes.io/) [CircleCI](https://circleci.com/) [GKE](https://cloud.google.com/kubernetes-engine)
 
 # 🚀 Getting Started
+
 - CircleCI pushes the Docker images after each successful build to
-    - https://hub.docker.com/u/andreasx42
+  - https://hub.docker.com/u/andreasx42
 - Google Kubernetes Engine cluster could be available on
-    -  http://34.30.101.95/
+  - http://35.239.36.15/
 - Or checkout repository
 - Start application with ‘docker-compose up --build’
-    - Application should be available on localhost:8501.
-    - Backend API documentation is available on localhost:8080/docs
+  - Application should be available on localhost:8501.
+  - Backend API documentation is available on localhost:8080/docs
 - Or use Kubernetes with 'kubectl apply -f k8s' to deploy locally
-    - Application should be available directly on localhost/
-    - For backend API access we use nginx routing with localhost/api/*
-    - Be aware to check deployment configs for image versions
+  - Application should be available directly on localhost/
+  - For backend API access we use nginx routing with localhost/api/\*
+  - Be aware to check deployment configs for image versions
 
 # 📖 What is Retrievel Augmented Generation (RAG)?
 
@@ -33,18 +34,20 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 In RAG, when a user query is received, relevant documents or passages are retrieved from a massive corpus, i.e. a document store. These retrieved documents are then provided as context to a generative model, which synthesizes a coherent response or answer using both the input query and the retrieved information. This approach leverages the strengths of both retrieval-based and generative systems, aiming to produce accurate and well-formed responses by drawing from vast amounts of textual data.
 
 # 🚀 Workflow of RAGflow
+
 - Automatic Generation of Question-Answer Pairs\
-Begin with RAGflow's capability to generate relevant question-answer pairs from provided documents which is used as an evaluation dataset to evaluate RAG systems.
-Hyperparameter Evaluation
+  Begin with RAGflow's capability to generate relevant question-answer pairs from provided documents which is used as an evaluation dataset to evaluate RAG systems.
+  Hyperparameter Evaluation
 - Evaluate provided hyperparameters \
-After generating Q&A pairs, dive into hyperparameter evaluation. Provide your hyperparameters, let RAGflow evaluate their efficacy, and obtain insights for crafting robust RAG systems.
-This approach allows you to select efficient document splitting strategies, language and embedding models which could be further finetuned with respect to your document store.
+  After generating Q&A pairs, dive into hyperparameter evaluation. Provide your hyperparameters, let RAGflow evaluate their efficacy, and obtain insights for crafting robust RAG systems.
+  This approach allows you to select efficient document splitting strategies, language and embedding models which could be further finetuned with respect to your document store.
 
 Here is a schematic overview:
 
 ![schematics](https://github.com/AndreasX42/RAGflow/assets/141482745/8ea78a21-8224-4baf-a441-dc4aa8249762)
 
 # 🌟 Key Features & Functionalities
+
 - `Document Store Integration` Provide documents in formats like pdf and docx as knowledge base.
 - `Dynamic Parameter Selection` Customize parameters such as document splitting strategies, embedding model, and question-answering LLMs for evaluations.
 - `Automated Dataset Generation` Automatically generates question answer pairs from the provided documents as evaluation dataset to evaluate each parameterized RAG system.
@@ -52,9 +55,11 @@ Here is a schematic overview:
 - `Advanced Retrieval Mechanisms` Employ techniques like "MMR" and the SelfQueryRetriever for optimal data extraction.
 - `Integration with External Platforms` Collaborate with platforms like Anyscale, MosaicML, and Replicate for enhanced functionalities and state-of-the-art LLM models.
 - `Interactive Feedback Loop` Refine and improve your RAG system with interactive feedback based on real-world results.
-    
+
 # 🛠️ Development
+
 Directory Structure
+
 - `/.circleci` CircleCI integration config for CI/CD pipeline.
 - `/app` Frontend components and resources in Streamlit.
 - `/ragflow` Backend services and APIs.
@@ -62,6 +67,7 @@ Directory Structure
 - `/notebooks` Jupyter notebooks with different experiments.
 - `/resources` Data storage.
 - `/vectorstore` ChromaDB component.
-    
+
 # 🌐 Links & Resources
+
 - TBA

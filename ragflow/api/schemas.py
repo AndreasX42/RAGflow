@@ -1,5 +1,6 @@
 import datetime as dt
-from pydantic import BaseModel
+from typing import Annotated
+from pydantic import BaseModel, EmailStr, StringConstraints
 
 from typing import Optional
 
@@ -24,4 +25,6 @@ class UpdateUserRequest(UserBase):
 
 
 class CreateUserRequest(UserBase):
-    password: str
+    username: Annotated[str, StringConstraints(min_length=4, max_length=64)]
+    password: Annotated[str, StringConstraints(min_length=8, max_length=128)]
+    email: EmailStr

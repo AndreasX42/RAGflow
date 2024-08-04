@@ -10,7 +10,6 @@ from ragflow.api.routers import (
     user_router,
 )
 
-import ragflow.api.services.user_service as user_service
 from ragflow.api.database import Base, engine
 
 app = FastAPI(

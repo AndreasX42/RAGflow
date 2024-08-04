@@ -71,10 +71,19 @@ def page_login():
     with tab2:
         with st.form("register_form"):
             st.subheader("Register")
-            reg_username = st.text_input("Username", key="reg_username")
+            reg_username = st.text_input(
+                "Username",
+                key="reg_username",
+                help="Username must be between 4 and 64 characters.",
+            )
+
             reg_email = st.text_input("Email", key="reg_email")
+
             reg_password = st.text_input(
-                "Password", type="password", key="reg_password"
+                "Password",
+                type="password",
+                key="reg_password",
+                help="Password must be between 8 and 128 characters.",
             )
 
             if st.form_submit_button("Register"):

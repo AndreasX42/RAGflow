@@ -3,7 +3,7 @@ openai==0.28.1
 tiktoken==0.5.1
 langchain==0.0.330
 Cython==3.0.5
-pydantic==2.4.2
+
 pandas==2.1.2
 numpy==1.26.1
 scikit-learn==1.3.2
@@ -29,6 +29,7 @@ absl-py==2.0.0
 
 # Web framework and API
 fastapi==0.104.1
+pydantic[email]==2.4.2
 uvicorn==0.24.0.post1
 python-dotenv==1.0.0
 SQLAlchemy==2.0.23

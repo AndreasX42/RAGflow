@@ -28,14 +28,15 @@ async def create_user(user_data: CreateUserRequest, db_session: Session) -> User
     )
 
     if existing_user:
-        # Determine which attribute (username or email) is duplicated
+        # Determine which attribute (username or email) already exists in db
         duplicate_field = (
             "username"
             if existing_user.username == user_data_dict.get("username")
             else "email"
         )
         raise HTTPException(
-            status_code=400, detail=f"User already exists with this {duplicate_field}"
+            status_code=400,
+            detail=f"User with provided {duplicate_field} already exists!",
         )
 
     user = User(**user_data_dict)

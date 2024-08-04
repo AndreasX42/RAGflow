@@ -22,9 +22,9 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: pgsecrets
-                  key: PGADMIN_DEFAULT_EMAIL
+                  key: PGADMIN_ADMIN_EMAIL
             - name: PGADMIN_DEFAULT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: pgsecrets
-                  key: POSTGRES_PASSWORD
+                  key: POSTGRES_ADMIN_PASSWORD

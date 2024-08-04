@@ -8,7 +8,6 @@ from ragflow.commons.configurations.BaseConfigurations import (
     LLM_MODELS,
 )
 
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 

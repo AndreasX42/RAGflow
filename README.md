@@ -17,14 +17,14 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
   - https://hub.docker.com/u/andreasx42
 - Google Kubernetes Engine cluster could be available on
   - http://35.239.36.15/
-- Or checkout repository
-- Start application with ‘docker-compose up --build’
-  - Application should be available on localhost:8501.
-  - Backend API documentation is available on localhost:8080/docs
-- Or use Kubernetes with 'kubectl apply -f k8s' to deploy locally
-  - Application should be available directly on localhost/
-  - For backend API access we use nginx routing with localhost/api/\*
-  - Be aware to check deployment configs for image versions
+- Checkout repository
+  - Start application with ‘docker-compose up --build’
+    - Application should be available on localhost:8501.
+    - Backend API documentation is available on localhost:8080/docs
+  - Use Kubernetes with 'kubectl apply -f k8s' to deploy locally
+    - Application should be available directly on localhost/
+    - For backend API access we use nginx routing with localhost/api/\*
+    - Be aware to check deployment configs for image versions
 
 # 📖 What is Retrievel Augmented Generation (RAG)?
 

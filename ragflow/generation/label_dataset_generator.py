@@ -207,6 +207,15 @@ async def agenerate_evaluation_set(
 
     logger.info("Checking for evaluation dataset configs.")
 
+    import nltk
+    from nltk.data import find
+
+    # Check if 'punkt' is already downloaded, and download if not
+    try:
+        find("tokenizers/punkt")
+    except LookupError:
+        nltk.download("punkt")
+
     label_dataset_gen_params = read_json(label_dataset_gen_params_path)
 
     # TODO: Only one single QA generation supported per user

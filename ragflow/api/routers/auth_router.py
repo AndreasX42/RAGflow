@@ -22,9 +22,7 @@ ACCESS_TOKEN_EXPIRATION_IN_MINUTES = 60 * 24 * 7  # 7 days
 
 
 @router.get("/user", response_model=UserFromDB, status_code=status.HTTP_200_OK)
-async def get_authenticated_user(
-    user: UserFromDB = Depends(get_current_active_user),
-):
+async def get_authenticated_user(user: UserFromDB = Depends(get_current_active_user)):
     return user
 
 

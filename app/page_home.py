@@ -88,22 +88,22 @@ def page_home():
         st.write(
             """
         1. Account Setup:
-        Log in or register.
+        Log in or register to get access to all services.
 
         2. API Key Submission:
-        Supply all the required API keys, such as those for OpenAI. The keys needed will vary based on the LLMs and services you intend to use.
+        Supply all the required API keys, such as those for OpenAI. The keys needed will vary based on the LLMs and services you intend to use. Keys will only get stored locally until page reloads.
 
         3. Document Upload:
-        Upload the documents for which you aim to create a RAG application.
+        Upload the documents for which you aim to create a RAG application under 'Documents'.
 
         4. Parameter Configuration:
-        Input the necessary parameters directly or by uploading a JSON file. This is essential for both the evaluation dataset generation and the hyperparameter assessment.
+        Input the necessary parameters directly or by uploading a JSON file in 'Parameters'. This is essential for both the evaluation dataset generation in the 'QA Generator settings' tab and for the hyperparameter assessment in the 'Hyperparameters settings' tab.
 
         5. Dashboard Analysis:
-        Navigate to the Dashboard to inspect hyperparameter metrics and view the generated data.
+        Navigate to the 'Dashboard' to inspect hyperparameter metrics and view the generated data.
 
         6. File Management:
-        The File Manager allows you to delete or download files within your directory for added flexibility.       
+        The 'File Manager' allows you to delete or download files within your directory for added flexibility.       
         """
         )
 

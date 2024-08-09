@@ -64,7 +64,6 @@ Directory Structure
 - `/app` Frontend components and resources in Streamlit.
 - `/ragflow` Backend services and APIs.
 - `/tests` Test scripts and test data.
-- `/notebooks` Jupyter notebooks with different experiments.
 - `/resources` Data storage.
 - `/vectorstore` ChromaDB component.
 

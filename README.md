@@ -15,8 +15,7 @@ RAGflow provides tools for constructing and evaluating Retrieval Augmented Gener
 
 - CircleCI pushes the Docker images after each successful build to
   - https://hub.docker.com/u/andreasx42
-- Google Kubernetes Engine cluster could be available on
-  - http://35.239.36.15/
+- Google Kubernetes Engine cluster currently not available
 - Checkout repository
   - Start application with ‘docker-compose up --build’
     - Application should be available on localhost:8501.
